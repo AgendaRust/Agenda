@@ -13,18 +13,18 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
 O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organizar e acompanhar seu progresso.
 
 ### Gestão de Metas
-Criação de Metas: O usuário pode criar metas para a semana, mês e ano.
-Detalhes da Meta: Cada meta é composta por uma descrição e uma categoria.
-Acompanhamento: É possível selecionar se as metas foram atingidas com sucesso, parcialmente atingidas ou não atingidas.
+- **Criação de Metas**: O usuário pode criar metas para a semana, mês e ano.
+- **Detalhes da Meta**: Cada meta é composta por uma descrição e uma categoria.
+- **Acompanhamento**: É possível selecionar se as metas foram atingidas com sucesso, parcialmente atingidas ou não atingidas.
 
 ### Planejamento de Tarefas
-Agendamento Diário: Permite criar um planejamento de atividades para um dia específico.
-Duração da Tarefa: As tarefas podem ser alocadas em blocos de tempo de meia hora, uma hora ou um turno do dia (manhã, tarde, noite).
-Detalhes da Tarefa: Assim como as metas, uma tarefa também possui uma descrição e uma categoria.
-Status da Tarefa: O usuário pode marcar as tarefas como executadas, parcialmente executadas ou adiadas.
+- **Agendamento Diário**: Permite criar um planejamento de atividades para um dia específico.
+- **Duração da Tarefa**: As tarefas podem ser alocadas em blocos de tempo de meia hora, uma hora ou um turno do dia (manhã, tarde, noite).
+- **Detalhes da Tarefa**: Assim como as metas, uma tarefa também possui uma descrição e uma categoria.
+- **Status da Tarefa**: O usuário pode marcar as tarefas como executadas, parcialmente executadas ou adiadas.
 
 ### Organização e Visualização
-Destaque por Categoria: Tarefas e metas podem ser destacadas por categoria, como por exemplo, exibindo itens da mesma categoria com a mesma cor para facilitar a visualização.
+- **Destaque por Categoria**: Tarefas e metas podem ser destacadas por categoria, como por exemplo, exibindo itens da mesma categoria com a mesma cor para facilitar a visualização.
 
 ### Lembretes Semanais
 - O sistema permite a criação de lembretes semanais para atividades recorrentes, tais como:
@@ -33,17 +33,17 @@ Destaque por Categoria: Tarefas e metas podem ser destacadas por categoria, como
   - Compras.
 
 ### Relatórios de Produtividade
-Geração de Relatórios: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
-Análise de Desempenho: Os relatórios incluem:
-- Quantidade e porcentagem de metas cumpridas.
-- Quantidade e porcentagem de tarefas executadas.
-- Destaque para as semanas e os meses mais produtivos.
-- Identificação dos turnos do dia mais produtivos.
-- As categorias de tarefas e metas mais realizadas.
+- Geração de Relatórios: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
+- Análise de Desempenho: Os relatórios incluem:
+  - Quantidade e porcentagem de metas cumpridas.
+  - Quantidade e porcentagem de tarefas executadas.
+  - Destaque para as semanas e os meses mais produtivos.
+  - Identificação dos turnos do dia mais produtivos.
+  - As categorias de tarefas e metas mais realizadas.
 
 ### Requisito Técnico
 
-Persistência de Dados: Todos os dados do usuário, como metas e tarefas, são armazenados de maneira persistente, seja em arquivos ou em um banco de dados.
+- Persistência de Dados: Todos os dados do usuário, como metas e tarefas, são armazenados de maneira persistente, seja em arquivos ou em um banco de dados.
 
 
 ## 🚀 Tecnologias Usadas
