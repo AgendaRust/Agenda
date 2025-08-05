@@ -1,4 +1,4 @@
-# Planner Virtual em Rust com Rocket
+# 🗓️ Planner Virtual em Rust com Rocket
 Este projeto é uma implementação de um planner virtual, desenvolvido para a disciplina de Paradigmas de Linguagens de Programação da Universidade Federal do Agreste de Pernambuco (UFAPE). O sistema foi construído utilizando a linguagem de programação Rust e o framework web Rocket.
 
 | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/52945665?v=4" width="115" style="border-radius: 50%;"><br><sub>Gabriel Silva</sub>](https://github.com/gabrielZZ231) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/194650600?v=4" width="115" style="border-radius: 50%;"><br><sub>Lucas Marques</sub>](https://github.com/marquesdiff) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/62724100?v=4" width="115" style="border-radius: 50%;"><br><sub>Raylandson Cesário</sub>](https://github.com/Raylandson) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/102694110?v=4" width="115" style="border-radius: 50%;"><br><sub>Jorge Ribeiro</sub>](https://github.com/JorgRibeiro) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/117954648?v=4" width="115" style="border-radius: 50%;"><br><sub>Clívisson Barbosa</sub>](https://github.com/clivissonjose) |
@@ -12,27 +12,27 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
 ## ✨ Funcionalidades
 O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organizar e acompanhar seu progresso.
 
-### Gestão de Metas
+### 📈 Gestão de Metas
 - **Criação de Metas**: O usuário pode criar metas para a semana, mês e ano.
 - **Detalhes da Meta**: Cada meta é composta por uma descrição e uma categoria.
 - **Acompanhamento**: É possível selecionar se as metas foram atingidas com sucesso, parcialmente atingidas ou não atingidas.
 
-### Planejamento de Tarefas
+### 📑 Planejamento de Tarefas
 - **Agendamento Diário**: Permite criar um planejamento de atividades para um dia específico.
 - **Duração da Tarefa**: As tarefas podem ser alocadas em blocos de tempo de meia hora, uma hora ou um turno do dia (manhã, tarde, noite).
 - **Detalhes da Tarefa**: Assim como as metas, uma tarefa também possui uma descrição e uma categoria.
 - **Status da Tarefa**: O usuário pode marcar as tarefas como executadas, parcialmente executadas ou adiadas.
 
-### Organização e Visualização
+### 🗂️ Organização e Visualização
 - **Destaque por Categoria**: Tarefas e metas podem ser destacadas por categoria, como por exemplo, exibindo itens da mesma categoria com a mesma cor para facilitar a visualização.
 
-### Lembretes Semanais
+### 📆 Lembretes Semanais
 - O sistema permite a criação de lembretes semanais para atividades recorrentes, tais como:
   - Ligações importantes.
   - Reuniões.
   - Compras.
 
-### Relatórios de Produtividade
+### 📊 Relatórios de Produtividade
 - Geração de Relatórios: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
 - Análise de Desempenho: Os relatórios incluem:
   - Quantidade e porcentagem de metas cumpridas.
@@ -41,10 +41,9 @@ O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organi
   - Identificação dos turnos do dia mais produtivos.
   - As categorias de tarefas e metas mais realizadas.
 
-### Requisito Técnico
+### 💻 Requisito Técnico
 
 - Persistência de Dados: Todos os dados do usuário, como metas e tarefas, são armazenados de maneira persistente, seja em arquivos ou em um banco de dados.
-
 
 ## 🚀 Tecnologias Usadas
 
