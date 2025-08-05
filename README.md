@@ -27,10 +27,10 @@ Status da Tarefa: O usuário pode marcar as tarefas como executadas, parcialment
 Destaque por Categoria: Tarefas e metas podem ser destacadas por categoria, como por exemplo, exibindo itens da mesma categoria com a mesma cor para facilitar a visualização.
 
 ### Lembretes Semanais
-O sistema permite a criação de lembretes semanais para atividades recorrentes, tais como:
-Ligações importantes.
-Reuniões.
-Compras.
+- O sistema permite a criação de lembretes semanais para atividades recorrentes, tais como:
+  - Ligações importantes.
+  - Reuniões.
+  - Compras.
 
 ### Relatórios de Produtividade
 Geração de Relatórios: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
@@ -62,6 +62,11 @@ Persistência de Dados: Todos os dados do usuário, como metas e tarefas, são a
     </td>
   </tr>
 </table>
+
+## 🎓 Agradecimentos
+- Projeto acadêmico desenvolvido para a disciplina de Paradigmas de Linguagens de Programação.
+- Professor: **Dimas Cassimiro do Nascimento Filho**.
+- Instituição: Universidade Federal do Agreste de Pernambuco.
 
 ## Status do Projeto
 
