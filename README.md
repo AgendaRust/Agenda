@@ -33,8 +33,8 @@ O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organi
   - Compras.
 
 ### 📊 Relatórios de Produtividade
-- Geração de Relatórios: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
-- Análise de Desempenho: Os relatórios incluem:
+- **Geração de Relatórios**: O usuário pode gerar relatórios de desempenho semanais, mensais ou anuais.
+- **Análise de Desempenho**: Os relatórios incluem:
   - Quantidade e porcentagem de metas cumpridas.
   - Quantidade e porcentagem de tarefas executadas.
   - Destaque para as semanas e os meses mais produtivos.
