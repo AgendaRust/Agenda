@@ -60,9 +60,9 @@ O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organi
       <a href="https://github.com/rwf2/Rocket" target="_blank">Rocket</a>
     </td>
     <td align="center">
-      <img src="https://yew.rs/" width="40" alt="Yew"/>
+      <img src="https://camo.githubusercontent.com/761eeed6db010be43e40e9a8dc73616a48690f91931e2fb81948c741c3fd7165/68747470733a2f2f7965772e72732f696d672f6c6f676f2e706e67" width="40" alt="Yew"/>
       <br/>
-      <a href="https://github.com/yewstack/yew" target="_blank">Yew</a>
+      <a href="https://yew.rs/" target="_blank">Yew</a>
     </td>
   </tr>
 </table>
