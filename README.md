@@ -76,12 +76,6 @@ trunk serve
    touch database.db
    ```
 
-   **Ou alternativamente:**
-
-   ```bash
-   sqlite3 database.db "VACUUM;"
-   ```
-
    **Instale o SeaORM CLI (se ainda não tiver):**
 
    ```bash
