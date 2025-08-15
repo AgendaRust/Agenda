@@ -1,9 +1,17 @@
 use yew::prelude::*;
 
+mod components;
+mod hooks;
+mod services;
+mod types;
+
+use components::ThemeToggle;
+use hooks::use_theme;
+
 #[function_component(Home)]
 fn home_component() -> Html {
     let counter = use_state(|| 0);
-    let dark_mode = use_state(|| true);
+    let (dark_mode, toggle_theme) = use_theme();
 
     let add_one = {
         let counter = counter.clone();
@@ -19,39 +27,24 @@ fn home_component() -> Html {
         })
     };
 
-    let toggle_theme = {
-        let dark_mode = dark_mode.clone();
-        Callback::from(move |_| {
-            dark_mode.set(!*dark_mode);
-        })
-    };
-
-    let theme_class = if *dark_mode {
+    let theme_class = if dark_mode {
         "dark-theme"
     } else {
         "light-theme"
     };
 
-    let theme_icon = if *dark_mode { "☀️" } else { "🌙" };
-
     html! {
-        <div class={format!("container {}", theme_class)}>
-            <div class="theme-toggle">
-                <button
-                    class="theme-btn"
-                    onclick={toggle_theme}
-                    title={if *dark_mode { "Switch to Light Mode" } else { "Switch to Dark Mode" }}
-                >
-                    { theme_icon }
-                </button>
+        <>
+            <ThemeToggle dark_mode={dark_mode} on_toggle={toggle_theme} />
+            <div class={format!("container {}", theme_class)}>
+                <h1> { "Bem vindo ao nosso projeto de agenda com rust!" } </h1>
+                <div class="button-container">
+                    <button onclick={add_one}>{ "+1" }</button>
+                    <button onclick={minus_one}>{ "-1" }</button>
+                </div>
+                <p class="counter">{ *counter }</p>
             </div>
-            <h1> { "Bem vindo ao nosso projeto de agenda com rust!" } </h1>
-            <div class="button-container">
-                <button onclick={add_one}>{ "+1" }</button>
-                <button onclick={minus_one}>{ "-1" }</button>
-            </div>
-            <p class="counter">{ *counter }</p>
-        </div>
+        </>
     }
 }
 
