@@ -9,6 +9,33 @@ Este projeto é uma implementação de um planner virtual, desenvolvido para a d
 
 O objetivo principal é criar um sistema de planner que permita aos usuários organizar suas metas e tarefas diárias de forma eficiente. O planner oferece funcionalidades para criação, acompanhamento e análise de produtividade, com os dados sendo armazenados de forma persistente.
 
+## ⚡ Início Rápido
+
+```bash
+# Clone o repositório
+git clone https://github.com/AgendaRust/Agenda.git
+cd Agenda
+
+# Configure e execute o backend
+cd backend
+echo "DATABASE_URL=sqlite:./database.db" > .env
+touch database.db
+cargo install sea-orm-cli
+sea-orm-cli migrate up
+cargo run
+
+# Em outro terminal, execute o frontend
+cd ../frontend
+rustup target add wasm32-unknown-unknown
+cargo install trunk
+trunk serve
+```
+
+**URLs:**
+
+- Backend API: http://localhost:8000
+- Frontend: http://localhost:8080
+
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
@@ -31,11 +58,41 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
    cargo install cargo-watch
    ```
 
-3. **Configure o banco de dados**
+3. **Configure o banco de dados e migrations**
 
    ```bash
    cd backend
-   # Certifique-se de que existe um arquivo .env na pasta backend com as configurações do banco
+   ```
+
+   **Crie o arquivo .env:**
+
+   ```bash
+   echo "DATABASE_URL=sqlite:./database.db" > .env
+   ```
+
+   **Crie o banco de dados SQLite:**
+
+   ```bash
+   touch database.db
+   ```
+
+   **Instale o SeaORM CLI (se ainda não tiver):**
+
+   ```bash
+   cargo install sea-orm-cli
+   ```
+
+   **Execute as migrations para criar o banco de dados e tabelas:**
+
+   ```bash
+   sea-orm-cli migrate up
+   ```
+
+   **Verifique se o banco foi criado corretamente:**
+
+   ```bash
+   sqlite3 database.db ".tables"
+   # Deve mostrar: notes seaql_migrations
    ```
 
 4. **Execute o backend**
@@ -43,14 +100,12 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
    **Para desenvolvimento (com auto-reload):**
 
    ```bash
-   cd backend
    cargo watch -x run
    ```
 
    **Para execução simples:**
 
    ```bash
-   cd backend
    cargo run
    ```
 
@@ -59,11 +114,114 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
    http://localhost:8000
    ```
 
+### Executando o Frontend
+
+6. **Volte para o diretório raiz e navegue para o frontend**
+
+   ```bash
+   cd ..
+   cd frontend
+   ```
+
+7. **Instale as dependências do WebAssembly**
+
+   ```bash
+   rustup target add wasm32-unknown-unknown
+   ```
+
+8. **Instale o Trunk** (ferramenta para build e servir aplicações Yew)
+
+   ```bash
+   cargo install trunk
+   ```
+
+9. **Execute o frontend**
+
+   **Para desenvolvimento (com hot-reload):**
+
+   ```bash
+   trunk serve
+   ```
+
+   **Para build de produção:**
+
+   ```bash
+   trunk build --release
+   ```
+
+10. **Acesse a aplicação web**
+    ```
+    http://localhost:8080
+    ```
+
+## 🗄️ Configuração do Banco de Dados
+
+Este projeto utiliza SQLite com SeaORM para gerenciamento do banco de dados e migrations.
+
+### Comandos de Migration Úteis
+
+```bash
+# Verificar status das migrations
+sea-orm-cli migrate status
+
+# Aplicar todas as migrations pendentes
+sea-orm-cli migrate up
+
+# Reverter a última migration
+sea-orm-cli migrate down
+
+# Resetar o banco (cuidado! apaga todos os dados)
+sea-orm-cli migrate reset
+
+# Gerar uma nova migration
+sea-orm-cli migrate generate nome_da_migration
+```
+
+### Estrutura do Banco de Dados
+
+**Tabela: notes**
+
+- `id` - INTEGER PRIMARY KEY AUTOINCREMENT
+- `text` - TEXT NOT NULL
+- `created_at` - TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+### Solução de Problemas
+
+**Erro de conexão com SQLite:**
+
+- Verifique se o arquivo `.env` existe em `backend/.env`
+- Confirme que `DATABASE_URL=sqlite:./database.db` está correto
+- **Crie o banco de dados antes das migrations:** `touch database.db` ou `sqlite3 database.db "VACUUM;"`
+- Certifique-se de que as features SQLite estão habilitadas no `Cargo.toml`
+
+**Migration não funciona:**
+
+- Execute `touch database.db` ou `sqlite3 database.db "VACUUM;"` para criar o arquivo do banco
+- Execute `cargo install sea-orm-cli` para instalar a CLI
+- Verifique se está no diretório `backend/` ao executar comandos
+- Use `sea-orm-cli migrate status` para ver o estado atual
+
+### Estrutura do Projeto
+
+```
+Agenda/
+├── backend/          # API em Rust com Rocket
+│   ├── src/
+│   │   ├── main.rs
+│   │   ├── routes/
+│   │   ├── entity/
+│   │   └── dto/
+│   └── Cargo.toml
+├── frontend/         # Interface web em Yew
+│   ├── src/
+│   │   └── main.rs
+│   ├── index.html
+│   ├── style.css
+│   └── Cargo.toml
+└── README.md
 ```
 
 ## ✨ Funcionalidades
-
-O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organizar e acompanhar seu progresso.
 
 ### 📈 Gestão de Metas
 
@@ -144,4 +302,3 @@ O sistema oferece uma gama de funcionalidades para ajudar o usuário a se organi
 ## Status do Projeto
 
 Em desenvolvimento 🚧
-```

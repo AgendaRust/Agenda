@@ -1,6 +1,8 @@
 use rocket::fairing::{self, AdHoc};
 use sea_orm::{Database, DatabaseConnection};
 
+use sea_orm_migration::prelude::*;
+
 pub type Pool = DatabaseConnection;
 
 const DB_NAME: &str = "my_db";
