@@ -1,6 +1,6 @@
-use crate::db::{self, Pool};
+use crate::db::Pool;
 use crate::dto::CreateNote;
-use crate::entity::{notes, prelude::*};
+use crate::entity::notes;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};

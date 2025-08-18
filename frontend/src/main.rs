@@ -27,6 +27,13 @@ fn home_component() -> Html {
         })
     };
 
+    let reset_counter = {
+        let counter = counter.clone();
+        Callback::from(move |_| {
+            counter.set(0);
+        })
+    };
+
     let theme_class = if dark_mode {
         "dark-theme"
     } else {
@@ -40,6 +47,7 @@ fn home_component() -> Html {
                 <h1> { "Bem vindo ao nosso projeto de agenda com rust!" } </h1>
                 <div class="button-container">
                     <button onclick={add_one}>{ "+1" }</button>
+                    <button onclick={reset_counter}>{ "Reset" }</button>
                     <button onclick={minus_one}>{ "-1" }</button>
                 </div>
                 <p class="counter">{ *counter }</p>

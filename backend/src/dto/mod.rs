@@ -1,3 +1,4 @@
+pub mod auth;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
