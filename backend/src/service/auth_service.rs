@@ -1,11 +1,16 @@
 use crate::db::Pool;
 use crate::dto::auth::AuthDto;
-use crate::entity::prelude::User;
+// use crate::entity::prelude::User;
+use crate::entity::prelude::*;
 use crate::entity::user;
-use rocket::http::Status;
-use rocket::serde::json::Json;
+// use rocket::http::Status;
+// use rocket::serde::json::Json;
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
 use rocket::State;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 
 pub enum UserError {
     InvalidUser(String),
@@ -27,10 +32,16 @@ pub async fn register_user_db(
     }
 
     let conn = db.inner();
+    let salt = SaltString::generate(&mut OsRng);
+    let argon2 = Argon2::default();
+    let password_hash = argon2
+        .hash_password(user_info.password.as_bytes(), &salt)
+        .map_err(|e| UserError::DatabaseError(e.to_string()))?
+        .to_string();
 
     let new_user = user::ActiveModel {
         username: Set(user_info.username.clone()),
-        password: Set(user_info.password.clone()),
+        password: Set(password_hash),
         ..Default::default()
     };
 
@@ -46,15 +57,22 @@ pub async fn login_user_db(
 ) -> Result<user::Model, UserError> {
     let conn = db.inner();
 
-    let user = user::Entity::find()
+    let user = User::find()
         .filter(user::Column::Username.eq(&user_info.username))
         .one(conn)
         .await;
 
     let error_msg = "Invalid username or password";
+    let argon2 = Argon2::default();
+
     match user {
         Ok(Some(user)) => {
-            if user.password == user_info.password {
+            let parsed_hash = PasswordHash::new(&user.password)
+                .map_err(|e| UserError::DatabaseError(e.to_string()))?;
+            if argon2
+                .verify_password(user_info.password.as_bytes(), &parsed_hash)
+                .is_ok()
+            {
                 Ok(user)
             } else {
                 Err(UserError::InvalidUser(error_msg.to_string()))

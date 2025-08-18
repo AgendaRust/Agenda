@@ -2,13 +2,13 @@ use rocket::fairing::{self, AdHoc};
 use sea_orm::{Database, DatabaseConnection};
 
 use sea_orm_migration::prelude::*;
-
+use std::env::var;
 pub type Pool = DatabaseConnection;
 
-const DB_NAME: &str = "my_db";
+// const DB_NAME: &str = "my_db";
 
 fn db_url() -> String {
-    std::env::var("DATABASE_URL").expect("DATABASE_URL must be set.")
+    var("DATABASE_URL").expect("DATABASE_URL must be set.")
 }
 
 pub fn init_pool() -> AdHoc {
@@ -23,9 +23,9 @@ pub fn init_pool() -> AdHoc {
     })
 }
 
-pub async fn get_conn<'r>(req: &'r rocket::Request<'_>) -> Result<Pool, ()> {
-    req.rocket()
-        .state::<Pool>()
-        .map(|pool| pool.clone())
-        .ok_or(())
-}
+// pub async fn get_conn<'r>(req: &'r rocket::Request<'_>) -> Result<Pool, ()> {
+//     req.rocket()
+//         .state::<Pool>()
+//         .map(|pool| pool.clone())
+//         .ok_or(())
+// }

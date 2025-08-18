@@ -1,6 +1,6 @@
 use crate::db::Pool;
-use crate::dto::auth::{self, AuthDto};
-use crate::entity::user;
+use crate::dto::auth::AuthDto;
+// use crate::entity::user;
 // use crate::entity::user;
 use crate::service::auth_service::{self, UserError};
 use rocket::http::Status;
@@ -8,61 +8,85 @@ use rocket::{serde::json::Json, State};
 // use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 // #[macro_use]
 // extern crate rocket;
-
 use rocket_jwt::jwt;
+use std::env::{var, VarError};
 
-static SECRET_KEY: &str = "secret";
+#[derive(serde::Serialize)]
+pub struct TokenResponse {
+    token: String,
+}
 
-#[jwt(SECRET_KEY, exp = 3600)]
+#[derive(serde::Serialize)]
+pub struct ErrorResponse {
+    error: String,
+}
+
+fn get_secret_key() -> Result<String, VarError> {
+    var("JWT_SECRET_KEY")
+}
+
+#[jwt(get_secret_key(), exp = 36000)]
 pub struct UserClaim {
     id: String,
 }
 
 #[post("/register", data = "<auth_dto>")]
-pub async fn register(auth_dto: Json<auth::AuthDto>, db: &State<Pool>) -> (Status, String) {
-    let result = auth_service::register_user_db(db, &auth_dto).await;
+pub async fn register(
+    auth_dto: Json<AuthDto>,
+    db: &State<Pool>,
+) -> Result<(Status, Json<TokenResponse>), (Status, Json<ErrorResponse>)> {
+    let result: Result<crate::entity::user::Model, UserError> =
+        auth_service::register_user_db(db, &auth_dto).await;
     match result {
         Ok(user) => {
             let user_claim = UserClaim {
                 id: user.id.to_string(),
             };
             let token = UserClaim::sign(user_claim);
-            (Status::Created, token)
+            Ok((Status::Created, Json(TokenResponse { token })))
         }
-        Err(err) => {
-            let (status, message) = match err {
-                UserError::InvalidUser(msg) => (Status::BadRequest, msg),
-                UserError::UserAlreadyExists(msg) => (Status::Conflict, msg),
-                UserError::DatabaseError(msg) => (Status::InternalServerError, msg),
-            };
-            (status, message)
-        }
+        Err(err) => match err {
+            UserError::InvalidUser(msg) => {
+                Err((Status::BadRequest, Json(ErrorResponse { error: msg })))
+            }
+            UserError::UserAlreadyExists(msg) => {
+                Err((Status::Conflict, Json(ErrorResponse { error: msg })))
+            }
+            UserError::DatabaseError(msg) => Err((
+                Status::InternalServerError,
+                Json(ErrorResponse { error: msg }),
+            )),
+        },
     }
 }
 
 #[post("/login", data = "<auth_dto>")]
 pub async fn login(
     db: &State<Pool>,
-    auth_dto: Json<auth::AuthDto>,
-) -> Result<(Status, String), String> {
+    auth_dto: Json<AuthDto>,
+) -> Result<Json<TokenResponse>, (Status, Json<ErrorResponse>)> {
     let result = auth_service::login_user_db(db, &auth_dto).await;
+    println!(
+        "secret key {}",
+        get_secret_key().unwrap_or_else(|_| "secret".into())
+    );
     match result {
         Ok(user) => {
             let user_claim = UserClaim {
                 id: user.id.to_string(),
             };
             let token = UserClaim::sign(user_claim);
-            Ok((Status::Ok, token))
+            Ok(Json(TokenResponse { token }))
         }
-        Err(err) => {
-            let message = match err {
-                UserError::InvalidUser(msg) | UserError::UserAlreadyExists(msg) => {
-                    (Status::BadRequest, msg)
-                }
-                UserError::DatabaseError(msg) => (Status::InternalServerError, msg),
-            };
-            Err(message.1)
-        }
+        Err(err) => match err {
+            UserError::InvalidUser(msg) | UserError::UserAlreadyExists(msg) => {
+                Err((Status::BadRequest, Json(ErrorResponse { error: msg })))
+            }
+            UserError::DatabaseError(msg) => Err((
+                Status::InternalServerError,
+                Json(ErrorResponse { error: msg }),
+            )),
+        },
     }
 }
 
