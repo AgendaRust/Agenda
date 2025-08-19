@@ -19,6 +19,7 @@ cd Agenda
 # Configure e execute o backend
 cd backend
 echo "DATABASE_URL=sqlite:./database.db" > .env
+echo "JWT_SECRET_KEY=your-super-secret-jwt-key-here" >> .env
 touch database.db
 cargo install sea-orm-cli
 sea-orm-cli migrate up
@@ -68,6 +69,7 @@ trunk serve
 
    ```bash
    echo "DATABASE_URL=sqlite:./database.db" > .env
+   echo "JWT_SECRET_KEY=your-super-secret-jwt-key-here" >> .env
    ```
 
    **Crie o banco de dados SQLite:**
@@ -158,6 +160,20 @@ trunk serve
 
 Este projeto utiliza SQLite com SeaORM para gerenciamento do banco de dados e migrations.
 
+### Variáveis de Ambiente Necessárias
+
+O arquivo `.env` deve conter as seguintes variáveis:
+
+```bash
+DATABASE_URL=sqlite:./database.db
+JWT_SECRET_KEY=your-super-secret-jwt-key-here
+```
+
+**Importante**:
+
+- `DATABASE_URL`: Define a localização do banco de dados SQLite
+- `JWT_SECRET_KEY`: Chave secreta para assinatura de tokens JWT (deve ter pelo menos 32 caracteres para segurança)
+
 ### Comandos de Migration Úteis
 
 ```bash
@@ -191,6 +207,7 @@ sea-orm-cli migrate generate nome_da_migration
 
 - Verifique se o arquivo `.env` existe em `backend/.env`
 - Confirme que `DATABASE_URL=sqlite:./database.db` está correto
+- Confirme que `JWT_SECRET_KEY` está definida com pelo menos 32 caracteres
 - **Crie o banco de dados antes das migrations:** `touch database.db` ou `sqlite3 database.db "VACUUM;"`
 - Certifique-se de que as features SQLite estão habilitadas no `Cargo.toml`
 
