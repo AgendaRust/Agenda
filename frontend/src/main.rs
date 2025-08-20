@@ -7,9 +7,8 @@ mod services;
 mod types;
 mod utils;
 
-use pages::home::Home;
-use pages::login::Login;
+use utils::routes::Main;
 
 fn main() {
-    yew::Renderer::<Login>::new().render();
+    yew::Renderer::<Main>::new().render();
 }
