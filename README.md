@@ -283,7 +283,7 @@ Agenda/
 <table>
   <tr>
     <td align="center">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Rust_programming_language_black_logo.svg/1200px-Rust_programming_language_black_logo.svg.png" width="40" alt="Rust"/>
+      <img src="https://rustacean.net/assets/rustacean-flat-noshadow.svg" width="40" alt="Rust"/>
       <br/>
       <a href="https://www.rust-lang.org/" target="_blank">Rust</a>
     </td>
@@ -298,7 +298,7 @@ Agenda/
       <a href="https://yew.rs/" target="_blank">Yew</a>
     </td>
     <td align="center">
-      <img src="https://avatars.githubusercontent.com/u/20165699?s=200&v=4" width="40" alt="SeaORM"/>
+      <img src="https://www.sea-ql.org/SeaORM-X/img/SeaQL.png" width="40" alt="SeaORM"/>
       <br/>
       <a href="https://github.com/SeaQL/sea-orm" target="_blank">SeaORM</a>
     </td>
