@@ -1,0 +1,18 @@
+// Main SCSS file - imports all modular styles
+// Import order is important for CSS cascade
+
+// Variables first (CSS custom properties and theme system)
+@import "variables";
+
+// Base styles (reset, typography, fundamental styles)
+@import "base";
+
+// Component styles (reusable UI components)
+@import "components";
+
+// Page-specific styles
+@import "login";
+@import "register";
+
+// Utilities last (animations, responsive design, helper classes)
+@import "utilities";

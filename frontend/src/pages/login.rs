@@ -4,7 +4,7 @@ use yew_router::hooks::use_navigator;
 
 use crate::utils::routes::Route;
 
-use crate::services::auth;
+use crate::services::auth::{self, AuthStruct};
 
 #[function_component(Login)]
 pub fn login() -> Html {
@@ -14,22 +14,33 @@ pub fn login() -> Html {
     let password = use_state(String::new);
 
     let onclick = {
+        let username = (*username).clone();
+        let password = (*password).clone();
+        let navigator = navigator.clone();
         // let navigator = navigator.clone();
         Callback::from(move |_: MouseEvent| {
-            auth::login();
+            let username = username.clone();
+            let password = password.clone();
+            let navigator = navigator.clone();
             spawn_local(async move {
-                let message = auth::get_notes().await;
-                web_sys::console::log_1(&message.into());
+                let login_info: AuthStruct = AuthStruct::new(username, password);
+                let login_response = auth::login(&login_info).await;
+                if login_response {
+                    navigator.push(&Route::Home);
+                } else {
+                    web_sys::window()
+                        .unwrap()
+                        .alert_with_message("Credenciais erradas.")
+                        .unwrap();
+                }
             });
-            web_sys::console::log_1(&"Bonsonara".to_string().into());
-            // navigator.push(&Route::Home);
         })
     };
 
     let onclick_register: Callback<MouseEvent> = {
         let navigator = navigator.clone();
         Callback::from(move |_: MouseEvent| {
-            navigator.push(&Route::Home);
+            navigator.push(&Route::Register);
         })
     };
 
@@ -56,29 +67,27 @@ pub fn login() -> Html {
     };
 
     html! {
-        <>
-        <div class= "login-father-container">
-            <div class= "right-login-container">
-                <h1>{ "Bem vindo de volta!" } </h1>
-                <form class= "login-form">
-                    <div class= "login-form-container">
-                        <label class= "login-form-label"> {"Insira seu nome de usuário"} </label>
-                        <input value= {(*username).clone()}
-                            oninput= {on_username_input_change} class= "login-input" type= "text" />
-                        <label class= "login-form-label"> {"Insira sua senha"} </label>
-                        <input value= {(*password).clone()}
-                            oninput= {on_password_input_change} class= "login-input-password" type= "password" />
-                        <button {onclick} class= "login-button" type="button"> {"Entrar"} </button>
-                        <a class = "login-register-link" onclick= {onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
+        <div class="login-page-wrapper">
+                <div class="login-father-container">
+                    <div class="right-login-container">
+                        <h1>{ "Bem vindo de volta!" } </h1>
+                        <form class="login-form">
+                            <div class="login-form-container">
+                                <label class="login-form-label"> {"Insira seu nome de usuário"} </label>
+                                <input value={(*username).clone()}
+                                    oninput={on_username_input_change} class="login-input" type="text" />
+                                <label class="login-form-label"> {"Insira sua senha"} </label>
+                                <input value={(*password).clone()}
+                                    oninput={on_password_input_change} class="login-input-password" type="password" />
+                                <button {onclick} class="login-button" type="button"> {"Entrar"} </button>
+                                <a class="login-register-link" onclick={onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
+                            </div>
+                        </form>
                     </div>
-                    </form>
+                    <div class="left-login-container">
+                        <img src="login.avif" alt="login image" class="login-image" />
+                    </div>
+                </div>
             </div>
-            <div class= "left-login-container">
-                // <h1> {"Sua pag de login"} </h1>
-                <img src = "login.avif" alt = "login image" class = "login-image" />
-            </div>
-        </div>
-
-        </>
     }
 }

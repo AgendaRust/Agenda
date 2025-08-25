@@ -38,7 +38,6 @@ pub async fn register_user_db(
         .hash_password(user_info.password.as_bytes(), &salt)
         .map_err(|e| UserError::DatabaseError(e.to_string()))?
         .to_string();
-
     let new_user = user::ActiveModel {
         username: Set(user_info.username.clone()),
         password: Set(password_hash),
