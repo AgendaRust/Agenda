@@ -1,9 +1,8 @@
-// use std::error::Error;
-
 use gloo::net::http::Request;
 use gloo_storage::{LocalStorage, Storage};
+use js_sys::Date;
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
-// use serde_json::Value
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthStruct {
@@ -16,11 +15,17 @@ pub struct Token {
     pub token: String,
 }
 
-// pub struct TokenClaims {
-//     pub exp: usize,
-//     pub iat: usize,
-//     pub id: String,
-// }
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserData {
+    pub id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TokenClaims {
+    pub exp: u64,
+    pub iat: u64,
+    pub user: UserData,
+}
 
 impl AuthStruct {
     pub fn new(username: String, password: String) -> Self {
@@ -102,16 +107,28 @@ pub fn get_token() -> Token {
     LocalStorage::get::<Token>("token").unwrap_or_default()
 }
 
-// pub async fn get_notes() -> String {
-//     let url = "http://127.0.0.1:8000/notes";
-//     let response = Request::get(&url).send().await.unwrap();
-//     if response.status() == 200 {
-//         format!(
-//             "notes resulted {} {}",
-//             response.status_text(),
-//             response.text().await.unwrap_or("aiai".to_string())
-//         )
-//     } else {
-//         format!("notes not found {}", response.status_text())
-//     }
-// }
+pub fn verify_token(token: &Token) -> bool {
+    // tem que verificar sem checar a secret key
+    // apenas para saber se está valido a data
+    let key = DecodingKey::from_secret(&[]);
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.insecure_disable_signature_validation();
+    match decode::<TokenClaims>(&token.token, &key, &validation) {
+        Ok(data) => {
+            let user_id = data.claims.user.id;
+            let exp_timestamp = data.claims.exp;
+            let current_timestamp = (Date::now() / 1000.0) as u64;
+
+            if exp_timestamp < current_timestamp {
+                web_sys::console::log_1(&format!("expired token").into());
+                return false;
+            }
+            web_sys::console::log_1(&format!("valid token, user id: {user_id}").into());
+            true
+        }
+        Err(error) => {
+            web_sys::console::log_1(&format!("error decoding data: {error:?}").into());
+            false
+        }
+    }
+}

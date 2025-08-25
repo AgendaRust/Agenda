@@ -1,7 +1,7 @@
 use crate::pages::home::Home;
 use crate::pages::login::Login;
 use crate::pages::register::Register;
-use crate::services::auth::{self, Token};
+use crate::services::auth::{self, verify_token, Token};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -20,7 +20,16 @@ fn switch(route: Route) -> Html {
         Route::Home => {
             let token: Token = auth::get_token();
             web_sys::console::log_1(&format!("{}", token.token).into());
+            // nao tem token então vai para registrar
             if token.token.is_empty() {
+                return {
+                    html! {
+                        <Register/>
+                    }
+                };
+            }
+            // possui token mas está invalido, entao vai para login
+            if !verify_token(&token) {
                 return {
                     html! {
                         <Login/>
@@ -28,11 +37,11 @@ fn switch(route: Route) -> Html {
                 };
             }
             html! {
-                <Home></Home>
+                <Home/>
             }
         }
         Route::Login => html! {
-            <Login></Login>
+            <Login/>
         },
         Route::Register => html! {
             <Register/>
