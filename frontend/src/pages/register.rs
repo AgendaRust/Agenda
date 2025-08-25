@@ -3,7 +3,7 @@ use yew::prelude::*;
 use yew_router::hooks::use_navigator;
 
 use crate::{
-    services::auth::{self, AuthStruct},
+    services::auth::{self, AuthStruct, RegisterResult},
     utils::routes::Route,
 };
 
@@ -62,25 +62,18 @@ pub fn register() -> Html {
                 spawn_local(async move {
                     button_pressed.set(true);
                     match auth::register(&register_info).await {
-                        Ok(response) => {
+                        RegisterResult::Success => {
                             // Handle successful registration
-                            web_sys::console::log_1(
-                                &format!(
-                                    "{}",
-                                    response.text().await.unwrap_or_else(|_| {
-                                        "error while getting response text".to_string()
-                                    })
-                                )
-                                .into(),
-                            );
-                            if response.status() == 201 {
-                                navigator.push(&Route::Home);
-                            }
+                            web_sys::console::log_1(&"Successful register".into());
+                            navigator.push(&Route::Home);
                         }
-                        Err(error) => {
+                        RegisterResult::InvalidFields => {
                             web_sys::console::log_1(
-                                &format!("Registration failed: {error:?}").into(),
+                                &format!("Registration failed, invalid input").into(),
                             );
+                        }
+                        RegisterResult::NetworkError => {
+                            web_sys::console::log_1(&format!("Backend off do line").into());
                         }
                     }
                     button_pressed.set(false);

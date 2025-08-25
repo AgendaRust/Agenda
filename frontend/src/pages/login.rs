@@ -4,7 +4,7 @@ use yew_router::hooks::use_navigator;
 
 use crate::utils::routes::Route;
 
-use crate::services::auth::{self, AuthStruct};
+use crate::services::auth::{self, AuthStruct, LoginResult};
 
 #[function_component(Login)]
 pub fn login() -> Html {
@@ -25,13 +25,22 @@ pub fn login() -> Html {
             spawn_local(async move {
                 let login_info: AuthStruct = AuthStruct::new(username, password);
                 let login_response = auth::login(&login_info).await;
-                if login_response {
-                    navigator.push(&Route::Home);
-                } else {
-                    web_sys::window()
-                        .unwrap()
-                        .alert_with_message("Credenciais erradas.")
-                        .unwrap();
+                match login_response {
+                    LoginResult::Success => {
+                        navigator.push(&Route::Home);
+                    }
+                    LoginResult::IncorrectCredentials => {
+                        web_sys::window()
+                            .unwrap()
+                            .alert_with_message("Credenciais erradas.")
+                            .unwrap();
+                    }
+                    LoginResult::NetworkError => {
+                        web_sys::window()
+                            .unwrap()
+                            .alert_with_message("Backend off do line")
+                            .unwrap();
+                    }
                 }
             });
         })

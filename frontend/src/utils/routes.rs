@@ -1,6 +1,7 @@
 use crate::pages::home::Home;
 use crate::pages::login::Login;
 use crate::pages::register::Register;
+use crate::services::auth::{self, Token};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -16,9 +17,20 @@ pub enum Route {
 
 fn switch(route: Route) -> Html {
     match route {
-        Route::Home => html! {
-            <Home></Home>
-        },
+        Route::Home => {
+            let token: Token = auth::get_token();
+            web_sys::console::log_1(&format!("{}", token.token).into());
+            if token.token.is_empty() {
+                return {
+                    html! {
+                        <Login/>
+                    }
+                };
+            }
+            html! {
+                <Home></Home>
+            }
+        }
         Route::Login => html! {
             <Login></Login>
         },
