@@ -43,6 +43,7 @@ trunk serve
 
 - [Rust](https://www.rust-lang.org/tools/install) (versão mais recente)
 - [cargo-watch](https://crates.io/crates/cargo-watch) para desenvolvimento com hot reload
+- Compilador C ([Clang](https://clang.llvm.org/) ou [GCC](https://gcc.gnu.org/)): O frontend possui dependências (como a crate ring usada para criptografia em jsonwebtoken) que necessitam de um compilador C para serem compiladas.
 
 ### Passo a Passo
 

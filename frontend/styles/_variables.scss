@@ -1,0 +1,32 @@
+// CSS Variables for themes
+:root {
+  // Light theme colors
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --container-bg: rgba(255, 255, 255, 0.95);
+  --container-border: rgba(255, 255, 255, 0.2);
+  --text-color: #333;
+  --heading-gradient: linear-gradient(135deg, #667eea, #764ba2);
+  --button-gradient: linear-gradient(135deg, #667eea, #764ba2);
+  --button-hover-gradient: linear-gradient(135deg, #5a6fd8, #6a4190);
+  --button-shadow: rgba(102, 126, 234, 0.3);
+  --button-hover-shadow: rgba(102, 126, 234, 0.4);
+  --counter-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --theme-btn-bg: rgba(255, 255, 255, 0.1);
+  --theme-btn-hover-bg: rgba(255, 255, 255, 0.2);
+}
+
+// Dark theme
+.dark-theme {
+  --bg-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  --container-bg: rgba(45, 52, 64, 0.95);
+  --container-border: rgba(255, 255, 255, 0.1);
+  --text-color: #ecf0f1;
+  --heading-gradient: linear-gradient(135deg, #74b9ff, #a29bfe);
+  --button-gradient: linear-gradient(135deg, #74b9ff, #a29bfe);
+  --button-hover-gradient: linear-gradient(135deg, #0984e3, #6c5ce7);
+  --button-shadow: rgba(116, 185, 255, 0.3);
+  --button-hover-shadow: rgba(116, 185, 255, 0.4);
+  --counter-gradient: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+  --theme-btn-bg: rgba(0, 0, 0, 0.2);
+  --theme-btn-hover-bg: rgba(0, 0, 0, 0.3);
+}
