@@ -40,5 +40,6 @@ fn rocket() -> _ {
             routes![index, delay_response, register, login, user_info],
         )
         .mount("/notes", routes::get_note_routes())
+        .mount("/tasks", routes::get_task_routes())
         .attach(cors.to_cors().unwrap())
 }

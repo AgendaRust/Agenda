@@ -1,5 +1,5 @@
 pub mod authDTO;
-mod taskDTO;
+pub mod taskDTO;
 
 use serde::Deserialize;
 
