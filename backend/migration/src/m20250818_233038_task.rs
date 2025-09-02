@@ -36,6 +36,15 @@ impl MigrationTrait for Migration {
     }
 }
 
+// id -> int
+// user_id -> int
+// nome -> string
+// data-inicio -> data (dia) after now
+// data-fim ->
+// categoria -> string
+// status -> string (executada, pendente, totalmente)
+// tipo -> (meia-hora/uma-hora/manha/tarde/noite)
+
 #[derive(DeriveIden)]
 enum Task {
     Table,
