@@ -1,4 +1,6 @@
 pub mod auth;
+mod task;
+
 use serde::Deserialize;
 
 #[derive(Deserialize)]

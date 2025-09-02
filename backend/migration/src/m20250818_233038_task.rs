@@ -1,4 +1,5 @@
 use sea_orm_migration::{prelude::*, schema::*};
+use crate::m20250817_224457_user::User;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -23,6 +24,14 @@ impl MigrationTrait for Migration {
                     .col(timestamp(Task::CompleteDate).not_null())
                     .col(string(Task::Category).not_null())
                     .col(string(Task::Type).not_null()) //put enum here
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-task-user_id")
+                            .from(Task::Table, Task::UserId)
+                            .to(User::Table, User::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await
@@ -38,12 +47,7 @@ impl MigrationTrait for Migration {
     }
 }
 
-// id -> int
-// user_id -> int
-// nome -> string
 // data-inicio -> data (dia) after now
-// data-fim ->
-// categoria -> string
 // status -> string (executada, pendente, totalmente)
 // tipo -> (meia-hora/uma-hora/manha/tarde/noite)
 

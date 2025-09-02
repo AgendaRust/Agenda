@@ -18,6 +18,8 @@ pub enum Relation {
     Goal,
     #[sea_orm(has_many = "super::reminder::Entity")]
     Reminder,
+    #[sea_orm(has_many = "super::task::Entity")]
+    Task,
 }
 
 impl Related<super::goal::Entity> for Entity {
@@ -27,6 +29,12 @@ impl Related<super::goal::Entity> for Entity {
 }
 
 impl Related<super::reminder::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Reminder.def()
+    }
+}
+
+impl Related<super::task::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Reminder.def()
     }
