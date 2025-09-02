@@ -9,24 +9,26 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
-        //todo!();
+        // todo!();
 
         manager
             .create_table(
                 Table::create()
-                    .table(Goals::Table)
+                    .table(Goal::Table)
                     .if_not_exists()
-                    .col(pk_auto(Goals::Id))
-                    .col(integer(Goals::User_id))
-                    .col(string(Goals::Name))
-                    .col(string_null(Goals::Description))
-                    .col(string_null(Goals::Category))
-                    .col(string(Goals::Status))
-                    .col(string(Goals::Type))
+                    .col(pk_auto(Goal::Id))
+                    .col(integer(Goal::UserId).not_null())
+                    .col(string(Goal::Name).not_null())
+                    .col(string_null(Goal::Description))
+                    .col(string_null(Goal::Category))
+                    .col(string(Goal::Status))
+                    .col(string(Goal::Type))
+                    .col(timestamp(Goal::DateEnd))
+                    .col(timestamp(Goal::DateStart))
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk-goals-user_id")
-                            .from(Goals::Table, Goals::User_id)
+                            .name("fk-goal-user_id")
+                            .from(Goal::Table, Goal::UserId)
                             .to(User::Table, User::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
@@ -41,16 +43,18 @@ impl MigrationTrait for Migration {
         // todo!();
 
         manager
-            .drop_table(Table::drop().table(Goals::Table).to_owned())
+            .drop_table(Table::drop().table(Goal::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Goals {
+enum Goal {
     Table,
     Id,
-    User_id,
+    UserId,
+    DateEnd,
+    DateStart,
     Name,
     Description,
     Category,

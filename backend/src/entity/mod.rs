@@ -2,6 +2,8 @@
 
 pub mod prelude;
 
+pub mod goals;
 pub mod notes;
+pub mod reminder;
 pub mod task;
 pub mod user;
