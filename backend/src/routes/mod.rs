@@ -9,3 +9,10 @@ pub fn get_note_routes() -> Vec<rocket::Route> {
         notes::update_note
     ]
 }
+
+pub fn get_task_routes() -> Vec<rocket::Route> {
+    routes![
+        task::get_all_tasks,
+        task::register_task
+    ]
+}

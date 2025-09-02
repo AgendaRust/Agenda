@@ -30,6 +30,12 @@ pub struct UserClaim {
     id: String,
 }
 
+impl UserClaim {
+    pub fn get_id(&self) -> &str {
+        &self.id
+    }
+}
+
 #[post("/register", data = "<auth_dto>")]
 pub async fn register(
     auth_dto: Json<AuthDto>,
