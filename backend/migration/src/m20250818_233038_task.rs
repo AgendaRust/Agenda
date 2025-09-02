@@ -16,11 +16,13 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto(Task::Id))
                     .col(string(Task::Title).not_null())
+                    .col(integer(Task::UserId).not_null())
                     .col(string(Task::Description))
                     .col(string(Task::Status).not_null()) //put enum here
                     .col(timestamp(Task::BeginDate).not_null())
                     .col(timestamp(Task::CompleteDate).not_null())
                     .col(string(Task::Category).not_null())
+                    .col(string(Task::Type).not_null()) //put enum here
                     .to_owned(),
             )
             .await
@@ -49,10 +51,12 @@ impl MigrationTrait for Migration {
 enum Task {
     Table,
     Id,
+    UserId,
     Title,
     Description,
     BeginDate,
     CompleteDate,
     Status,
-    Category
+    Category,
+    Type,
 }
