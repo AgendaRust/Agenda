@@ -192,6 +192,9 @@ sea-orm-cli migrate reset
 
 # Gerar uma nova migration
 sea-orm-cli migrate generate nome_da_migration
+
+# Criar as entidades
+sea-orm-cli generate entity -u sqlite:./database.db  -o src/entity
 ```
 
 ### Estrutura do Banco de Dados
