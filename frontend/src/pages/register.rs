@@ -85,6 +85,7 @@ pub fn register() -> Html {
     html! {
         <>
         <div class="register-page-wrapper"></div>
+
         <div class= "register-father-container">
             <div class= "right-register-container">
                 <h1>{ "Registre-se!" } </h1>
@@ -104,6 +105,7 @@ pub fn register() -> Html {
             <div class= "left-register-container">
                 <img src = "register.jpg" alt = "register image" class = "register-image" />
             </div>
+        <div></div>
         </div>
         </>
     }
