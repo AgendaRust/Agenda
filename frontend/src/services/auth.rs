@@ -69,7 +69,7 @@ pub async fn login(login_info: &AuthStruct) -> LoginResult {
                 save_token(token_value.token);
                 LoginResult::Success
             }
-            401 => LoginResult::IncorrectCredentials,
+            400 => LoginResult::IncorrectCredentials,
             _ => LoginResult::NetworkError,
         },
         Err(_) => LoginResult::NetworkError,
@@ -90,7 +90,7 @@ pub async fn register(register_info: &AuthStruct) -> RegisterResult {
                 save_token(token_value.token);
                 RegisterResult::Success
             }
-            4001 => RegisterResult::InvalidFields,
+            400 => RegisterResult::InvalidFields,
             _ => RegisterResult::NetworkError,
         },
         Err(_) => RegisterResult::NetworkError,

@@ -12,6 +12,7 @@ pub fn login() -> Html {
 
     let username = use_state(String::new);
     let password = use_state(String::new);
+    let login_pressed = use_state(|| false);
 
     let onclick = {
         let username = (*username).clone();
@@ -22,7 +23,12 @@ pub fn login() -> Html {
             let username = username.clone();
             let password = password.clone();
             let navigator = navigator.clone();
+            let login_pressed = login_pressed.clone();
+            if *login_pressed {
+                return;
+            }
             spawn_local(async move {
+                login_pressed.set(true);
                 let login_info: AuthStruct = AuthStruct::new(username, password);
                 let login_response = auth::login(&login_info).await;
                 match login_response {
@@ -42,6 +48,7 @@ pub fn login() -> Html {
                             .unwrap();
                     }
                 }
+                login_pressed.set(false);
             });
         })
     };
@@ -97,6 +104,6 @@ pub fn login() -> Html {
                         <img src="login.avif" alt="login image" class="login-image" />
                     </div>
                 </div>
-            </div>
+        </div>
     }
 }
