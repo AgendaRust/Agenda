@@ -1,5 +1,5 @@
 use crate::db::Pool;
-use crate::dto::auth::AuthDto;
+use crate::dto::authDTO::AuthDto;
 // use crate::entity::user;
 // use crate::entity::user;
 use crate::service::auth_service::{self, UserError};

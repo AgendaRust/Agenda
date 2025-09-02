@@ -1,4 +1,5 @@
 mod notes;
+mod task;
 
 pub fn get_note_routes() -> Vec<rocket::Route> {
     routes![
