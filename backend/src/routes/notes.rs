@@ -14,6 +14,7 @@ pub async fn create_note(
 
     let new_note = notes::ActiveModel {
         text: Set(note_dto.text.clone()),
+        bolsonar: Set(note_dto.bolsonar.clone()),
         ..Default::default()
     };
 
@@ -36,6 +37,7 @@ pub async fn update_note(
             let updated_note = notes::ActiveModel {
                 id: Set(note.id),
                 text: Set(note_dto.text.clone()),
+                bolsonar: Set(note_dto.bolsonar.clone()),
                 ..Default::default()
             };
 
