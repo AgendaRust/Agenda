@@ -1,5 +1,5 @@
 use crate::db::Pool;
-use crate::dto::auth::AuthDto;
+use crate::dto::authDTO::AuthDto;
 // use crate::entity::prelude::User;
 use crate::entity::prelude::*;
 use crate::entity::user;
