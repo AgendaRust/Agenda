@@ -1,5 +1,6 @@
-mod notes;
-mod task;
+use crate::controller::task;
+use crate::controller::notes;
+
 
 pub fn get_note_routes() -> Vec<rocket::Route> {
     routes![
