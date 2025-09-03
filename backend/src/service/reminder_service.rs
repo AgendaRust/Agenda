@@ -50,3 +50,26 @@ pub async fn delete_reminder_db(db: &Pool, id: i32) -> Result<reminder::Model, (
         Err(e) => Err((Status::InternalServerError, e.to_string())),
     }
 }  
+
+
+pub async fn list_reminders_db(
+    db: &Pool,
+) -> Result<Vec<reminder::Model>, (Status, String)> {
+    let conn = db;
+    match reminder::Entity::find().all(conn).await {
+        Ok(reminders) => Ok(reminders),
+        Err(e) => Err((Status::InternalServerError, e.to_string())),
+    }
+}
+
+pub async fn get_reminder_db(
+    db: &Pool,
+    id: i32,
+) -> Result<reminder::Model, (Status, String)> {
+    let conn = db;
+    match reminder::Entity::find_by_id(id).one(conn).await {
+        Ok(Some(reminder)) => Ok(reminder),
+        Ok(None) => Err((Status::NotFound, "Reminder not found".into())),
+        Err(e) => Err((Status::InternalServerError, e.to_string())),
+    }
+}

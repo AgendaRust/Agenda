@@ -20,6 +20,8 @@ pub fn get_task_routes() -> Vec<rocket::Route> {
 pub fn get_reminder_routes() -> Vec<rocket::Route> {
     routes![
         reminder::register_reminder,
-        reminder::delete_reminder
+        reminder::delete_reminder,
+        reminder::list_reminders,
+        reminder::get_reminder
     ]
 }

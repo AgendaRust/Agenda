@@ -10,6 +10,7 @@ use crate::entity::reminder;
 use crate::service::reminder_service::create_reminder_db;
 use crate::service::reminder_service::ReminderError;
 use crate::service::reminder_service::delete_reminder_db;
+use crate::service::reminder_service;
 
 
 
@@ -65,6 +66,24 @@ pub async fn delete_reminder(
     }
 }  
 
+#[get("/")]
+pub async fn list_reminders(db: &State<Pool>) -> Result<Json<Vec<reminder::Model>>, (Status, String)> {
+    match reminder_service::list_reminders_db(db).await {
+        Ok(reminders) => Ok(Json(reminders)),
+        Err(e) => Err(e),
+    }
+}
+
+#[get("/<id>")]
+pub async fn get_reminder(
+    db: &State<Pool>,
+    id: i32,
+) -> Result<Json<reminder::Model>, (Status, String)> {
+    match reminder_service::get_reminder_db(db, id).await {
+        Ok(reminder) => Ok(Json(reminder)),
+        Err(e) => Err(e),
+    }
+}
 
 // #[post("/")]
 // pub async fn register_reminder() -> &'static str {
