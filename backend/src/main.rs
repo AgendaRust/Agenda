@@ -7,6 +7,7 @@ mod dto;
 mod entity;
 mod routes;
 mod service;
+mod repository;
 
 use crate::controller::auth::{login, register, user_info};
 use dotenvy::dotenv;

@@ -8,7 +8,7 @@ use crate::dto::authDTO::AuthDto;
 use crate::dto::CreateNote;
 use crate::entity::{notes, task};
 use crate::service::auth_service;
-use crate::service::auth_service::UserError;
+use crate::repository::auth_repository::UserError;
 use crate::dto::taskDTO::TaskDto;
 use crate::service::task_service;
 use crate::service::task_service::{register_task_db, TaskError};
