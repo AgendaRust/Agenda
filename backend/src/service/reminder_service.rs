@@ -4,6 +4,7 @@ use crate::db::Pool;
 use crate::dto::reminder_dto::reminder_DTO;
 use crate::entity::reminder;
 use rocket::http::Status;
+use sea_orm::prelude::DateTimeUtc;
 
  use sea_orm::EntityTrait;
 /// Enum para erros específicos do serviço de reminders
@@ -69,6 +70,36 @@ pub async fn get_reminder_db(
     let conn = db;
     match reminder::Entity::find_by_id(id).one(conn).await {
         Ok(Some(reminder)) => Ok(reminder),
+        Ok(None) => Err((Status::NotFound, "Reminder not found".into())),
+        Err(e) => Err((Status::InternalServerError, e.to_string())),
+    }
+}
+
+
+
+pub async fn update_reminder_db(
+    db: &Pool,
+    id: i32,
+    reminder_dto: &reminder_DTO,
+) -> Result<reminder::Model, (Status, String)> {
+  
+    let date_end = reminder_dto.date_end;
+
+   let conn = db;
+    match reminder::Entity::find_by_id(id).one(conn).await {
+        Ok(Some(reminder_model)) => {
+            let updated_reminder = reminder::ActiveModel {
+                id: Set(reminder_model.id),
+                user_id: Set(reminder_model.user_id),
+                name: Set(reminder_dto.name.clone()),
+                category: Set(reminder_dto.category.clone()),
+                date_end: Set(date_end),
+            };
+            match updated_reminder.update(conn).await {
+                Ok(reminder) => Ok(reminder),
+                Err(e) => Err((Status::InternalServerError, e.to_string())),
+            }
+        }
         Ok(None) => Err((Status::NotFound, "Reminder not found".into())),
         Err(e) => Err((Status::InternalServerError, e.to_string())),
     }

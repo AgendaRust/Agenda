@@ -22,6 +22,7 @@ pub fn get_reminder_routes() -> Vec<rocket::Route> {
         reminder::register_reminder,
         reminder::delete_reminder,
         reminder::list_reminders,
-        reminder::get_reminder
+        reminder::get_reminder,
+        reminder::update_reminder
     ]
 }

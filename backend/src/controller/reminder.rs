@@ -85,6 +85,19 @@ pub async fn get_reminder(
     }
 }
 
+#[put("/<id>", data = "<reminder_dto>")]
+pub async fn update_reminder(
+    db: &State<Pool>,
+    id: i32,
+    reminder_dto: Json<reminder_DTO>,
+) -> Result<Json<reminder::Model>, (Status, String)> {
+    match reminder_service::update_reminder_db(db, id, &reminder_dto).await {
+        Ok(reminder) => Ok(Json(reminder)),
+        Err(e) => Err(e),
+    }
+}
+
+
 // #[post("/")]
 // pub async fn register_reminder() -> &'static str {
 //     "Hello reminders"
