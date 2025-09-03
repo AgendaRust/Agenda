@@ -4,12 +4,14 @@ use crate::dto::taskDTO::TaskDto;
 use crate::entity::task;
 use crate::repository::task_repository::TaskRepository;
 use sea_orm::DeleteResult;
+use validator::Validate;
 
 /// Enum para erros específicos do serviço de tarefas.
 pub enum TaskError {
     TaskNotFound(String),
     DatabaseError(String),
     Unauthorized(String),
+    ValidationError(String),
 }
 
 pub async fn get_all_tasks_db(db: &State<Pool>) -> Result<Vec<task::Model>, TaskError> {
@@ -44,6 +46,7 @@ pub async fn register_task_db(
     task_info: &TaskDto,
     user_id: i32,
 ) -> Result<task::Model, TaskError> {
+    task_info.validate().map_err(|e| TaskError::ValidationError(e.to_string()))?; // validator
     let conn = db.inner();
     let repo = TaskRepository::new(conn);
     repo.create_task(task_info, user_id)

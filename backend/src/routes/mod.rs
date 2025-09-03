@@ -1,6 +1,15 @@
 use crate::controller::task;
 use crate::controller::notes;
 use crate::controller::goal;
+use crate::controller::auth;
+
+pub fn get_auth_routes() -> Vec<rocket::Route> {
+    routes![
+        auth::login,
+        auth::register,
+        auth::user_info
+    ]
+}
 
 pub fn get_note_routes() -> Vec<rocket::Route> {
     routes![
