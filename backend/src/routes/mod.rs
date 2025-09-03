@@ -14,7 +14,11 @@ pub fn get_note_routes() -> Vec<rocket::Route> {
 pub fn get_task_routes() -> Vec<rocket::Route> {
     routes![
         task::get_all_tasks,
-        task::register_task
+        task::get_task_by_id,
+        task::register_task,
+        task::update_task,
+        task::delete_task,
+        task::get_tasks_by_user_id
     ]
 }
 

@@ -2,7 +2,8 @@ use crate::db::Pool;
 use crate::dto::authDTO::AuthDto;
 // use crate::entity::user;
 // use crate::entity::user;
-use crate::service::auth_service::{self, UserError};
+use crate::repository::auth_repository:: UserError;
+use crate::repository::auth_repository;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
 // use sea_orm::{ActiveModelTrait, EntityTrait, Set};
@@ -10,6 +11,7 @@ use rocket::{serde::json::Json, State};
 // extern crate rocket;
 use rocket_jwt::jwt;
 use std::env::{var, VarError};
+use crate::service::auth_service;
 
 #[derive(serde::Serialize)]
 pub struct TokenResponse {
@@ -42,7 +44,7 @@ pub async fn register(
     db: &State<Pool>,
 ) -> Result<(Status, Json<TokenResponse>), (Status, Json<ErrorResponse>)> {
     let result: Result<crate::entity::user::Model, UserError> =
-        auth_service::register_user_db(db, &auth_dto).await;
+        auth_repository::create_user(db, &auth_dto).await;
     match result {
         Ok(user) => {
             let user_claim = UserClaim {
@@ -71,7 +73,8 @@ pub async fn login(
     db: &State<Pool>,
     auth_dto: Json<AuthDto>,
 ) -> Result<Json<TokenResponse>, (Status, Json<ErrorResponse>)> {
-    let result = auth_service::login_user_db(db, &auth_dto).await;
+    let result = auth_service::login_user(db, &auth_dto).await;
+
     println!(
         "secret key {}",
         get_secret_key().unwrap_or_else(|_| "secret".into())
