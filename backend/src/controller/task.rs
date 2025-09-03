@@ -3,8 +3,11 @@ use rocket::serde::json::Json;
 use rocket::State;
 use crate::controller::auth::UserClaim;
 use crate::db::Pool;
-use crate::dto::taskDTO::TaskDto;
-use crate::entity::task;
+use crate::dto::authDTO::AuthDto;
+use crate::dto::CreateNote;
+use crate::entity::{notes, task};
+use crate::service::auth_service;
+use crate::repository::auth_repository::UserError;
 use crate::service::task_service::{
     delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, TaskError, get_tasks_by_user_id_db
 };
