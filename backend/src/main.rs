@@ -36,12 +36,9 @@ fn rocket() -> _ {
 
     rocket::build()
         .attach(db::init_pool())
-        .mount(
-            "/",
-            routes![index, delay_response, register, login, user_info],
-        )
+        .mount("/", routes::get_auth_routes())
         .mount("/notes", routes::get_note_routes())
         .mount("/tasks", routes::get_task_routes())
-        .mount("/goals", routes::get_goal_routes()) 
+        .mount("/goals", routes::get_goal_routes())
         .attach(cors.to_cors().unwrap())
 }
