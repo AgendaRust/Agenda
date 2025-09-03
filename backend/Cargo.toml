@@ -16,3 +16,4 @@ sea-orm-migration = "1.1.14"
 serde = { version = "1.0.219", features = ["derive"] }
 pbkdf2 = { version = "0.12", features = ["simple"] }
 rand_core = { version = "0.6", features = ["std"] }
+validator = { version = "0.18", features = ["derive"] }
