@@ -1,6 +1,9 @@
 pub mod authDTO;
 pub mod taskDTO;
+
 pub mod reminder_dto;
+pub mod goalDTO;
+
 use serde::Deserialize;
 
 #[derive(Deserialize)]

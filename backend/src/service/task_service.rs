@@ -1,35 +1,84 @@
 use rocket::State;
-use sea_orm::{ActiveModelTrait, Set};
 use crate::db::Pool;
 use crate::dto::taskDTO::TaskDto;
 use crate::entity::task;
+use crate::repository::task_repository::TaskRepository;
+use sea_orm::DeleteResult;
+use validator::Validate;
 
 /// Enum para erros específicos do serviço de tarefas.
 pub enum TaskError {
     TaskNotFound(String),
     DatabaseError(String),
     Unauthorized(String),
+    ValidationError(String),
+}
+
+pub async fn get_all_tasks_db(db: &State<Pool>) -> Result<Vec<task::Model>, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+    repo.find_all()
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))
+}
+
+pub async fn get_task_by_id_db(db: &State<Pool>, id: i32) -> Result<task::Model, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+    repo.find_by_id(id)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))?
+        .ok_or_else(|| TaskError::TaskNotFound(format!("Task with id {} not found", id)))
+}
+
+pub async fn get_tasks_by_user_id_db(
+    db: &State<Pool>,
+    user_id: i32,
+) -> Result<Vec<task::Model>, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+    repo.find_by_user_id(user_id)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))
 }
 pub async fn register_task_db(
     db: &State<Pool>,
     task_info: &TaskDto,
-    user_id: i32, // Recebe o user_id diretamente
+    user_id: i32,
+) -> Result<task::Model, TaskError> {
+    task_info.validate().map_err(|e| TaskError::ValidationError(e.to_string()))?; // validator
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+    repo.create_task(task_info, user_id)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))
+}
+
+pub async fn update_task_db(
+    db: &State<Pool>,
+    id: i32,
+    task_info: &TaskDto,
 ) -> Result<task::Model, TaskError> {
     let conn = db.inner();
-    let new_task = task::ActiveModel {
-        title: Set(task_info.title.clone()),
-        user_id: Set(user_id), // Usa o user_id recebido
-        description: Set(task_info.description.clone()),
-        status: Set(task_info.status.clone()),
-        begin_date: Set(task_info.begin_date),
-        complete_date: Set(task_info.complete_date),
-        category: Set(task_info.category.clone()),
-        r#type: Set(task_info.r#type.clone()),
-        ..Default::default()
-    };
+    let repo = TaskRepository::new(conn);
+    repo.update_task(id, task_info)
+        .await
+        .map_err(|e| match e {
+            sea_orm::DbErr::RecordNotFound(_) => TaskError::TaskNotFound(e.to_string()),
+            _ => TaskError::DatabaseError(e.to_string()),
+        })
+}
 
-    match new_task.insert(conn).await {
-        Ok(task) => Ok(task),
-        Err(e) => Err(TaskError::DatabaseError(e.to_string())),
+pub async fn delete_task_db(db: &State<Pool>, id: i32) -> Result<DeleteResult, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+    let result = repo.delete_task(id)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))?;
+
+    if result.rows_affected == 0 {
+        Err(TaskError::TaskNotFound(format!("Task with id {} not found", id)))
+    } else {
+        Ok(result)
     }
 }
