@@ -1,6 +1,6 @@
 use crate::controller::task;
 use crate::controller::notes;
-
+use crate::controller::reminder;
 
 pub fn get_note_routes() -> Vec<rocket::Route> {
     routes![
@@ -15,5 +15,10 @@ pub fn get_task_routes() -> Vec<rocket::Route> {
     routes![
         task::get_all_tasks,
         task::register_task
+    ]
+}
+pub fn get_reminder_routes() -> Vec<rocket::Route> {
+    routes![
+        reminder::register_reminder
     ]
 }

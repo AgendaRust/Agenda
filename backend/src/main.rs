@@ -41,5 +41,6 @@ fn rocket() -> _ {
         )
         .mount("/notes", routes::get_note_routes())
         .mount("/tasks", routes::get_task_routes())
+        .mount("/reminders", routes::get_reminder_routes())
         .attach(cors.to_cors().unwrap())
 }
