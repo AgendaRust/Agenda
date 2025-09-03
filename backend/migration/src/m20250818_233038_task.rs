@@ -19,11 +19,11 @@ impl MigrationTrait for Migration {
                     .col(string(Task::Title).not_null())
                     .col(integer(Task::UserId).not_null())
                     .col(string(Task::Description))
-                    .col(string(Task::Status).not_null()) //put enum here
+                    .col(string(Task::Status).not_null())
                     .col(timestamp(Task::BeginDate).not_null())
                     .col(timestamp(Task::CompleteDate).not_null())
                     .col(string(Task::Category).not_null())
-                    .col(string(Task::Type).not_null()) //put enum here
+                    .col(string(Task::Type).not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-task-user_id")
