@@ -14,7 +14,6 @@ pub fn get_auth_routes() -> Vec<rocket::Route> {
     ]
 }
 
-
 pub fn get_note_routes() -> Vec<rocket::Route> {
     routes![
         notes::create_note,
@@ -31,7 +30,8 @@ pub fn get_task_routes() -> Vec<rocket::Route> {
         task::register_task,
         task::update_task,
         task::delete_task,
-        task::get_tasks_by_user_id
+        task::get_tasks_by_user_id,
+        task::update_status_task,
     ]
 }
 
