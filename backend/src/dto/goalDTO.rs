@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct GoalDto {
-    pub user_id: i32,
     pub name: String,
     pub description: Option<String>,
     pub category: Option<String>,

@@ -8,12 +8,13 @@ use sea_orm::prelude::DateTimeUtc;
 pub async fn create_goal_db(
     db: &Pool,
     goal_dto: &GoalDto,
+    user_id: i32,
 ) -> Result<goal::Model, (Status, String)> {
     let date_start = goal_dto.date_start.parse::<DateTimeUtc>().map_err(|e| (Status::BadRequest, e.to_string()))?;
     let date_end = goal_dto.date_end.parse::<DateTimeUtc>().map_err(|e| (Status::BadRequest, e.to_string()))?;
     let conn = db;
     let new_goal = goal::ActiveModel {
-        user_id: Set(goal_dto.user_id),
+        user_id: Set(user_id),
         name: Set(goal_dto.name.clone()),
         description: Set(goal_dto.description.clone()),
         category: Set(goal_dto.category.clone()),
@@ -34,6 +35,7 @@ pub async fn update_goal_db(
     db: &Pool,
     id: i32,
     goal_dto: &GoalDto,
+    user_id: i32,
 ) -> Result<goal::Model, (Status, String)> {
     let date_start = goal_dto.date_start.parse::<DateTimeUtc>().map_err(|e| (Status::BadRequest, e.to_string()))?;
     let date_end = goal_dto.date_end.parse::<DateTimeUtc>().map_err(|e| (Status::BadRequest, e.to_string()))?;
@@ -42,7 +44,7 @@ pub async fn update_goal_db(
         Ok(Some(goal_model)) => {
             let updated_goal = goal::ActiveModel {
                 id: Set(goal_model.id),
-                user_id: Set(goal_dto.user_id),
+                user_id: Set(user_id),
                 name: Set(goal_dto.name.clone()),
                 description: Set(goal_dto.description.clone()),
                 category: Set(goal_dto.category.clone()),

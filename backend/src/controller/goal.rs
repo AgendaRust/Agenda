@@ -4,13 +4,18 @@ use crate::entity::goal;
 use crate::service::goal_service;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
+use crate::controller::auth::UserClaim;
 
 #[post("/", data = "<goal_dto>")]
 pub async fn create_goal(
     db: &State<Pool>,
     goal_dto: Json<GoalDto>,
+    token: UserClaim,
 ) -> Result<Json<goal::Model>, (Status, String)> {
-    match goal_service::create_goal_db(db, &goal_dto).await {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+    match goal_service::create_goal_db(db, &goal_dto, user_id).await {
         Ok(goal) => Ok(Json(goal)),
         Err(e) => Err(e),
     }
@@ -21,8 +26,12 @@ pub async fn update_goal(
     db: &State<Pool>,
     id: i32,
     goal_dto: Json<GoalDto>,
+    token: UserClaim,
 ) -> Result<Json<goal::Model>, (Status, String)> {
-    match goal_service::update_goal_db(db, id, &goal_dto).await {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+    match goal_service::update_goal_db(db, id, &goal_dto,user_id).await {
         Ok(goal) => Ok(Json(goal)),
         Err(e) => Err(e),
     }
