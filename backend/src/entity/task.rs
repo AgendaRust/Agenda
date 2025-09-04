@@ -15,7 +15,7 @@ pub struct Model {
     pub begin_date: DateTimeUtc,
     pub complete_date: DateTimeUtc,
     pub category: String,
-    pub r#type: String,
+    pub r#type: String,                     //  MeiaHora, UmaHora, Manha, Tarde, Noite
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

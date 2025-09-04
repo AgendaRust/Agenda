@@ -9,9 +9,8 @@ use crate::dto::taskDTO::TaskDto;
 use crate::entity::{notes, task};
 use crate::service::auth_service;
 use crate::repository::auth_repository::UserError;
-use crate::service::task_service::{
-    delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError
-};
+use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError, update_status_task_db};
+use crate::dto::taskStatusDTO::StatusUpdateDto;
 
 #[get("/")]
 pub async fn get_all_tasks(db: &State<Pool>) -> Result<Json<Vec<task::Model>>, (Status, String)> {
@@ -77,6 +76,21 @@ pub async fn update_task(
         Err(TaskError::TaskNotFound(msg)) => Err((Status::NotFound, msg)),
         Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
         _ => Err((Status::InternalServerError, "Failed to update task".to_string())),
+    }
+}
+
+#[put("/<id>/status", data = "<status_dto>")]
+pub async fn update_status_task(
+    id: i32,
+    status_dto: Json<StatusUpdateDto>,
+    db: &State<Pool>,
+    _token: UserClaim,
+) -> Result<Json<task::Model>, (Status, String)> {
+    match update_status_task_db(db, id, &status_dto.status).await {
+        Ok(task) => Ok(Json(task)),
+        Err(TaskError::TaskNotFound(msg)) => Err((Status::NotFound, msg)),
+        Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
+        _ => Err((Status::InternalServerError, "Failed to update task status".to_string())),
     }
 }
 
