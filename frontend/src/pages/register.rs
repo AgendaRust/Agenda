@@ -93,10 +93,10 @@ pub fn register() -> Html {
                     <div class= "register-form-container">
                         <label class= "register-form-label"> {"Insira seu nome de usuário"} </label>
                         <input value= {(*username).clone()}
-                            oninput= {on_username_input_change} class= "register-input" type= "text" />
+                            oninput= {on_username_input_change} class= "register-input" type= "text" required=true minlength= "3" />
                         <label class= "register-form-label"> {"Insira sua senha"} </label>
                         <input value= {(*password).clone()}
-                            oninput= {on_password_input_change} class= "register-input-password" type= "password" />
+                            oninput= {on_password_input_change} class= "register-input-password" type= "password" required=true minlength= "6" />
                         <button disabled={(*button_pressed).clone()} onclick= {on_click_register} class= "register-button" type="button"> {"Cadastrar"} </button>
                         <a class = "register-login-link" onclick= {on_click_login}> {"Já possui uma conta? entre aqui."} </a>
                     </div>

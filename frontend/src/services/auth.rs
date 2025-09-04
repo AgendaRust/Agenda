@@ -3,6 +3,7 @@ use gloo_storage::{LocalStorage, Storage};
 use js_sys::Date;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
+use super::API_URL;
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthStruct {
@@ -53,7 +54,6 @@ pub enum RegisterResult {
     NetworkError,
 }
 
-const API_URL: &str = "http://127.0.0.1:8000";
 
 pub async fn login(login_info: &AuthStruct) -> LoginResult {
     let login_url = format!("{API_URL}/login");
