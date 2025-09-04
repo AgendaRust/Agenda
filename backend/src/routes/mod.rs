@@ -41,7 +41,8 @@ pub fn get_reminder_routes() -> Vec<rocket::Route> {
         reminder::delete_reminder,
         reminder::list_reminders,
         reminder::get_reminder,
-        reminder::update_reminder
+        reminder::update_reminder,
+        reminder::get_reminders_by_user_id,
     ]
 }
 pub fn get_goal_routes() -> Vec<rocket::Route> {
