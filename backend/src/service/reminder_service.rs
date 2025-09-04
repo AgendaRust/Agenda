@@ -5,6 +5,8 @@ use crate::dto::reminder_dto::reminder_DTO;
 use crate::entity::reminder;
 use rocket::http::Status;
 use sea_orm::prelude::DateTimeUtc;
+use sea_orm::QueryFilter;
+ use sea_orm::ColumnTrait;
 
  use sea_orm::EntityTrait;
 /// Enum para erros específicos do serviço de reminders
@@ -104,3 +106,20 @@ pub async fn update_reminder_db(
         Err(e) => Err((Status::InternalServerError, e.to_string())),
     }
 }
+
+
+pub async fn get_reminders_by_user_id_db(
+    db: &State<Pool>,
+    user_id: i32,
+) -> Result<Vec<reminder::Model>, ReminderError> {
+    let conn = db.inner();
+    match reminder::Entity::find()
+        .filter(reminder::Column::UserId.eq(user_id))
+        .all(conn)
+        .await
+    {
+        Ok(reminders) => Ok(reminders),
+        Err(e) => Err(ReminderError::DatabaseError(e.to_string())),
+    }
+}
+

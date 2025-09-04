@@ -79,6 +79,22 @@ pub async fn update_reminder(
     }
 }
 
+#[get("/user")]
+pub async fn get_reminders_by_user_id(
+    db: &State<Pool>,
+    token: UserClaim,
+) -> Result<Json<Vec<reminder::Model>>, (Status, String)> {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+
+    match reminder_service::get_reminders_by_user_id_db(db, user_id).await {
+        Ok(reminders) => Ok(Json(reminders)),
+        Err(ReminderError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
+        _ => Err((Status::InternalServerError, "Failed to get user reminders".to_string())),
+    }
+}
+
 
 // #[post("/")]
 // pub async fn register_reminder() -> &'static str {
