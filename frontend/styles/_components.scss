@@ -101,162 +101,20 @@ p {
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3) !important;
 }
 
-.task-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 20px;
-  margin: 20px;
-  border: 2px solid rgba(236, 72, 153, 0.3); // Pink border like login/register
-  box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2); // Pink shadow
-  transition: all 0.3s ease;
-  max-width: 500px;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 25px 50px rgba(236, 72, 153, 0.3);
-  }
-
-  label {
-    margin-bottom: 8px;
-    font-weight: 700;
-    color: #333;
-    font-size: 1.1rem;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #ec4899, #8b5cf6); // Pink to purple gradient
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  input, select {
-    padding: 15px 20px;
-    border: 2px solid rgba(236, 72, 153, 0.3); // Pink border
-    border-radius: 50px;
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    color: #333;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1); // Pink shadow
-
-    &:focus {
-      outline: none;
-      border-color: #ec4899; // Hot pink focus
-      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4); // Stronger pink shadow
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.95);
-    }
-
-    &::placeholder {
-      color: rgba(139, 92, 246, 0.6); // Purple placeholder
-      font-style: italic;
-    }
-  }
-
-  select {
-    cursor: pointer;
-    border-radius: 50px;
-  }
-
-  button[type="submit"] {
-    width: 100%;
-    padding: 15px 20px;
-    margin: 20px 0 0 0;
-    background: linear-gradient(135deg, #ec4899, #a855f7); // Pink to purple gradient
-    border: none;
-    border-radius: 50px;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); // Pink shadow
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-sizing: border-box;
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(236, 72, 153, 0.6); // Stronger pink shadow
-      background: linear-gradient(135deg, #db2777, #9333ea); // Darker pink to purple
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-  }
-}
-
-// Dark theme support for task form
-.dark-theme .task-form,
-.form-container.dark-theme .task-form {
-  background: rgba(45, 52, 64, 0.95);
-  border-color: rgba(236, 72, 153, 0.4);
-  box-shadow: 0 20px 40px rgba(190, 24, 93, 0.3);
-
-  &:hover {
-    box-shadow: 0 25px 50px rgba(190, 24, 93, 0.4);
-  }
-
-  label {
-    color: #ecf0f1;
-    background: linear-gradient(135deg, #f472b6, #c084fc); // Light pink to purple for dark mode
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  input, select {
-    background: rgba(45, 52, 64, 0.9);
-    border-color: rgba(236, 72, 153, 0.4);
-    color: #ecf0f1;
-
-    &::placeholder {
-      color: rgba(192, 132, 252, 0.6); // Light purple placeholder in dark mode
-    }
-
-    &:focus {
-      border-color: #f472b6; // Light pink focus in dark mode
-      box-shadow: 0 4px 20px rgba(244, 114, 182, 0.4);
-      background: rgba(45, 52, 64, 0.95);
-    }
-  }
-
-  option {
-    background: rgba(45, 52, 64, 0.95);
-    color: #ecf0f1;
-  }
-}
-
 .calendar-app {
-  //margin-top: 40px;
-  //text-align: left;
-  width: 60%;
-  min-width: 90vmin;
-  aspect-ratio: 3/2;
+  width: 100%;
+  max-width: 900px;
   background-color: cadetblue;
-  padding: 3rem;
-  border-radius: 3rem;
-  border: 0.5rem solid var(--container-border);
+  padding: 1.5rem;
+  border-radius: 2rem;
+  border: 0.3rem solid var(--container-border);
   display: flex;
-  flex-direction: column;
-  column-gap: 5rem;
+  flex-direction: row;
+  gap: 1.5rem;
   position: relative;
   transform-style: preserve-3d;
+  min-height: 60vh; // Reduced height
+  margin: 0 auto; // Center the container
   
   &:after {
     content: "";
@@ -264,7 +122,7 @@ p {
     bottom: -12rem;
     left: 50%;
     transform: translateX(-50%) rotateX(50deg);
-    width:90%;
+    width: 90%;
     height: 16rem;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 20rem;
@@ -315,13 +173,15 @@ p {
 }
 
 .calendar-app .calendar {
-  width: 60%;
-  .calendar-heading{
+  flex: 2;
+  min-width: 0; // Allows flex item to shrink below content size
+  
+  .calendar-heading {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-size: clamp(6rem, 3.8cpi, 7rem);
-    color:#072a33;
-    letter-spacing: 0.3rem;
-    margin: 0;
+    font-size: clamp(3rem, 5vw, 6rem);
+    color: #072a33;
+    letter-spacing: 0.2rem;
+    margin: 0 0 1rem 0;
     text-align: left;
   }
 }
@@ -389,166 +249,79 @@ p {
   }
 }
 
-// Event popup styles
-.calendar-app .events {
-  .task-popup {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 45%;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    border: 2px solid rgba(33, 189, 209, 0.3);
-    max-height: 80vh;
-    overflow-y: auto;
-
-    .time-input {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-
-      .event-popup-time {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        .hour-input, .minute-input {
-          width: 60px;
-          height: 45px;
-          padding: 8px 4px;
-          border: 2px solid rgba(33, 189, 209, 0.3);
-          border-radius: 8px;
-          text-align: center;
-          font-size: 1.1rem;
-          font-weight: bold;
-          background: rgba(255, 255, 255, 0.9);
-          color: #072a33;
-          box-sizing: border-box;
-
-          &:focus {
-            outline: none;
-            border-color: rgba(33, 189, 209, 0.8);
-            box-shadow: 0 0 0 3px rgba(33, 189, 209, 0.2);
-          }
-
-          &::placeholder {
-            color: rgba(7, 42, 51, 0.5);
-            font-size: 0.9rem;
-          }
-
-          // Remove spinner arrows for number inputs
-          &::-webkit-outer-spin-button,
-          &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-          }
-
-          // Firefox
-          &[type=number] {
-            -moz-appearance: textfield;
-            appearance: textfield;
-          }
-        }
-      }
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      margin-top: 15px;
-      font-weight: 700;
+// Sidebar for tasks
+.calendar-app .sidebar {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+  .sidebar-header {
+    h3 {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
       color: #072a33;
-      font-size: 1rem;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: bold;
+      margin: 0;
+      text-align: center;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(7, 42, 51, 0.2);
+    }
+  }
+  
+  .task-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    // Remove height restrictions to allow natural growth
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .calendar-app {
+    flex-direction: column;
+    width: 90%;
+    max-width: 90vw;
+    padding: 1.2rem;
+    
+    .calendar {
+      flex: none;
       
-      &:first-of-type {
-        margin-top: 0;
+      .calendar-heading {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        text-align: center;
       }
     }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid rgba(33, 189, 209, 0.3);
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 1rem;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: rgba(255, 255, 255, 0.9);
-      color: #333;
-      transition: all 0.3s ease;
-      box-sizing: border-box;
-
-      &:focus {
-        outline: none;
-        border-color: rgba(33, 189, 209, 0.8);
-        box-shadow: 0 0 0 3px rgba(33, 189, 209, 0.2);
-        background: rgba(255, 255, 255, 0.95);
-      }
-
-      &::placeholder {
-        color: rgba(7, 42, 51, 0.6);
-        font-style: italic;
+    
+    .sidebar {
+      flex: none;
+      min-width: auto;
+      max-width: none;
+      
+      .task-list {
+        max-height: 40vh;
       }
     }
+  }
+}
 
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-      line-height: 1.4;
-      overflow-y: auto;
+@media (max-width: 768px) {
+  .calendar-app {
+    width: 90%;
+    max-width: 90vw;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    
+    .sidebar .sidebar-header h3 {
+      font-size: 1.3rem;
     }
-
-    input {
-      min-height: 45px;
-    }
-
-    select {
-      cursor: pointer;
-    }
-
-    .popup-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      justify-content: flex-end;
-    }
-
-    .event-popup-save, .event-popup-cancel {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-    }
-
-    .event-popup-save {
-      background: rgba(33, 189, 209, 0.9);
-      color: white;
-
-      &:hover {
-        background: rgba(33, 189, 209, 1);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(33, 189, 209, 0.4);
-      }
-    }
-
-    .event-popup-cancel {
-      background: rgba(239, 68, 68, 0.9);
-      color: white;
-
-      &:hover {
-        background: rgba(239, 68, 68, 1);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-      }
+    
+    .calendar .calendar-heading {
+      font-size: 1.8rem;
     }
   }
 }

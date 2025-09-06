@@ -1,12 +1,13 @@
 use yew::{function_component, html, Html, use_state, Callback, MouseEvent};
 use chrono::{Local, NaiveDate};
 
-use crate::components::task_form::TaskForm;
+use crate::components::{task_card::TaskCard, task_form::TaskForm};
+use crate::types::TaskDuration;
 
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
-    let show_task_form = use_state(|| true);
+    let show_task_form = use_state(|| false);
     
     // Date state - using placeholder values for now
     let selected_date = use_state(|| {
@@ -42,7 +43,6 @@ pub fn calendar_app() -> Html {
                         <button>{ ">" }</button>
                         <button onclick={toggle_task_form}>{ "+" }</button>
                     </div>
-                    // Calendar grid implementation goes here
                 </div>
                 <div class="weekdays">
                     <span class="weekday">{ "Sun" }</span>
@@ -54,36 +54,67 @@ pub fn calendar_app() -> Html {
                     <span class="weekday">{ "Sat" }</span>
                 </div>
                 <div class="days">
-                    // Days of the month will be rendered here
                     { for (1..=31).map(|day| html! {
-                        
-                            <span class="unique-day">{ day }</span>
-                            // Tasks for the day can be listed here
-                        
+                        <span class="unique-day">{ day }</span>
                     }) }
                     <span class="current-day"> { "32" } </span>
                 </div>
-                <div class="events">
-                    <TaskForm 
-                        visible={*show_task_form} 
-                        on_close={close_task_form} 
-                        selected_date={*selected_date}
-                    />
-                    
-                    <div class="task">
-                        <div class="task-date-wrapper">
-                            <div class="task-date"> { "May 20, 2023" } </div>
-                            <div class="task-time"> { "10:00 - 11:00" } </div>
-                        </div>
-                        <div class="task-title"> { "Meeting with Team" } </div>
-                        <div class="task-buttons">
-                            <button class="task-edit"> { "Edit" } </button>
-                            <button class="task-delete"> { "Delete" } </button>
-                        </div>
-                    </div>
-                </div>
-                
             </div>
+            
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>{ "Tasks" }</h3>
+                </div>
+                <div class="task-list">
+                    <TaskCard 
+                        title={"Meeting with Team".to_string()}
+                        category={"Work".to_string()}
+                        description={"Weekly team sync to discuss project progress and upcoming deadlines".to_string()}
+                        date={"May 20, 2023".to_string()}
+                        time={"10:00".to_string()}
+                        duration={TaskDuration::UmaHora}
+                    />
+                    <TaskCard 
+                        title={"Project Review".to_string()}
+                        category={"Work".to_string()}
+                        description={"Review project deliverables and prepare for client presentation".to_string()}
+                        date={"May 21, 2023".to_string()}
+                        time={"14:30".to_string()}
+                        duration={TaskDuration::MeiaHora}
+                    />
+                    <TaskCard 
+                        title={"Morning Workout".to_string()}
+                        category={"Personal".to_string()}
+                        description={"Daily exercise routine and stretching".to_string()}
+                        date={"May 22, 2023".to_string()}
+                        time={"07:00".to_string()}
+                        duration={TaskDuration::Manha}
+                    />
+                    <TaskCard 
+                        title={"Lunch Meeting".to_string()}
+                        category={"Business".to_string()}
+                        description={"Client meeting to discuss new project requirements and timeline".to_string()}
+                        date={"May 23, 2023".to_string()}
+                        time={"12:00".to_string()}
+                        duration={TaskDuration::Tarde}
+                    />
+                    <TaskCard 
+                        title={"Code Review".to_string()}
+                        category={"Work".to_string()}
+                        description={"Review pull requests and provide feedback to team members".to_string()}
+                        date={"May 24, 2023".to_string()}
+                        time={"15:00".to_string()}
+                        duration={TaskDuration::UmaHora}
+                    />
+                </div>
+            </div>
+            
+            // TaskForm as overlay/modal
+            <TaskForm 
+                visible={*show_task_form} 
+                on_close={close_task_form} 
+                selected_date={*selected_date}
+            />
         </div>
     }
 }

@@ -1,4 +1,6 @@
 // Type definitions
 pub mod note;
+pub mod task;
 
-//pub use note::*;
+// Re-export commonly used types
+pub use task::{Task, TaskDuration};

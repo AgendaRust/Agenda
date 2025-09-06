@@ -1,6 +1,7 @@
 use yew::{function_component, html, use_state, Callback, Html, InputEvent, MouseEvent, Properties, TargetCast};
 use web_sys::HtmlInputElement;
 use chrono::NaiveDate;
+use crate::types::TaskDuration;
 
 #[derive(Properties, PartialEq)]
 pub struct TaskFormProps {
@@ -18,7 +19,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
     let _task_description = use_state(|| String::new());
     let task_hour = use_state(|| 9u32);
     let task_minute = use_state(|| 0u32);
-    let _task_type = use_state(|| "MeiaHora".to_string());
+    let _task_type = use_state(|| TaskDuration::default());
 
     let begin_date = format!("{}T{:02}:{:02}", 
         props.selected_date.format("%Y-%m-%d"), 
@@ -86,90 +87,94 @@ pub fn task_form(props: &TaskFormProps) -> Html {
     html! {
         if props.visible {
             <div class="task-popup">
-                <label>{ "Hora:" }</label>
-                <div class="time-input">
-                    <div class="event-popup-time">
-                        <input 
-                            type="number" 
-                            name="hours" 
-                            min="0" 
-                            max="23" 
-                            class="hour-input" 
-                            placeholder="HH" 
-                            value={task_hour.to_string()}
-                            oninput={on_hour_change}
-                        />
-                        { ":" }
-                        <input 
-                            type="number" 
-                            name="minutes" 
-                            min="0" 
-                            max="59" 
-                            class="minute-input" 
-                            placeholder="MM" 
-                            value={task_minute.to_string()}
-                            oninput={on_minute_change}
-                        />
+                <div class="task-form">
+                    <label>{ "Hora:" }</label>
+                    <div class="time-input">
+                        <div class="event-popup-time">
+                            <input 
+                                type="number" 
+                                name="hours" 
+                                min="0" 
+                                max="23" 
+                                class="hour-input" 
+                                placeholder="HH" 
+                                value={task_hour.to_string()}
+                                oninput={on_hour_change}
+                            />
+                            { ":" }
+                            <input 
+                                type="number" 
+                                name="minutes" 
+                                min="0" 
+                                max="59" 
+                                class="minute-input" 
+                                placeholder="MM" 
+                                value={task_minute.to_string()}
+                                oninput={on_minute_change}
+                            />
+                        </div>
                     </div>
-                </div>
-                
-                // Hidden input for begin_date (combined date + time)
-                <input 
-                    type="hidden" 
-                    name="begin_date" 
-                    value={begin_date.clone()}
-                />
-                
-                // Debug display (you can remove this later)
-                <div style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">
-                    { format!("Data/Hora: {}", begin_date) }
-                </div>
-                
-                <label for="title">{ "Nova task:" }</label>
-                <input 
-                    type="text" 
-                    id="title" 
-                    name="title" 
-                    minlength="3" 
-                    required=true 
-                    placeholder="Digite o título da task"
-                />
-                
-                <label for="category">{ "Categoria:" }</label>
-                <input 
-                    type="text" 
-                    id="category" 
-                    name="category" 
-                    minlength="5" 
-                    required=true 
-                    placeholder="Digite a categoria"
-                />
-                
-                <label for="description">{ "Descrição:" }</label>
-                <textarea 
-                    id="description" 
-                    name="description" 
-                    required=true 
-                    placeholder="Digite a descrição"
-                    rows="3"
-                ></textarea>
+                    
+                    // Hidden input for begin_date (combined date + time)
+                    <input 
+                        type="hidden" 
+                        name="begin_date" 
+                        value={begin_date.clone()}
+                    />
+                    
+                    // Debug display (you can remove this later)
+                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">
+                        { format!("Data/Hora: {}", begin_date) }
+                    </div>
+                    
+                    <label for="title">{ "Nova task:" }</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        minlength="3" 
+                        required=true 
+                        placeholder="Digite o título da task"
+                    />
+                    
+                    <label for="category">{ "Categoria:" }</label>
+                    <input 
+                        type="text" 
+                        id="category" 
+                        name="category" 
+                        minlength="5" 
+                        required=true 
+                        placeholder="Digite a categoria"
+                    />
+                    
+                    <label for="description">{ "Descrição:" }</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        required=true 
+                        placeholder="Digite a descrição"
+                        rows="3"
+                    ></textarea>
 
-                <label for="type">{ "Tipo:" }</label>
-                <select 
-                    id="type" 
-                    name="type" 
-                    required=true 
-                >
-                    <option value="MeiaHora">{ "Meia Hora" }</option>
-                    <option value="UmaHora">{ "Uma Hora" }</option>
-                    <option value="Manhã">{ "Manhã" }</option>
-                    <option value="Tarde">{ "Tarde" }</option>
-                    <option value="Noite">{ "Noite" }</option>
-                </select>
-                
-                <div class="popup-buttons">
-                    <button class="event-popup-save">{"Add Task"}</button>
-                    <button onclick={on_close} class="event-popup-cancel">{"Cancel"}</button>
+                    <label for="type">{ "Tipo:" }</label>
+                    <select 
+                        id="type" 
+                        name="type" 
+                        required=true 
+                    >
+                        {
+                            TaskDuration::all().iter().map(|duration| {
+                                html! {
+                                    <option value={duration.value()}>
+                                        { duration.display_name() }
+                                    </option>
+                                }
+                            }).collect::<Html>()
+                        }
+                    </select>
+                    
+                    <button type="submit">{"Add Task"}</button>
+                    <button type="button" onclick={on_close}>{"Cancel"}</button>
                 </div>
             </div>
     }

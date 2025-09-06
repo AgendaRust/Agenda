@@ -5,3 +5,4 @@ pub mod task_form;
 //pub use header::Header;
 pub use theme_toggle::ThemeToggle;
 // pub use calendar_app::CalendarApp;
+pub mod task_card;

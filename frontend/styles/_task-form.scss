@@ -1,0 +1,264 @@
+// Task Form Component Styles
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: var(--container-bg);
+  padding: 40px;
+  border-radius: 20px;
+  margin: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  max-width: 700px;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  label {
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  input, select, textarea {
+    padding: 15px 20px;
+    border: 1px solid var(--container-border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 4px 12px var(--button-shadow);
+      transform: translateY(-1px);
+      background: var(--container-bg);
+    }
+
+    &::placeholder {
+      color: var(--text-secondary);
+      font-style: italic;
+      opacity: 0.7;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  select {
+    cursor: pointer;
+    border-radius: 12px;
+  }
+
+  // Time input specific styling for the task form
+  .time-input {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .event-popup-time {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .hour-input, .minute-input {
+        width: 60px;
+        height: 45px;
+        padding: 8px 4px;
+        border: 1px solid var(--container-border);
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: bold;
+        background: var(--input-bg);
+        color: var(--text-color);
+        box-sizing: border-box;
+        margin-bottom: 0;
+
+        &:focus {
+          outline: none;
+          border-color: var(--accent-color);
+          box-shadow: 0 4px 12px var(--button-shadow);
+        }
+
+        &::placeholder {
+          color: var(--text-secondary);
+          font-size: 0.9rem;
+          opacity: 0.7;
+        }
+
+        // Remove spinner arrows for number inputs
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        // Firefox
+        &[type=number] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
+      }
+    }
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 15px 20px;
+    margin: 20px 0 0 0;
+    background: var(--button-gradient);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px var(--button-shadow);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--button-hover-shadow);
+      background: var(--button-hover-gradient);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px var(--button-shadow);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  button[type="button"] {
+    width: 100%;
+    padding: 15px 20px;
+    margin: 10px 0 0 0;
+    background: linear-gradient(135deg, #636e72, #2d3436);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(99, 110, 114, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 110, 114, 0.4);
+      background: linear-gradient(135deg, #2d3436, #636e72);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(99, 110, 114, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+}
+
+// Task Popup (Event popup) styles - Modal Overlay
+.task-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+//   background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  
+  // The task form itself already has the styling we need
+  .task-form {
+    margin: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+}
+
+// Responsive design for task forms
+@media (max-width: 768px) {
+  .task-form {
+    margin: 10px;
+    padding: 25px;
+    max-width: calc(100vw - 20px);
+  }
+  
+  .task-popup {
+    padding: 10px;
+    
+    .task-form {
+      margin: 0;
+      max-width: calc(100vw - 20px);
+      padding: 20px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .task-form {
+    padding: 20px;
+    gap: 10px;
+    
+    input, select {
+      padding: 12px 15px;
+      font-size: 1rem;
+    }
+    
+    button[type="submit"] {
+      padding: 12px 15px;
+      font-size: 1rem;
+    }
+  }
+  
+  .task-popup {
+    padding: 15px;
+    
+    .task-form {
+      padding: 15px;
+      gap: 8px;
+    }
+  }
+}
