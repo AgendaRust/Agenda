@@ -1,7 +1,8 @@
 use yew::prelude::*;
-use gloo_net::http::Request;
+// use gloo_net::http::Request;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
+use crate::components::calendar_app::CalendarApp;
 
 use crate::components::ThemeToggle;
 use crate::hooks::use_theme;
@@ -19,26 +20,26 @@ pub fn home_component() -> Html {
     let task_begin_date = use_state(|| String::new());
     let task_type = use_state(|| "MeiaHora".to_string());
 
-    let add_one = {
-        let counter = counter.clone();
-        Callback::from(move |_| {
-            counter.set(*counter + 1);
-        })
-    };
+    // let add_one = {
+    //     let counter = counter.clone();
+    //     Callback::from(move |_| {
+    //         counter.set(*counter + 1);
+    //     })
+    // };
 
-    let minus_one = {
-        let counter = counter.clone();
-        Callback::from(move |_| {
-            counter.set(*counter - 1);
-        })
-    };
+    // let minus_one = {
+    //     let counter = counter.clone();
+    //     Callback::from(move |_| {
+    //         counter.set(*counter - 1);
+    //     })
+    // };
 
-    let reset_counter = {
-        let counter = counter.clone();
-        Callback::from(move |_| {
-            counter.set(0);
-        })
-    };
+    // let reset_counter = {
+    //     let counter = counter.clone();
+    //     Callback::from(move |_| {
+    //         counter.set(0);
+    //     })
+    // };
 
     let theme_class = if dark_mode {
         "dark-theme"
@@ -120,104 +121,105 @@ pub fn home_component() -> Html {
 
     html! {
         <>
-            <ThemeToggle dark_mode={dark_mode} on_toggle={toggle_theme} />
-            <div class={format!("container {}", theme_class)}>
-                <h1> { "Bem vindo ao nosso projeto de agenda com rust!" } </h1>
-                <div class="button-container">
-                    <button onclick={add_one}>{ "+1" }</button>
-                    <button onclick={reset_counter}>{ "Reset" }</button>
-                    <button onclick={minus_one}>{ "-1" }</button>
-                </div>
-                <p class="counter">{ *counter }</p>
-            </div>
-            <div class={format!("form-container {}", theme_class)}>
-                <form class="task-form" onsubmit={on_task_submit}>
-                    <label for="title">{ "Nova task:" }</label>
-                    <input 
-                        type="text" 
-                        id="title" 
-                        name="title" 
-                        minlength="3" 
-                        required=true 
-                        value={(*task_title).clone()}
-                        oninput={Callback::from({
-                            let task_title = task_title.clone();
-                            move |e: InputEvent| {
-                                let input: HtmlInputElement = e.target_unchecked_into();
-                                task_title.set(input.value());
-                            }
-                        })}
-                    />
-                    <label for="category">{ "Categoria:" }</label>
-                    <input 
-                        type="text" 
-                        id="category" 
-                        name="category" 
-                        minlength="5" 
-                        required=true 
-                        value={(*task_category).clone()}
-                        oninput={Callback::from({
-                            let task_category = task_category.clone();
-                            move |e: InputEvent| {
-                                let input: HtmlInputElement = e.target_unchecked_into();
-                                task_category.set(input.value());
-                            }
-                        })}
-                    />
-                    <label for="description">{ "Descrição:" }</label>
-                    <input 
-                        type="text" 
-                        id="description" 
-                        name="description" 
-                        required=true 
-                        value={(*task_description).clone()}
-                        oninput={Callback::from({
-                            let task_description = task_description.clone();
-                            move |e: InputEvent| {
-                                let input: HtmlInputElement = e.target_unchecked_into();
-                                task_description.set(input.value());
-                            }
-                        })}
-                    />
-                    <label for="begin_date">{ "Data de Início:" }</label>
-                    <input 
-                        type="datetime-local" 
-                        id="begin_date" 
-                        name="begin_date" 
-                        required=true 
-                        value={(*task_begin_date).clone()}
-                        oninput={Callback::from({
-                            let task_begin_date = task_begin_date.clone();
-                            move |e: InputEvent| {
-                                let input: HtmlInputElement = e.target_unchecked_into();
-                                task_begin_date.set(input.value());
-                            }
-                        })}
-                    />
+            // <ThemeToggle dark_mode={dark_mode} on_toggle={toggle_theme} />
+            // <div class={format!("container {}", theme_class)}>
+            //     <h1> { "Bem vindo ao nosso projeto de agenda com rust!" } </h1>
+            //     <div class="button-container">
+            //         <button onclick={add_one}>{ "+1" }</button>
+            //         <button onclick={reset_counter}>{ "Reset" }</button>
+            //         <button onclick={minus_one}>{ "-1" }</button>
+            //     </div>
+            //     <p class="counter">{ *counter }</p>
+            // </div>
+            <CalendarApp />
+            // <div class={format!("form-container {}", theme_class)}>
+            //     <form class="task-form" onsubmit={on_task_submit}>
+            //         <label for="title">{ "Nova task:" }</label>
+            //         <input 
+            //             type="text" 
+            //             id="title" 
+            //             name="title" 
+            //             minlength="3" 
+            //             required=true 
+            //             value={(*task_title).clone()}
+            //             oninput={Callback::from({
+            //                 let task_title = task_title.clone();
+            //                 move |e: InputEvent| {
+            //                     let input: HtmlInputElement = e.target_unchecked_into();
+            //                     task_title.set(input.value());
+            //                 }
+            //             })}
+            //         />
+            //         <label for="category">{ "Categoria:" }</label>
+            //         <input 
+            //             type="text" 
+            //             id="category" 
+            //             name="category" 
+            //             minlength="5" 
+            //             required=true 
+            //             value={(*task_category).clone()}
+            //             oninput={Callback::from({
+            //                 let task_category = task_category.clone();
+            //                 move |e: InputEvent| {
+            //                     let input: HtmlInputElement = e.target_unchecked_into();
+            //                     task_category.set(input.value());
+            //                 }
+            //             })}
+            //         />
+            //         <label for="description">{ "Descrição:" }</label>
+            //         <input 
+            //             type="text" 
+            //             id="description" 
+            //             name="description" 
+            //             required=true 
+            //             value={(*task_description).clone()}
+            //             oninput={Callback::from({
+            //                 let task_description = task_description.clone();
+            //                 move |e: InputEvent| {
+            //                     let input: HtmlInputElement = e.target_unchecked_into();
+            //                     task_description.set(input.value());
+            //                 }
+            //             })}
+            //         />
+            //         <label for="begin_date">{ "Data de Início:" }</label>
+            //         <input 
+            //             type="datetime-local" 
+            //             id="begin_date" 
+            //             name="begin_date" 
+            //             required=true 
+            //             value={(*task_begin_date).clone()}
+            //             oninput={Callback::from({
+            //                 let task_begin_date = task_begin_date.clone();
+            //                 move |e: InputEvent| {
+            //                     let input: HtmlInputElement = e.target_unchecked_into();
+            //                     task_begin_date.set(input.value());
+            //                 }
+            //             })}
+            //         />
 
-                    <label for="type">{ "Tipo:" }</label>
-                    <select 
-                        id="type" 
-                        name="type" 
-                        required=true 
-                        value={(*task_type).clone()}
-                        onchange={Callback::from({
-                            let task_type = task_type.clone();
-                            move |e: Event| {
-                                let select: HtmlInputElement = e.target_unchecked_into();
-                                task_type.set(select.value());
-                            }
-                        })}
-                    >
-                        <option value="MeiaHora">{ "Meia Hora" }</option>
-                        <option value="UmaHora">{ "Uma Hora" }</option>
-                        <option value="Manhã">{ "Manhã" }</option>
-                        <option value="Tarde">{ "Tarde" }</option>
-                        <option value="Noite">{ "Noite" }</option>
-                    </select>
-                    <button type="submit">{ "Adicionar" }</button>
-                </form>
-            </div>
+            //         <label for="type">{ "Tipo:" }</label>
+            //         <select 
+            //             id="type" 
+            //             name="type" 
+            //             required=true 
+            //             value={(*task_type).clone()}
+            //             onchange={Callback::from({
+            //                 let task_type = task_type.clone();
+            //                 move |e: Event| {
+            //                     let select: HtmlInputElement = e.target_unchecked_into();
+            //                     task_type.set(select.value());
+            //                 }
+            //             })}
+            //         >
+            //             <option value="MeiaHora">{ "Meia Hora" }</option>
+            //             <option value="UmaHora">{ "Uma Hora" }</option>
+            //             <option value="Manhã">{ "Manhã" }</option>
+            //             <option value="Tarde">{ "Tarde" }</option>
+            //             <option value="Noite">{ "Noite" }</option>
+            //         </select>
+            //         <button type="submit">{ "Adicionar" }</button>
+            //     </form>
+            // </div>
         </>
     }
 }
