@@ -4,12 +4,8 @@ use serde_json::Value;
 use rocket::State;
 use crate::controller::auth::UserClaim;
 use crate::db::Pool;
-use crate::dto::authDTO::AuthDto;
-use crate::dto::CreateNote;
 use crate::dto::taskDTO::TaskDto;
-use crate::entity::{notes, task};
-use crate::service::auth_service;
-use crate::repository::auth_repository::UserError;
+use crate::entity::task;
 use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError, update_status_task_db, get_task_stats_year_db};
 use crate::dto::taskStatusDTO::StatusUpdateDto;
 

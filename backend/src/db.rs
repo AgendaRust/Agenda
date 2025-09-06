@@ -1,4 +1,4 @@
-use rocket::fairing::{self, AdHoc};
+use rocket::fairing::AdHoc;
 use sea_orm::{Database, DatabaseConnection};
 
 use sea_orm_migration::prelude::*;

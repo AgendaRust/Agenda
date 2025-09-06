@@ -1,11 +1,8 @@
-use sea_orm::ColumnTrait;
-use sea_orm::QueryFilter;
 use crate::db::Pool;
 use crate::dto::authDTO::AuthDto;
 use crate::repository::auth_repository::{self, UserError};
 use crate::entity::user;
 use rocket::State;
-//use sea_orm::EntityTrait;
 
 pub async fn register_user(
     db: &State<Pool>,
