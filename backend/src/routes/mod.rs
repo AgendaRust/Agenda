@@ -32,6 +32,7 @@ pub fn get_task_routes() -> Vec<rocket::Route> {
         task::delete_task,
         task::get_tasks_by_user_id,
         task::update_status_task,
+        task::get_task_stats_year
     ]
 }
 

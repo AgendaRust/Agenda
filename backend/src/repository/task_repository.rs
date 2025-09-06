@@ -1,7 +1,8 @@
-use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set, PaginatorTrait};
+use chrono::{Datelike, Timelike, Utc, TimeZone, Duration};
+use std::collections::HashMap;
 use crate::dto::taskDTO::TaskDto;
 use crate::entity::task;
-use chrono::{Duration, Timelike, Utc};
 
 pub struct TaskRepository<'a> {
     db: &'a DatabaseConnection,
@@ -27,6 +28,92 @@ impl<'a> TaskRepository<'a> {
             .await
     }
 
+    pub async fn tasks_stats_year(&self, user_id: i32, year: i32) -> Result<(i64, i64, f64, i32, String, String), DbErr> {
+
+        let start_date = Utc.with_ymd_and_hms(year, 1, 1, 0, 0, 0).unwrap();
+        let end_date = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap();
+
+        // Total de tarefas do usuário no ano especificado
+        let total_tasks = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::BeginDate.gte(start_date))
+            .filter(task::Column::BeginDate.lte(end_date))
+            .count(self.db)
+            .await?;
+
+        // Tarefas executadas no ano
+        let executed_tasks = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::BeginDate.gte(start_date))
+            .filter(task::Column::BeginDate.lte(end_date))
+            .filter(task::Column::Status.eq("Executada"))
+            .count(self.db)
+            .await?;
+
+        // Calcular porcentagem
+        let percentage = if total_tasks > 0 {
+            (executed_tasks as f64 / total_tasks as f64) * 100.0
+        } else {
+            0.0
+        };
+
+        // 1. Buscar os detalhes das tarefas executadas
+        let executed_task_details = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::Status.eq("Executada"))
+            .filter(task::Column::CompleteDate.gte(start_date))
+            .filter(task::Column::CompleteDate.lte(end_date))
+            .all(self.db)
+            .await?;
+
+        // 2. Inicializar os contadores para turnos e categorias
+        let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
+        let mut category_counts: HashMap<String, i32> = HashMap::new();
+
+        // 3. Iterar sobre as tarefas para contar turnos E categorias
+        for task in &executed_task_details {
+            // Lógica para contar o turno (sem alterações)
+            let hour = task.complete_date.hour();
+            let shift_name = match hour {
+                6..=11 => Some("Manhã"),
+                12..=17 => Some("Tarde"),
+                18..=23 => Some("Noite"),
+                0..=5 => Some("Madrugada"),
+                _ => None,
+            };
+            if let Some(name) = shift_name {
+                *shift_counts.entry(name).or_insert(0) += 1;
+            }
+
+            // NOVO: Lógica para contar as categorias
+            *category_counts.entry(task.category.clone()).or_insert(0) += 1;
+        }
+
+        // 4. Encontrar o turno mais produtivo
+        let most_productive_shift = shift_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(shift_name, _)| shift_name.to_string())
+            .unwrap_or_else(|| "N/A".to_string());
+
+
+        // 5. Encontrar a categoria com a maior contagem diretamente
+        let most_used_category = category_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(category, _)| category)
+            .unwrap_or_else(|| "N/A".to_string());
+
+        Ok((
+            total_tasks as i64,
+            executed_tasks as i64,
+            percentage,
+            year,
+            most_productive_shift,
+            most_used_category,
+        ))
+    }
+
     pub async fn create_task(
         &self,
         task_info: &TaskDto,
@@ -41,17 +128,25 @@ impl<'a> TaskRepository<'a> {
                 task_info.begin_date,
                 task_info.begin_date + Duration::hours(1),
             ),
+            "DuasHoras" => (
+                task_info.begin_date,
+                task_info.begin_date + Duration::hours(1),
+            ),
             "Manha" => (
-                task_info.begin_date.with_hour(8).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
-                task_info.begin_date.with_hour(12).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
+                task_info.begin_date.with_hour(6).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
+                task_info.begin_date.with_hour(11).unwrap().with_minute(59).unwrap().with_second(59).unwrap(),
             ),
             "Tarde" => (
-                task_info.begin_date.with_hour(13).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
-                task_info.begin_date.with_hour(18).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
+                task_info.begin_date.with_hour(12).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
+                task_info.begin_date.with_hour(17).unwrap().with_minute(59).unwrap().with_second(59).unwrap(),
             ),
             "Noite" => (
                 task_info.begin_date.with_hour(18).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
                 task_info.begin_date.with_hour(23).unwrap().with_minute(59).unwrap().with_second(59).unwrap(),
+            ),
+            "Madrugada" => (
+                task_info.begin_date.with_hour(0).unwrap().with_minute(0).unwrap().with_second(0).unwrap(),
+                task_info.begin_date.with_hour(5).unwrap().with_minute(59).unwrap().with_second(59).unwrap(),
             ),
             _ => {
                 return Err(DbErr::Custom(format!(
