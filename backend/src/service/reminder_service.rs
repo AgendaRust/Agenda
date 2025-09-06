@@ -4,7 +4,6 @@ use crate::db::Pool;
 use crate::dto::reminder_dto::reminder_DTO;
 use crate::entity::reminder;
 use rocket::http::Status;
-use sea_orm::prelude::DateTimeUtc;
 use sea_orm::QueryFilter;
  use sea_orm::ColumnTrait;
 
