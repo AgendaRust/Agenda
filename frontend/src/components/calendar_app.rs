@@ -9,10 +9,6 @@ use crate::types::TaskDuration;
 pub fn calendar_app() -> Html {
     let show_task_form = use_state(|| false);
     
-    let selected_date = use_state(|| {
-        NaiveDate::from_ymd_opt(2023, 10, 15).unwrap_or_else(|| Local::now().date_naive())
-    });
-
     let toggle_task_form = {
         let show_task_form = show_task_form.clone();
         Callback::from(move |_: MouseEvent| {
@@ -27,8 +23,18 @@ pub fn calendar_app() -> Html {
         })
     };
 
-    let current_month = use_state(|| Local::now().date_naive().month());
-    let current_year = use_state(|| Local::now().date_naive().year());
+    let current_date = Local::now().date_naive();
+
+    let current_month = use_state(|| current_date.month());
+    let current_year = use_state(|| current_date.year());
+    let selected_day = use_state(|| current_date.day()); // Track selected day
+
+    let on_day_click = {
+        let selected_day = selected_day.clone();
+        Callback::from(move |day: u32| {
+            selected_day.set(day);
+        })
+    };
 
     let prev_month = {
         let current_month = current_month.clone();
@@ -56,10 +62,10 @@ pub fn calendar_app() -> Html {
         })
     };
 
-    let days_of_week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    let days_of_week = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
     let months_of_year = [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
     ];
     
     let days_in_month = match *current_month {
@@ -82,7 +88,7 @@ pub fn calendar_app() -> Html {
     html! {
         <div class="calendar-app">
             <div class="calendar">
-                <h2 class="calendar-heading">{ "Calendar" }</h2>
+                <h2 class="calendar-heading">{ "Agenda" }</h2>
                 <div class="navigate-date">
                     <h2 class="month"> { months_of_year[*current_month as usize - 1] } </h2>
                     <h2 class="year"> { *current_year } </h2>
@@ -101,20 +107,43 @@ pub fn calendar_app() -> Html {
                 </div>
                 <div class="days">
                     // Empty cells for days before the month starts
+                    
                     { for (0..first_weekday).map(|index| html! {
                         <span key={format!("empty-{}", index)} class="empty-day"></span>
                     }) }
                     
                     // Actual days of the month
-                    { for (1..=days_in_month).map(|day| html! {
-                        <span class="unique-day">{ day }</span>
+                    { for (1..=days_in_month).map(|day| {
+                        let on_day_click = on_day_click.clone();
+                        let is_today = day == current_date.day() && 
+                                      *current_month == current_date.month() && 
+                                      *current_year == current_date.year();
+                        let is_selected = day == *selected_day;
+                        
+                        let class = match (is_today, is_selected) {
+                            (true, true) => "unique-day current-day selected-day",
+                            (true, false) => "unique-day current-day",
+                            (false, true) => "unique-day selected-day",
+                            (false, false) => "unique-day",
+                        };
+                        
+                        html! {
+                            <span 
+                                class={class}
+                                onclick={Callback::from(move |_: MouseEvent| {
+                                    on_day_click.emit(day);
+                                })}
+                            >
+                                { day }
+                            </span>
+                        }
                     }) }
                 </div>
             </div>
             
             <div class="sidebar">
                 <div class="sidebar-header">
-                    <h3>{ "Tasks" }</h3>
+                    <h3>{ "Tarefas" }</h3>
                 </div>
                 <div class="task-list">
                     <TaskCard 
@@ -164,7 +193,7 @@ pub fn calendar_app() -> Html {
             <TaskForm 
                 visible={*show_task_form} 
                 on_close={close_task_form} 
-                selected_date={*selected_date}
+                selected_date={NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day).unwrap_or_else(|| Local::now().date_naive())}
             />
         </div>
     }
