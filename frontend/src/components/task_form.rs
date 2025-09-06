@@ -22,6 +22,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
     let task_hour = use_state(|| 9u32);
     let task_minute = use_state(|| 0u32);
     let task_type = use_state(|| TaskDuration::default());
+    let form_status = use_state(|| String::new()); // "success", "error", or ""
 
     let begin_date = format!("{}T{:02}:{:02}", 
         props.selected_date.format("%Y-%m-%d"), 
@@ -82,6 +83,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
         let task_category = task_category.clone();
         let task_description = task_description.clone();
         let task_type = task_type.clone();
+        let form_status = form_status.clone();
         let on_close = props.on_close.clone();
         let begin_date = begin_date.clone();
 
@@ -91,8 +93,10 @@ pub fn task_form(props: &TaskFormProps) -> Html {
             let task_category = task_category.clone();
             let task_description = task_description.clone();
             let task_type = task_type.clone();
+            let form_status = form_status.clone();
             let on_close = on_close.clone();
             let begin_date = begin_date.clone();
+            
             spawn_local(async move {
                 let begin_date_parsed = chrono::NaiveDateTime::parse_from_str(&begin_date, "%Y-%m-%dT%H:%M")
                                     .ok()
@@ -106,27 +110,58 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                     begin_date: begin_date_parsed,
                     task_type: task_type.value().to_string(),
                 };
+                
                 let result = create_task(&task_info).await;
                 match result {
                     crate::services::tasks::TaskResult::Success(task) => {
                         web_sys::console::log_1(&format!("Task created successfully: {:?}", task).into());
+                        form_status.set("success".to_string());
+                        
+                        // Clear form and close after success animation
+                        let task_title = task_title.clone();
+                        let task_category = task_category.clone();
+                        let task_description = task_description.clone();
+                        let task_type = task_type.clone();
+                        let form_status = form_status.clone();
+                        let on_close = on_close.clone();
+                        
+                        wasm_bindgen_futures::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(1500).await;
+                            task_title.set(String::new());
+                            task_category.set(String::new());
+                            task_description.set(String::new());
+                            task_type.set(TaskDuration::default());
+                            form_status.set(String::new());
+                            
+                            if let Some(callback) = &on_close {
+                                callback.emit(());
+                            }
+                        });
                     },
                     crate::services::tasks::TaskResult::InvalidFields => {
                         web_sys::console::log_1(&"Failed to create task: Invalid fields".into());
+                        form_status.set("error".to_string());
+                        
+                        // Reset error status after animation
+                        let form_status = form_status.clone();
+                        wasm_bindgen_futures::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(3000).await;
+                            form_status.set(String::new());
+                        });
                     },
                     crate::services::tasks::TaskResult::NetworkError(err) => {
                         web_sys::console::log_1(&format!("Network error while creating task: {}", err).into());
+                        form_status.set("error".to_string());
+                        
+                        // Reset error status after animation
+                        let form_status = form_status.clone();
+                        wasm_bindgen_futures::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(3000).await;
+                            form_status.set(String::new());
+                        });
                     },
                 }
-
-                task_title.set(String::new());
-                task_category.set(String::new());
-                task_description.set(String::new());
-                task_type.set(TaskDuration::default());
             });
-            if let Some(callback) = &on_close {
-                callback.emit(());
-            }
         })
     };
 
@@ -178,7 +213,17 @@ pub fn task_form(props: &TaskFormProps) -> Html {
     html! {
         if props.visible {
             <div class="task-popup">
-                <div class="task-form">
+                <div class={format!("task-form {}", (*form_status).clone())}>
+                    // Status message
+                    if !form_status.is_empty() {
+                        <div class={format!("status-message {}", (*form_status).clone())}>
+                            if *form_status == "success" {
+                                { "✓ Task created successfully!" }
+                            } else if *form_status == "error" {
+                                { "✗ Failed to create task. Please try again." }
+                            }
+                        </div>
+                    }
                     <label>{ "Hora:" }</label>
                     <div class="time-input">
                         <div class="event-popup-time">
