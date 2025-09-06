@@ -1,8 +1,32 @@
-use yew::{function_component, html, Html};
+use yew::{function_component, html, Html, use_state, Callback, MouseEvent};
+use chrono::{Local, NaiveDate};
+
+use crate::components::task_form::TaskForm;
 
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
+    let show_task_form = use_state(|| true);
+    
+    // Date state - using placeholder values for now
+    let selected_date = use_state(|| {
+        // Placeholder: October 15, 2023
+        NaiveDate::from_ymd_opt(2023, 10, 15).unwrap_or_else(|| Local::now().date_naive())
+    });
+
+    let toggle_task_form = {
+        let show_task_form = show_task_form.clone();
+        Callback::from(move |_: MouseEvent| {
+            show_task_form.set(!*show_task_form);
+        })
+    };
+
+    let close_task_form = {
+        let show_task_form = show_task_form.clone();
+        Callback::from(move |_: ()| {
+            show_task_form.set(false);
+        })
+    };
     
     
     
@@ -16,6 +40,7 @@ pub fn calendar_app() -> Html {
                     <div class="calendar-buttons">
                         <button>{ "<" }</button>
                         <button>{ ">" }</button>
+                        <button onclick={toggle_task_form}>{ "+" }</button>
                     </div>
                     // Calendar grid implementation goes here
                 </div>
@@ -39,71 +64,12 @@ pub fn calendar_app() -> Html {
                     <span class="current-day"> { "32" } </span>
                 </div>
                 <div class="events">
-                    <div class="task-popup">
-                        <div class="time-input">
-                            <div class="event-popup-time">
-                                <input type="number" name="hours" min="0" max = "23" class="hour-input" placeholder="HH" />
-                                { ":" }
-                                <input type="number" name="minutes" min="0" max = "59" class="minute-input" placeholder="MM" />
-                            </div>
-                            // <textarea placeholder="Enter event details..." class="event-popup-details"></textarea>
-                        </div>
-                        
-                        <label for="title">{ "Nova task:" }</label>
-                        <input 
-                            type="text" 
-                            id="title" 
-                            name="title" 
-                            minlength="3" 
-                            required=true 
-                            placeholder="Digite o título da task"
-                        />
-                        
-                        <label for="category">{ "Categoria:" }</label>
-                        <input 
-                            type="text" 
-                            id="category" 
-                            name="category" 
-                            minlength="5" 
-                            required=true 
-                            placeholder="Digite a categoria"
-                        />
-                        
-                        <label for="description">{ "Descrição:" }</label>
-                        <textarea 
-                            id="description" 
-                            name="description" 
-                            required=true 
-                            placeholder="Digite a descrição"
-                            rows="3"
-                        ></textarea>
-                        
-                        <label for="begin_date">{ "Data de Início:" }</label>
-                        <input 
-                            type="datetime-local" 
-                            id="begin_date" 
-                            name="begin_date" 
-                            required=true 
-                        />
-
-                        <label for="type">{ "Tipo:" }</label>
-                        <select 
-                            id="type" 
-                            name="type" 
-                            required=true 
-                        >
-                            <option value="MeiaHora">{ "Meia Hora" }</option>
-                            <option value="UmaHora">{ "Uma Hora" }</option>
-                            <option value="Manhã">{ "Manhã" }</option>
-                            <option value="Tarde">{ "Tarde" }</option>
-                            <option value="Noite">{ "Noite" }</option>
-                        </select>
-                        
-                        <div class="popup-buttons">
-                            <button class="event-popup-save">{"Add Task"}</button>
-                            <button class="event-popup-cancel">{"Cancel"}</button>
-                        </div>
-                    </div>
+                    <TaskForm 
+                        visible={*show_task_form} 
+                        on_close={close_task_form} 
+                        selected_date={*selected_date}
+                    />
+                    
                     <div class="task">
                         <div class="task-date-wrapper">
                             <div class="task-date"> { "May 20, 2023" } </div>
