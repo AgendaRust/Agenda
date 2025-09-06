@@ -214,116 +214,148 @@ pub fn task_form(props: &TaskFormProps) -> Html {
         if props.visible {
             <div class="task-popup">
                 <div class={format!("task-form {}", (*form_status).clone())}>
-                    // Status message
-                    if !form_status.is_empty() {
-                        <div class={format!("status-message {}", (*form_status).clone())}>
-                            if *form_status == "success" {
-                                { "✓ Task created successfully!" }
-                            } else if *form_status == "error" {
-                                { "✗ Failed to create task. Please try again." }
-                            }
-                        </div>
-                    }
-                    <label>{ "Hora:" }</label>
-                    <div class="time-input">
-                        <div class="event-popup-time">
-                            <input 
-                                type="number" 
-                                name="hours" 
-                                min="0" 
-                                max="23" 
-                                class="hour-input" 
-                                placeholder="HH" 
-                                value={task_hour.to_string()}
-                                oninput={on_hour_change}
-                            />
-                            { ":" }
-                            <input 
-                                type="number" 
-                                name="minutes" 
-                                min="0" 
-                                max="59" 
-                                class="minute-input" 
-                                placeholder="MM" 
-                                value={task_minute.to_string()}
-                                oninput={on_minute_change}
-                            />
+                    // Windows 98 Title Bar Header
+                    <div class="task-form-header">
+                        <div class="title-text">{"Criar tarefa"}</div>
+                        <div class="window-controls">
+                            <div class="control-button minimize"></div>
+                            <div class="control-button maximize"></div>
+                            <div class="control-button close" onclick={on_close.clone()}></div>
                         </div>
                     </div>
-                    
-                    // Hidden input for begin_date (combined date + time)
-                    <input 
-                        type="hidden" 
-                        name="begin_date" 
-                        value={begin_date.clone()}
-                    />
-                    
-                    // Debug display (you can remove this later)
-                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">
-                        { format!("Data/Hora: {}", begin_date) }
-                    </div>
-                    
-                    <label for="title">{ "Nova task:" }</label>
-                    <input 
-                        type="text" 
-                        id="title" 
-                        name="title" 
-                        minlength="3" 
-                        required=true 
-                        placeholder="Digite o título da task"
-                        value={(*task_title).clone()}
-                        oninput={on_title_change}
-                    />
-                    
-                    <label for="category">{ "Categoria:" }</label>
-                    <input 
-                        type="text" 
-                        id="category" 
-                        name="category" 
-                        minlength="5" 
-                        required=true 
-                        placeholder="Digite a categoria"
-                        value={(*task_category).clone()}
-                        oninput={on_category_change}
-                    />
-                    
-                    <label for="description">{ "Descrição:" }</label>
-                    <textarea 
-                        id="description" 
-                        name="description" 
-                        required=true 
-                        placeholder="Digite a descrição"
-                        rows="3"
-                        value={(*task_description).clone()}
-                        oninput={on_description_change}
-                    ></textarea>
 
-                    <label for="type">{ "Tipo:" }</label>
-                    <select 
-                        id="type" 
-                        name="type" 
-                        required=true
-                        onchange={on_type_change}
-                    >
-                        {
-                            TaskDuration::all().iter().map(|duration| {
-                                let is_selected = *task_type == *duration;
-                                html! {
-                                    <option 
-                                        value={duration.value()} 
-                                        selected={is_selected}
-                                    >
-                                        { duration.display_name() }
-                                    </option>
+                    // Task Form Content
+                    <div class="task-form-content">
+                        // Status message
+                        if !form_status.is_empty() {
+                            <div class={format!("status-message {}", (*form_status).clone())}>
+                                if *form_status == "success" {
+                                    { "✓ Task created successfully!" }
+                                } else if *form_status == "error" {
+                                    { "✗ Failed to create task. Please try again." }
                                 }
-                            }).collect::<Html>()
+                            </div>
                         }
-                    </select>
 
-                    <button type="submit" onclick={on_create}>{"Add Task"}</button>
-                    <button type="button" onclick={on_close}>{"Cancel"}</button>
+                        // Time input - left column
+                        <div>
+                            <label>{ "Hora:" }</label>
+                            <div class="time-input">
+                                <div class="event-popup-time">
+                                    <input 
+                                        type="number" 
+                                        name="hours" 
+                                        min="0" 
+                                        max="23" 
+                                        class="hour-input" 
+                                        placeholder="HH" 
+                                        value={task_hour.to_string()}
+                                        oninput={on_hour_change}
+                                    />
+                                    { ":" }
+                                    <input 
+                                        type="number" 
+                                        name="minutes" 
+                                        min="0" 
+                                        max="59" 
+                                        class="minute-input" 
+                                        placeholder="MM" 
+                                        value={task_minute.to_string()}
+                                        oninput={on_minute_change}
+                                    />
+                                </div>
+                            </div>
+                            
+                            // Debug display (you can remove this later)
+                            <div style="font-size: 8px; color: #666; margin-top: 4px;">
+                                { format!("Data/Hora: {}", begin_date) }
+                            </div>
+                        </div>
+
+                        // Task title - right column
+                        <div>
+                            <label for="title">{ "Nova task:" }</label>
+                            <input 
+                                type="text" 
+                                id="title" 
+                                name="title" 
+                                minlength="3" 
+                                required=true 
+                                placeholder="Digite o título da task"
+                                value={(*task_title).clone()}
+                                oninput={on_title_change}
+                            />
+                        </div>
+
+                        // Category - left column
+                        <div>
+                            <label for="category">{ "Categoria:" }</label>
+                            <input 
+                                type="text" 
+                                id="category" 
+                                name="category" 
+                                minlength="5" 
+                                required=true 
+                                placeholder="Digite a categoria"
+                                value={(*task_category).clone()}
+                                oninput={on_category_change}
+                            />
+                        </div>
+
+                        // Type - right column
+                        <div>
+                            <label for="type">{ "Tipo:" }</label>
+                            <select 
+                                id="type" 
+                                name="type" 
+                                required=true
+                                onchange={on_type_change}
+                            >
+                                {
+                                    TaskDuration::all().iter().map(|duration| {
+                                        let is_selected = *task_type == *duration;
+                                        html! {
+                                            <option 
+                                                value={duration.value()} 
+                                                selected={is_selected}
+                                            >
+                                                { duration.display_name() }
+                                            </option>
+                                        }
+                                    }).collect::<Html>()
+                                }
+                            </select>
+                        </div>
+
+                        // Description - full width
+                        <div class="full-width">
+                            <label for="description">{ "Descrição:" }</label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                required=true 
+                                placeholder="Digite a descrição"
+                                rows="3"
+                                value={(*task_description).clone()}
+                                oninput={on_description_change}
+                            ></textarea>
+                        </div>
+
+                        // Buttons - full width
+                        <div class="button-container">
+                            <button type="submit" onclick={on_create}>{"Criar Task"}</button>
+                            <button type="button" onclick={on_close}>{"Cancelar"}</button>
+                        </div>
+
+                        // Hidden input for begin_date (combined date + time)
+                        <input 
+                            type="hidden" 
+                            name="begin_date" 
+                            value={begin_date.clone()}
+                        />
+                    </div>
                 </div>
             </div>
+        }
     }
-}
 }

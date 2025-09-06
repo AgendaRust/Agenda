@@ -7,7 +7,9 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg-gradient);
+  background: url('/wall-paper-top.jpg') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -17,6 +19,45 @@ body {
 
   // Smooth background transition
   transition: background 0.5s ease-in-out;
+  
+  // Add overlay effects
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    
+    // Gradient overlay for depth and contrast
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.1) 30%,
+      rgba(255, 255, 255, 0.05) 60%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+    
+    // Slight blur and brightness adjustment
+    backdrop-filter: brightness(0.85) contrast(1.1);
+    -webkit-backdrop-filter: brightness(0.85) contrast(1.1);
+  }
+  
+  // Additional subtle pattern overlay for texture
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 177, 153, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
 }
 
 // Heading styles
