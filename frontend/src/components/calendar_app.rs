@@ -106,13 +106,11 @@ pub fn calendar_app() -> Html {
                     }
                 </div>
                 <div class="days">
-                    // Empty cells for days before the month starts
                     
                     { for (0..first_weekday).map(|index| html! {
                         <span key={format!("empty-{}", index)} class="empty-day"></span>
                     }) }
                     
-                    // Actual days of the month
                     { for (1..=days_in_month).map(|day| {
                         let on_day_click = on_day_click.clone();
                         let is_today = day == current_date.day() && 

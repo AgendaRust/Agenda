@@ -1,7 +1,9 @@
-use yew::{function_component, html, use_state, Callback, Html, InputEvent, MouseEvent, Properties, TargetCast};
-use web_sys::HtmlInputElement;
+use yew::{function_component, html, use_state, Callback, Event, Html, InputEvent, MouseEvent, Properties, TargetCast};
+use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 use chrono::NaiveDate;
 use crate::types::TaskDuration;
+use crate::services::tasks::{TaskDto, create_task};
+use wasm_bindgen_futures::spawn_local;
 
 #[derive(Properties, PartialEq)]
 pub struct TaskFormProps {
@@ -14,12 +16,12 @@ pub struct TaskFormProps {
 #[function_component(TaskForm)]
 pub fn task_form(props: &TaskFormProps) -> Html {
 
-    let _task_title = use_state(|| String::new());
-    let _task_category = use_state(|| String::new());
-    let _task_description = use_state(|| String::new());
+    let task_title = use_state(|| String::new());
+    let task_category = use_state(|| String::new());
+    let task_description = use_state(|| String::new());
     let task_hour = use_state(|| 9u32);
     let task_minute = use_state(|| 0u32);
-    let _task_type = use_state(|| TaskDuration::default());
+    let task_type = use_state(|| TaskDuration::default());
 
     let begin_date = format!("{}T{:02}:{:02}", 
         props.selected_date.format("%Y-%m-%d"), 
@@ -72,6 +74,95 @@ pub fn task_form(props: &TaskFormProps) -> Html {
             } else {
                 input.set_value(&task_minute.to_string());
             }
+        })
+    };
+
+    let on_create = {
+        let task_title = task_title.clone();
+        let task_category = task_category.clone();
+        let task_description = task_description.clone();
+        let task_type = task_type.clone();
+        let on_close = props.on_close.clone();
+        let begin_date = begin_date.clone();
+
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            let task_title = task_title.clone();
+            let task_category = task_category.clone();
+            let task_description = task_description.clone();
+            let task_type = task_type.clone();
+            let on_close = on_close.clone();
+            let begin_date = begin_date.clone();
+            spawn_local(async move {
+                let begin_date_parsed = chrono::NaiveDateTime::parse_from_str(&begin_date, "%Y-%m-%dT%H:%M")
+                                    .ok()
+                                    .map(|naive| chrono::DateTime::<chrono::Utc>::from_utc(naive, chrono::Utc))
+                                    .unwrap_or_else(|| chrono::Utc::now());
+
+                let task_info = TaskDto {
+                    title: (*task_title).clone(),
+                    category: (*task_category).clone(),
+                    description: (*task_description).clone(),
+                    begin_date: begin_date_parsed,
+                    task_type: task_type.value().to_string(),
+                };
+                let result = create_task(&task_info).await;
+                match result {
+                    crate::services::tasks::TaskResult::Success(task) => {
+                        web_sys::console::log_1(&format!("Task created successfully: {:?}", task).into());
+                    },
+                    crate::services::tasks::TaskResult::InvalidFields => {
+                        web_sys::console::log_1(&"Failed to create task: Invalid fields".into());
+                    },
+                    crate::services::tasks::TaskResult::NetworkError(err) => {
+                        web_sys::console::log_1(&format!("Network error while creating task: {}", err).into());
+                    },
+                }
+
+                task_title.set(String::new());
+                task_category.set(String::new());
+                task_description.set(String::new());
+                task_type.set(TaskDuration::default());
+            });
+            if let Some(callback) = &on_close {
+                callback.emit(());
+            }
+        })
+    };
+
+
+    let on_title_change = {
+        let task_title = task_title.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            task_title.set(input.value());
+        })
+    };
+
+    let on_category_change = {
+        let task_category = task_category.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            task_category.set(input.value());
+        })
+    };
+
+    let on_description_change = {
+        let task_description = task_description.clone();
+        Callback::from(move |e: InputEvent| {
+            let textarea: HtmlTextAreaElement = e.target_unchecked_into();
+            task_description.set(textarea.value());
+        })
+    };
+
+    let on_type_change = {
+        let task_type = task_type.clone();
+        Callback::from(move |e: Event| {
+            let select: HtmlInputElement = e.target_unchecked_into();
+            //test with different dataset
+            let duration = TaskDuration::from_value(&select.value()).unwrap_or_default();
+
+            task_type.set(duration);
         })
     };
 
@@ -135,6 +226,8 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         minlength="3" 
                         required=true 
                         placeholder="Digite o título da task"
+                        value={(*task_title).clone()}
+                        oninput={on_title_change}
                     />
                     
                     <label for="category">{ "Categoria:" }</label>
@@ -145,6 +238,8 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         minlength="5" 
                         required=true 
                         placeholder="Digite a categoria"
+                        value={(*task_category).clone()}
+                        oninput={on_category_change}
                     />
                     
                     <label for="description">{ "Descrição:" }</label>
@@ -154,26 +249,33 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         required=true 
                         placeholder="Digite a descrição"
                         rows="3"
+                        value={(*task_description).clone()}
+                        oninput={on_description_change}
                     ></textarea>
 
                     <label for="type">{ "Tipo:" }</label>
                     <select 
                         id="type" 
                         name="type" 
-                        required=true 
+                        required=true
+                        onchange={on_type_change}
                     >
                         {
                             TaskDuration::all().iter().map(|duration| {
+                                let is_selected = *task_type == *duration;
                                 html! {
-                                    <option value={duration.value()}>
+                                    <option 
+                                        value={duration.value()} 
+                                        selected={is_selected}
+                                    >
                                         { duration.display_name() }
                                     </option>
                                 }
                             }).collect::<Html>()
                         }
                     </select>
-                    
-                    <button type="submit">{"Add Task"}</button>
+
+                    <button type="submit" onclick={on_create}>{"Add Task"}</button>
                     <button type="button" onclick={on_close}>{"Cancel"}</button>
                 </div>
             </div>
