@@ -85,23 +85,36 @@ pub fn login() -> Html {
     html! {
         <div class="login-page-wrapper">
                 <div class="login-father-container">
-                    <div class="right-login-container">
-                        <h1>{ "Bem vindo de volta!" } </h1>
-                        <form class="login-form">
-                            <div class="login-form-container">
-                                <label class="login-form-label"> {"Insira seu nome de usuário"} </label>
-                                <input value={(*username).clone()}
-                                    oninput={on_username_input_change} class="login-input" type="text" />
-                                <label class="login-form-label"> {"Insira sua senha"} </label>
-                                <input value={(*password).clone()}
-                                    oninput={on_password_input_change} class="login-input-password" type="password" />
-                                <button {onclick} class="login-button" type="button"> {"Entrar"} </button>
-                                <a class="login-register-link" onclick={onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
-                            </div>
-                        </form>
+                    // Windows 98 Header Bar
+                    <div class="login-header">
+                        <span class="login-header-title">{"Login"}</span>
+                        <div class="login-header-controls">
+                            <button class="login-control-button minimize" type="button"></button>
+                            <button class="login-control-button maximize" type="button"></button>
+                            <button class="login-control-button close" type="button"></button>
+                        </div>
                     </div>
-                    <div class="left-login-container">
-                        <img src="login.avif" alt="login image" class="login-image" />
+                    
+                    // Main Content Container
+                    <div class="login-content-container">
+                        <div class="right-login-container">
+                            <h1>{ "Bem vindo de volta!" } </h1>
+                            <form class="login-form">
+                                <div class="login-form-container">
+                                    <label class="login-form-label"> {"Insira seu nome de usuário"} </label>
+                                    <input value={(*username).clone()}
+                                        oninput={on_username_input_change} class="login-input" type="text" />
+                                    <label class="login-form-label"> {"Insira sua senha"} </label>
+                                    <input value={(*password).clone()}
+                                        oninput={on_password_input_change} class="login-input-password" type="password" />
+                                    <button {onclick} class="login-button" type="button"> {"Entrar"} </button>
+                                    <a class="login-register-link" onclick={onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="left-login-container">
+                            <img src="login.avif" alt="login image" class="login-image" />
+                        </div>
                     </div>
                 </div>
         </div>

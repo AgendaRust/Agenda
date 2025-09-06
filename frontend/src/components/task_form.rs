@@ -1,4 +1,4 @@
-use yew::{function_component, html, use_state, Callback, Event, Html, InputEvent, MouseEvent, Properties, TargetCast};
+use yew::{function_component, html, use_state, Callback, Event, Html, InputEvent, MouseEvent, Properties, TargetCast, classes};
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 use chrono::NaiveDate;
 use crate::types::TaskDuration;
@@ -201,6 +201,13 @@ pub fn task_form(props: &TaskFormProps) -> Html {
         })
     };
 
+    let on_type_change_custom = {
+        let task_type = task_type.clone();
+        Callback::from(move |duration: TaskDuration| {
+            task_type.set(duration);
+        })
+    };
+
     let on_close = {
         let on_close = props.on_close.clone();
         Callback::from(move |_: MouseEvent| {
@@ -305,26 +312,11 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         // Type - right column
                         <div>
                             <label for="type">{ "Tipo:" }</label>
-                            <select 
-                                id="type" 
-                                name="type" 
-                                required=true
-                                onchange={on_type_change}
-                            >
-                                {
-                                    TaskDuration::all().iter().map(|duration| {
-                                        let is_selected = *task_type == *duration;
-                                        html! {
-                                            <option 
-                                                value={duration.value()} 
-                                                selected={is_selected}
-                                            >
-                                                { duration.display_name() }
-                                            </option>
-                                        }
-                                    }).collect::<Html>()
-                                }
-                            </select>
+                            <Windows98Select 
+                                value={*task_type}
+                                on_change={on_type_change_custom}
+                                options={TaskDuration::all().iter().map(|d| (*d, d.display_name())).collect::<Vec<_>>()}
+                            />
                         </div>
 
                         // Description - full width
@@ -357,5 +349,72 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                 </div>
             </div>
         }
+    }
+}
+
+// Custom Windows 98 style dropdown component
+#[derive(Properties, PartialEq)]
+pub struct Windows98SelectProps {
+    pub value: TaskDuration,
+    pub on_change: Callback<TaskDuration>,
+    pub options: Vec<(TaskDuration, &'static str)>,
+}
+
+#[function_component(Windows98Select)]
+pub fn windows98_select(props: &Windows98SelectProps) -> Html {
+    let is_open = use_state(|| false);
+    let is_open_clone = is_open.clone();
+
+    let toggle_dropdown = {
+        let is_open = is_open.clone();
+        Callback::from(move |_: MouseEvent| {
+            is_open.set(!*is_open);
+        })
+    };
+
+    let select_option = {
+        let is_open = is_open.clone();
+        let on_change = props.on_change.clone();
+        Callback::from(move |value: TaskDuration| {
+            on_change.emit(value);
+            is_open.set(false);
+        })
+    };
+
+    let current_label = props.options.iter()
+        .find(|(val, _)| *val == props.value)
+        .map(|(_, label)| *label)
+        .unwrap_or("Select");
+
+    html! {
+        <div class="win98-select-container">
+            <div class="win98-select-button" onclick={toggle_dropdown}>
+                <span class="win98-select-text">{current_label}</span>
+                <span class="win98-select-arrow">{"▼"}</span>
+            </div>
+            
+            if *is_open_clone {
+                <div class="win98-select-dropdown">
+                    { for props.options.iter().map(|(value, label)| {
+                        let value = *value;
+                        let select_option = select_option.clone();
+                        let is_selected = value == props.value;
+                        
+                        html! {
+                            <div 
+                                class={classes!("win98-select-option", is_selected.then_some("selected"))}
+                                onclick={{
+                                    let value = value;
+                                    let select_option = select_option.clone();
+                                    Callback::from(move |_: MouseEvent| select_option.emit(value))
+                                }}
+                            >
+                                {label}
+                            </div>
+                        }
+                    }) }
+                </div>
+            }
+        </div>
     }
 }

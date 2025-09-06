@@ -83,30 +83,40 @@ pub fn register() -> Html {
     };
 
     html! {
-        <>
-        <div class="register-page-wrapper"></div>
-
-        <div class= "register-father-container">
-            <div class= "right-register-container">
-                <h1>{ "Registre-se!" } </h1>
-                <form class= "register-form">
-                    <div class= "register-form-container">
-                        <label class= "register-form-label"> {"Insira seu nome de usuário"} </label>
-                        <input value= {(*username).clone()}
-                            oninput= {on_username_input_change} class= "register-input" type= "text" required=true minlength= "3" />
-                        <label class= "register-form-label"> {"Insira sua senha"} </label>
-                        <input value= {(*password).clone()}
-                            oninput= {on_password_input_change} class= "register-input-password" type= "password" required=true minlength= "6" />
-                        <button disabled={(*button_pressed).clone()} onclick= {on_click_register} class= "register-button" type="button"> {"Cadastrar"} </button>
-                        <a class = "register-login-link" onclick= {on_click_login}> {"Já possui uma conta? entre aqui."} </a>
+        <div class="register-page-wrapper">
+            <div class="register-father-container">
+                // Windows 98 Header Bar
+                <div class="register-header">
+                    <span class="register-header-title">{"Register"}</span>
+                    <div class="register-header-controls">
+                        <button class="register-control-button minimize" type="button"></button>
+                        <button class="register-control-button maximize" type="button"></button>
+                        <button class="register-control-button close" type="button"></button>
                     </div>
-                </form>
+                </div>
+                
+                // Main Content Container
+                <div class="register-content-container">
+                    <div class="right-register-container">
+                        <h1>{ "Registre-se!" } </h1>
+                        <form class="register-form">
+                            <div class="register-form-container">
+                                <label class="register-form-label"> {"Insira seu nome de usuário"} </label>
+                                <input value={(*username).clone()}
+                                    oninput={on_username_input_change} class="register-input" type="text" required=true minlength="3" />
+                                <label class="register-form-label"> {"Insira sua senha"} </label>
+                                <input value={(*password).clone()}
+                                    oninput={on_password_input_change} class="register-input-password" type="password" required=true minlength="6" />
+                                <button disabled={(*button_pressed).clone()} onclick={on_click_register} class="register-button" type="button"> {"Cadastrar"} </button>
+                                <a class="register-login-link" onclick={on_click_login}> {"Já possui uma conta? entre aqui."} </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="left-register-container">
+                        <img src="register.jpg" alt="register image" class="register-image" />
+                    </div>
+                </div>
             </div>
-            <div class= "left-register-container">
-                <img src = "register.jpg" alt = "register image" class = "register-image" />
-            </div>
-        <div></div>
         </div>
-        </>
     }
 }

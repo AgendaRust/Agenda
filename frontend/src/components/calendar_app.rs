@@ -85,6 +85,10 @@ pub fn calendar_app() -> Html {
         .unwrap_or_else(|| Local::now().date_naive());
     
     let first_weekday = first_day_of_month.weekday().number_from_sunday() as usize - 1;
+    
+    let total_cells_used = first_weekday + days_in_month as usize;
+    let remaining_cells = if total_cells_used % 7 == 0 { 0 } else { 7 - (total_cells_used % 7) };
+    
     html! {
         <div class="calendar-app">
             <div class="calendar">
@@ -136,6 +140,11 @@ pub fn calendar_app() -> Html {
                             </span>
                         }
                     }) }
+                    { 
+                        for (0..remaining_cells).map(|index| html! {
+                            <span key={format!("empty-end-{}", index)} class="empty-day"></span>
+                        })
+                    }
                 </div>
             </div>
             

@@ -1,12 +1,14 @@
-// Reset and base styles
+// Windows 98 Reset and base styles
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  border-radius: 0 !important; // Remove all rounded corners globally for Windows 98 authenticity
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
   background: url('/wall-paper-top.jpg') no-repeat center center fixed;
   background-size: cover;
   position: relative;
@@ -15,12 +17,9 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  transition: all 0.3s ease;
+  color: #000000;
 
-  // Smooth background transition
-  transition: background 0.5s ease-in-out;
-  
-  // Add overlay effects
+  // Windows 98 desktop overlay with blue gradient
   &::before {
     content: '';
     position: fixed;
@@ -30,21 +29,18 @@ body {
     bottom: 0;
     z-index: -1;
     
-    // Gradient overlay for depth and contrast
+    // Blue gradient overlay matching Windows 98 aesthetic
     background: linear-gradient(
       135deg,
-      rgba(0, 0, 0, 0.3) 0%,
-      rgba(0, 0, 0, 0.1) 30%,
-      rgba(255, 255, 255, 0.05) 60%,
-      rgba(0, 0, 0, 0.2) 100%
+      rgba(58, 110, 165, 0.2) 0%,
+      rgba(29, 78, 137, 0.2) 25%,
+      rgba(87, 139, 230, 0.15) 50%,
+      rgba(58, 110, 165, 0.2) 75%,
+      rgba(29, 78, 137, 0.2) 100%
     );
-    
-    // Slight blur and brightness adjustment
-    backdrop-filter: brightness(0.85) contrast(1.1);
-    -webkit-backdrop-filter: brightness(0.85) contrast(1.1);
   }
   
-  // Additional subtle pattern overlay for texture
+  // Subtle texture overlay for Windows 98 authenticity
   &::after {
     content: '';
     position: fixed;
@@ -54,22 +50,19 @@ body {
     bottom: 0;
     z-index: -1;
     background: 
-      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(255, 177, 153, 0.1) 0%, transparent 50%);
+      radial-gradient(circle at 20% 80%, rgba(192, 192, 192, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(192, 192, 192, 0.05) 0%, transparent 50%);
     pointer-events: none;
   }
 }
 
-// Heading styles
+// Windows 98 heading styles
 h1 {
-  color: var(--text-color);
-  font-size: 2.2rem;
-  margin-bottom: 30px;
-  font-weight: 700;
-  background: var(--heading-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #000000;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-family: 'MS Sans Serif', sans-serif;
+  text-shadow: 1px 1px 0px #ffffff;
   line-height: 1.2;
-  transition: all 0.3s ease;
 }
