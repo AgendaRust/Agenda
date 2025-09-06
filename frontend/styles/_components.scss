@@ -211,7 +211,7 @@ p {
   flex-wrap: wrap;
   // row-gap: 1rem;
   
-  .unique-day {
+  .unique-day, .empty-day {
     width: calc(100% / 7);
     aspect-ratio: 1/1;
     display: flex;
@@ -223,7 +223,9 @@ p {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
-
+  }
+  
+  .unique-day {
     &:hover {
       background-color: rgba(33, 189, 209, 0.2);
       transform: scale(1.1);
@@ -240,6 +242,11 @@ p {
     }
   }
   
+  .empty-day {
+    cursor: default;
+    color: transparent; // Hide any content
+  }
+
   .current-day {
     @extend .unique-day;
     background-color: rgba(33, 189, 209, 0.9);
