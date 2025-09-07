@@ -1,4 +1,5 @@
 use std::fmt;
+use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -68,33 +69,40 @@ impl fmt::Display for TaskDuration {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Task {
-    pub id: Option<u32>,
+    pub id: u32,
     pub title: String,
-    pub category: String,
+    pub user_id: u32,
     pub description: String,
-    pub duration: TaskDuration,
-    pub begin_date: String, // ISO 8601 format: YYYY-MM-DDTHH:MM
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
+    pub status: String,
+    pub begin_date: DateTime<chrono::Utc>,
+    pub complete_date: DateTime<chrono::Utc>,
+    pub category: String,
+    #[serde(rename = "type")]
+    pub task_type: String,
 }
 
 impl Task {
     pub fn new(
+        id: u32,
         title: String,
-        category: String,
+        user_id: u32,
         description: String,
-        duration: TaskDuration,
-        begin_date: String,
+        status: String,
+        begin_date: DateTime<chrono::Utc>,
+        complete_date: DateTime<chrono::Utc>,
+        category: String,
+        task_type: String,
     ) -> Self {
         Self {
-            id: None,
+            id,
             title,
-            category,
+            user_id,
             description,
-            duration,
+            status,
             begin_date,
-            created_at: None,
-            updated_at: None,
+            complete_date,
+            category,
+            task_type,
         }
     }
 }

@@ -1,6 +1,8 @@
 use chrono::DateTime;
 use gloo::net::http::Request;
 use serde::{Serialize, Deserialize};
+use crate::types::Task;
+
 use super::{API_URL, auth::get_token};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -14,12 +16,38 @@ pub struct TaskDto {
 }
 
 pub enum TaskResult {
-    Success(TaskDto),
+    Success(Task),
     InvalidFields,
     NetworkError(String),
 }
 
-pub async fn get_all_tasks() -> Result<Vec<TaskDto>, String> {
+pub async fn delete_task(_task_id: u32) -> Result<(), String> {
+    let url = format!("{}/tasks/{}", API_URL, _task_id as i32);
+    let token = get_token();
+    if token.token.is_empty() {
+        return Err("No authentication token found".to_string());
+    }
+    match Request::delete(&url)
+        .header("Authorization", &format!("Bearer {}", token.token))
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status() == 200 || response.status() == 204 {
+                Ok(())
+            } else {
+                // Get the error message from the response body
+                let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+                let error_msg = format!("Failed to delete task: HTTP {} - {}", response.status(), error_text);
+                web_sys::console::log_1(&error_msg.clone().into()); // Log the full error
+                Err(error_msg)
+            }
+        }
+        Err(e) => Err(format!("Network error: {}", e)),
+    }
+}
+
+pub async fn get_all_tasks() -> Result<Vec<Task>, String> {
     let url = format!("{}/tasks", API_URL);
     let token = get_token();
 
@@ -34,7 +62,7 @@ pub async fn get_all_tasks() -> Result<Vec<TaskDto>, String> {
     {
         Ok(response) => {
             if response.status() == 200 {
-                match response.json::<Vec<TaskDto>>().await {
+                match response.json::<Vec<Task>>().await {
                     Ok(tasks) => {
                         web_sys::console::log_1(&format!("Fetched {} tasks", tasks.len()).into());
                         Ok(tasks)
@@ -79,7 +107,7 @@ pub async fn create_task(task_info: &TaskDto) -> TaskResult {
     {
         Ok(response) => match response.status() {
             200 | 201 => {
-                let task: TaskDto = response.json().await.unwrap();
+                let task: Task = response.json().await.unwrap();
                 TaskResult::Success(task)
             }
             400 => TaskResult::InvalidFields,

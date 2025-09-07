@@ -1,7 +1,7 @@
 use yew::{function_component, html, use_state, Callback, Html, InputEvent, MouseEvent, Properties, TargetCast, classes};
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 use chrono::NaiveDate;
-use crate::types::TaskDuration;
+use crate::types::{Task, TaskDuration};
 use crate::services::tasks::{TaskDto, create_task};
 use wasm_bindgen_futures::spawn_local;
 
@@ -11,7 +11,7 @@ pub struct TaskFormProps {
     #[prop_or_default]
     pub on_close: Option<Callback<()>>,
     #[prop_or_default]
-    pub on_task_created: Option<Callback<TaskDto>>,
+    pub on_task_created: Option<Callback<Task>>,
     pub selected_date: NaiveDate,
 }
 
@@ -317,7 +317,6 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                             />
                         </div>
 
-                        // Description - full width
                         <div class="full-width">
                             <label for="description">{ "Descrição:" }</label>
                             <textarea 

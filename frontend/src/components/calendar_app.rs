@@ -3,13 +3,12 @@ use yew::{function_component, html, use_effect, use_state, Callback, Html, Mouse
 use chrono::{Local, NaiveDate, Datelike};
 
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
-use crate::types::TaskDuration;
-use crate::services::tasks::TaskDto;
+use crate::types::{TaskDuration, Task};
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
     let show_task_form = use_state(|| false);
-    let tasks = use_state(|| Vec::<TaskDto>::new());
+    let tasks = use_state(|| Vec::<Task>::new());
     let first_render = use_state(|| true);
 
 
@@ -27,17 +26,37 @@ pub fn calendar_app() -> Html {
         })
     };
 
-    // Callback to handle new task creation
+    let on_task_delete = {
+        let tasks = tasks.clone();
+        Callback::from(move |task_id: u32| {
+            let tasks = tasks.clone();
+            spawn_local(async move {
+                match crate::services::tasks::delete_task(task_id).await {
+                    Ok(_) => {
+                        let updated_tasks: Vec<Task> = (*tasks)
+                            .iter()
+                            .cloned()
+                            .filter(|task| task.id != task_id)
+                            .collect();
+                        tasks.set(updated_tasks);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to delete task: {}", error).into());
+                    }
+                }
+            });
+        })
+    };
+
     let on_task_created = {
         let tasks = tasks.clone();
-        Callback::from(move |new_task: TaskDto| {
+        Callback::from(move |new_task: Task| {
             let mut current_tasks = (*tasks).clone();
             current_tasks.push(new_task);
             tasks.set(current_tasks);
         })
     };
 
-        // Fetch tasks on component mount
     {
         let tasks = tasks.clone();
         use_effect(move || {
@@ -198,9 +217,11 @@ pub fn calendar_app() -> Html {
                             html! {
                                 <TaskCard 
                                     key={format!("task-{}-{}", index, task.title)}
+                                    id={task.id}
                                     title={task.title.clone()}
                                     category={task.category.clone()}
                                     description={task.description.clone()}
+                                    on_task_delete={on_task_delete.clone()}
                                     date={date_formatted}
                                     time={time_formatted}
                                     duration={duration}
