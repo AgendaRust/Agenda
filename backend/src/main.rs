@@ -41,5 +41,6 @@ fn rocket() -> _ {
         .mount("/tasks", routes::get_task_routes())
         .mount("/reminders", routes::get_reminder_routes())
         .mount("/goals", routes::get_goal_routes())
+        .mount("/reports", routes::get_report_routes())
         .attach(cors.to_cors().unwrap())
 }

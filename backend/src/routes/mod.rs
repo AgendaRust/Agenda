@@ -1,10 +1,9 @@
 use crate::controller::task;
 use crate::controller::notes;
-
 use crate::controller::reminder;
-
 use crate::controller::goal;
 use crate::controller::auth;
+use crate::controller::report;
 
 pub fn get_auth_routes() -> Vec<rocket::Route> {
     routes![
@@ -45,6 +44,7 @@ pub fn get_reminder_routes() -> Vec<rocket::Route> {
         reminder::get_reminders_by_user_id,
     ]
 }
+
 pub fn get_goal_routes() -> Vec<rocket::Route> {
     routes![
         goal::create_goal,
@@ -52,6 +52,16 @@ pub fn get_goal_routes() -> Vec<rocket::Route> {
         goal::get_goal,
         goal::update_goal,
         goal::delete_goal
+    ]
+}
 
+pub fn get_report_routes() -> Vec<rocket::Route> {
+    routes![
+        report::test_endpoint,
+        report::generate_report,
+        report::weekly_report,
+        report::monthly_report,
+        report::annual_report,
+        report::get_date_suggestions,
     ]
 }

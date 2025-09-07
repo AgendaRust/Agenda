@@ -1,7 +1,7 @@
 pub mod auth;
 pub mod task;
 pub mod notes;
-
+pub mod report; 
 pub mod reminder;
 
 pub mod goal;
