@@ -113,7 +113,7 @@ pub fn login() -> Html {
                             </form>
                         </div>
                         <div class="left-login-container">
-                            <img src="login.avif" alt="login image" class="login-image" />
+                            <img src="coca_login.png" alt="login image" class="login-image" />
                         </div>
                     </div>
                 </div>

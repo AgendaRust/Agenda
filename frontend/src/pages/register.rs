@@ -113,7 +113,7 @@ pub fn register() -> Html {
                         </form>
                     </div>
                     <div class="left-register-container">
-                        <img src="register.jpg" alt="register image" class="register-image" />
+                        <img src="Tired.jpeg" alt="register image" class="register-image" />
                     </div>
                 </div>
             </div>
