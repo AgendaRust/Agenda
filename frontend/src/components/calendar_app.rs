@@ -1,14 +1,18 @@
-use yew::{function_component, html, Html, use_state, Callback, MouseEvent};
+use wasm_bindgen_futures::spawn_local;
+use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent};
 use chrono::{Local, NaiveDate, Datelike};
 
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::types::TaskDuration;
-
+use crate::services::tasks::TaskDto;
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
     let show_task_form = use_state(|| false);
-    
+    let tasks = use_state(|| Vec::<TaskDto>::new());
+    let first_render = use_state(|| true);
+
+
     let toggle_task_form = {
         let show_task_form = show_task_form.clone();
         Callback::from(move |_: MouseEvent| {
@@ -23,11 +27,43 @@ pub fn calendar_app() -> Html {
         })
     };
 
+    // Callback to handle new task creation
+    let on_task_created = {
+        let tasks = tasks.clone();
+        Callback::from(move |new_task: TaskDto| {
+            let mut current_tasks = (*tasks).clone();
+            current_tasks.push(new_task);
+            tasks.set(current_tasks);
+        })
+    };
+
+        // Fetch tasks on component mount
+    {
+        let tasks = tasks.clone();
+        use_effect(move || {
+            if *first_render {
+                first_render.set(false);
+            } else {
+                return;
+            }
+            spawn_local(async move {
+                match crate::services::tasks::get_all_tasks().await {
+                    Ok(fetched_tasks) => {
+                        tasks.set(fetched_tasks);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to fetch tasks: {}", error).into());
+                    }
+                }
+            });
+        });
+    }
+
     let current_date = Local::now().date_naive();
 
     let current_month = use_state(|| current_date.month());
     let current_year = use_state(|| current_date.year());
-    let selected_day = use_state(|| current_date.day()); // Track selected day
+    let selected_day = use_state(|| current_date.day());
 
     let on_day_click = {
         let selected_day = selected_day.clone();
@@ -153,53 +189,32 @@ pub fn calendar_app() -> Html {
                     <h3>{ "Tarefas" }</h3>
                 </div>
                 <div class="task-list">
-                    <TaskCard 
-                        title={"Meeting with Team".to_string()}
-                        category={"Work".to_string()}
-                        description={"Weekly team sync to discuss project progress and upcoming deadlines".to_string()}
-                        date={"May 20, 2023".to_string()}
-                        time={"10:00".to_string()}
-                        duration={TaskDuration::UmaHora}
-                    />
-                    <TaskCard 
-                        title={"Project Review".to_string()}
-                        category={"Work".to_string()}
-                        description={"Review project deliverables and prepare for client presentation".to_string()}
-                        date={"May 21, 2023".to_string()}
-                        time={"14:30".to_string()}
-                        duration={TaskDuration::MeiaHora}
-                    />
-                    <TaskCard 
-                        title={"Morning Workout".to_string()}
-                        category={"Personal".to_string()}
-                        description={"Daily exercise routine and stretching".to_string()}
-                        date={"May 22, 2023".to_string()}
-                        time={"07:00".to_string()}
-                        duration={TaskDuration::Manha}
-                    />
-                    <TaskCard 
-                        title={"Lunch Meeting".to_string()}
-                        category={"Business".to_string()}
-                        description={"Client meeting to discuss new project requirements and timeline".to_string()}
-                        date={"May 23, 2023".to_string()}
-                        time={"12:00".to_string()}
-                        duration={TaskDuration::Tarde}
-                    />
-                    <TaskCard 
-                        title={"Code Review".to_string()}
-                        category={"Work".to_string()}
-                        description={"Review pull requests and provide feedback to team members".to_string()}
-                        date={"May 24, 2023".to_string()}
-                        time={"15:00".to_string()}
-                        duration={TaskDuration::UmaHora}
-                    />
+                    { 
+                        for tasks.iter().enumerate().map(|(index, task)| {
+                            let duration = TaskDuration::from_value(&task.task_type).unwrap_or_default();
+                            let date_formatted = task.begin_date.format("%B %d, %Y").to_string();
+                            let time_formatted = task.begin_date.format("%H:%M").to_string();
+                            
+                            html! {
+                                <TaskCard 
+                                    key={format!("task-{}-{}", index, task.title)}
+                                    title={task.title.clone()}
+                                    category={task.category.clone()}
+                                    description={task.description.clone()}
+                                    date={date_formatted}
+                                    time={time_formatted}
+                                    duration={duration}
+                                />
+                            }
+                        })
+                    }
                 </div>
             </div>
             
-            // TaskForm as overlay/modal
             <TaskForm 
                 visible={*show_task_form} 
-                on_close={close_task_form} 
+                on_close={close_task_form}
+                on_task_created={on_task_created}
                 selected_date={NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day).unwrap_or_else(|| Local::now().date_naive())}
             />
         </div>

@@ -3,7 +3,7 @@ use gloo::net::http::Request;
 use serde::{Serialize, Deserialize};
 use super::{API_URL, auth::get_token};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TaskDto {
     pub title: String,
     pub category: String,
@@ -18,6 +18,47 @@ pub enum TaskResult {
     InvalidFields,
     NetworkError(String),
 }
+
+pub async fn get_all_tasks() -> Result<Vec<TaskDto>, String> {
+    let url = format!("{}/tasks", API_URL);
+    let token = get_token();
+
+    if token.token.is_empty() {
+        return Err("No authentication token found".to_string());
+    }
+
+    match Request::get(&url)
+        .header("Authorization", &format!("Bearer {}", token.token))
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status() == 200 {
+                match response.json::<Vec<TaskDto>>().await {
+                    Ok(tasks) => {
+                        web_sys::console::log_1(&format!("Fetched {} tasks", tasks.len()).into());
+                        Ok(tasks)
+                    }
+                    Err(e) => {
+                        let error_msg = format!("Failed to parse tasks JSON: {}", e);
+                        web_sys::console::log_1(&error_msg.clone().into());
+                        Err(error_msg)
+                    }
+                }
+            } else {
+                let error_msg = format!("Failed to fetch tasks: HTTP {}", response.status());
+                web_sys::console::log_1(&error_msg.clone().into());
+                Err(error_msg)
+            }
+        }
+        Err(e) => {
+            let error_msg = format!("Network error: {}", e);
+            web_sys::console::log_1(&error_msg.clone().into());
+            Err(error_msg)
+        }
+    }
+}
+
 
 pub async fn create_task(task_info: &TaskDto) -> TaskResult {
     let url = format!("{}/tasks", API_URL);

@@ -10,6 +10,8 @@ pub struct TaskFormProps {
     pub visible: bool,
     #[prop_or_default]
     pub on_close: Option<Callback<()>>,
+    #[prop_or_default]
+    pub on_task_created: Option<Callback<TaskDto>>,
     pub selected_date: NaiveDate,
 }
 
@@ -85,6 +87,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
         let task_type = task_type.clone();
         let form_status = form_status.clone();
         let on_close = props.on_close.clone();
+        let on_task_created = props.on_task_created.clone();
         let begin_date = begin_date.clone();
 
         Callback::from(move |e: MouseEvent| {
@@ -95,6 +98,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
             let task_type = task_type.clone();
             let form_status = form_status.clone();
             let on_close = on_close.clone();
+            let on_task_created = on_task_created.clone();
             let begin_date = begin_date.clone();
             
             spawn_local(async move {
@@ -116,6 +120,11 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                     crate::services::tasks::TaskResult::Success(task) => {
                         web_sys::console::log_1(&format!("Task created successfully: {:?}", task).into());
                         form_status.set("success".to_string());
+                        
+                        // Notify parent component about the new task
+                        if let Some(callback) = &on_task_created {
+                            callback.emit(task.clone());
+                        }
                         
                         // Clear form and close after success animation
                         let task_title = task_title.clone();
