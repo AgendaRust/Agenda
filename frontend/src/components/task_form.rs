@@ -1,4 +1,4 @@
-use yew::{function_component, html, use_state, Callback, Event, Html, InputEvent, MouseEvent, Properties, TargetCast, classes};
+use yew::{function_component, html, use_state, Callback, Html, InputEvent, MouseEvent, Properties, TargetCast, classes};
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 use chrono::NaiveDate;
 use crate::types::TaskDuration;
@@ -187,17 +187,6 @@ pub fn task_form(props: &TaskFormProps) -> Html {
         Callback::from(move |e: InputEvent| {
             let textarea: HtmlTextAreaElement = e.target_unchecked_into();
             task_description.set(textarea.value());
-        })
-    };
-
-    let on_type_change = {
-        let task_type = task_type.clone();
-        Callback::from(move |e: Event| {
-            let select: HtmlInputElement = e.target_unchecked_into();
-            //test with different dataset
-            let duration = TaskDuration::from_value(&select.value()).unwrap_or_default();
-
-            task_type.set(duration);
         })
     };
 

@@ -62,7 +62,7 @@ pub fn calendar_app() -> Html {
         })
     };
 
-    let days_of_week = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+    let days_of_week = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     let months_of_year = [
         "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
         "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
