@@ -3,6 +3,7 @@ use crate::dto::CreateNote;
 use crate::entity::notes;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
+use rocket::{post, put, delete, get};
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 #[post("/", data = "<note_dto>")]

@@ -6,6 +6,11 @@ use rocket::http::Status;
 use rocket::{serde::json::Json, State};
 use crate::controller::auth::UserClaim;
 
+use rocket::post;
+use rocket::put;
+use rocket::delete;
+use rocket::get;
+
 #[post("/", data = "<goal_dto>")]
 pub async fn create_goal(
     db: &State<Pool>,
