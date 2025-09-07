@@ -3,7 +3,7 @@ use chrono::{Local, NaiveDate, Datelike};
 
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::types::TaskDuration;
-
+use crate::components::{reminder_form::ReminderForm};
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
@@ -22,6 +22,22 @@ pub fn calendar_app() -> Html {
             show_task_form.set(false);
         })
     };
+
+    let show_reminder_form = use_state(|| false);
+
+    let toggle_reminder_form = {
+        let show_reminder_form = show_reminder_form.clone();
+        Callback::from(move |_: MouseEvent| {
+            show_reminder_form.set(!*show_reminder_form);
+        })
+    };
+
+    let close_reminder_form = {
+        let show_reminder_form = show_reminder_form.clone();
+        Callback::from(move |_: ()| {
+            show_reminder_form.set(false);
+        })
+};
 
     let current_date = Local::now().date_naive();
 
@@ -100,6 +116,7 @@ pub fn calendar_app() -> Html {
                         <button onclick={prev_month}>{ "<" }</button>
                         <button onclick={next_month}>{ ">" }</button>
                         <button onclick={toggle_task_form}>{ "+" }</button>
+                        <button onclick={toggle_reminder_form}>{ "Lembrete" }</button>
                     </div>
                 </div>
                 <div class="weekdays">
@@ -147,8 +164,7 @@ pub fn calendar_app() -> Html {
                     }
                 </div>
             </div>
-            
-            <div class="sidebar">
+             <div class="sidebar">
                 <div class="sidebar-header">
                     <h3>{ "Tarefas" }</h3>
                 </div>
@@ -201,6 +217,11 @@ pub fn calendar_app() -> Html {
                 visible={*show_task_form} 
                 on_close={close_task_form} 
                 selected_date={NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day).unwrap_or_else(|| Local::now().date_naive())}
+            />
+
+            <ReminderForm 
+                visible={*show_reminder_form} 
+                on_close={close_reminder_form.clone()}
             />
         </div>
     }
