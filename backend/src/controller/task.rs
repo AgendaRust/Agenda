@@ -1,5 +1,9 @@
 use rocket::http::Status;
 use rocket::serde::json::Json;
+use rocket::delete;
+use rocket::get;
+use rocket::post;
+use rocket::put;
 use serde_json::Value;
 use rocket::State;
 use crate::controller::auth::UserClaim;

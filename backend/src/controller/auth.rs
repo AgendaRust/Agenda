@@ -6,6 +6,8 @@ use crate::repository::auth_repository:: UserError;
 use crate::repository::auth_repository;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
+use rocket::post;
+use rocket::get;
 // use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 // #[macro_use]
 // extern crate rocket;

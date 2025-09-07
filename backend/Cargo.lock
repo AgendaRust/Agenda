@@ -204,6 +204,7 @@ dependencies = [
  "dotenvy",
  "jsonwebtoken 9.3.1",
  "pbkdf2",
+ "rand",
  "rand_core",
  "rocket",
  "rocket-jwt",
@@ -213,6 +214,7 @@ dependencies = [
  "sea-orm-migration",
  "serde",
  "serde_json",
+ "tokio",
  "validator",
 ]
 
@@ -3112,6 +3114,7 @@ dependencies = [
  "io-uring",
  "libc",
  "mio",
+ "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
  "slab",
