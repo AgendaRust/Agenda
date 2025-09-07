@@ -4,6 +4,7 @@ use crate::pages::register::Register;
 use crate::services::auth::{self, verify_token, Token};
 use yew::prelude::*;
 use yew_router::prelude::*;
+use crate::pages::reminder::ReminderPage;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -13,6 +14,9 @@ pub enum Route {
     Login,
     #[at("/register")]
     Register,
+
+     #[at("/reminder")]
+     Reminder,
 }
 
 fn switch(route: Route) -> Html {
@@ -46,6 +50,7 @@ fn switch(route: Route) -> Html {
         Route::Register => html! {
             <Register/>
         },
+         Route::Reminder => html! { <ReminderPage/> }
     }
 }
 
