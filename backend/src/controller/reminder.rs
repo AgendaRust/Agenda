@@ -1,8 +1,6 @@
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
-use sea_orm::EntityTrait;
-
 use crate::controller::auth::UserClaim;
 use crate::db::Pool;
 use crate::dto::reminder_dto::reminder_DTO;

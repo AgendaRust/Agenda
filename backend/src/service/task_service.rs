@@ -5,7 +5,7 @@ use crate::entity::task;
 use crate::repository::task_repository::TaskRepository;
 use sea_orm::DeleteResult;
 use validator::Validate;
-
+use serde_json::{json, Value};
 /// Enum para erros específicos do serviço de tarefas.
 pub enum TaskError {
     TaskNotFound(String),
@@ -40,6 +40,55 @@ pub async fn get_tasks_by_user_id_db(
     repo.find_by_user_id(user_id)
         .await
         .map_err(|e| TaskError::DatabaseError(e.to_string()))
+}
+
+pub async fn get_task_stats_year_db(
+    db: &State<Pool>,
+    user_id: i32,
+    year: i32,
+
+) -> Result<Value, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+
+    let (total_tasks, executed_tasks, percentage, year, most_productive_shift, most_used_category) = repo
+        .tasks_stats_year(user_id, year)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))?;
+
+    Ok(json!({
+        "total_tasks": total_tasks,
+        "executed_tasks": executed_tasks,
+        "percentage": format!("{:.2}", percentage),
+        "year": year,
+        "most_productive_shift": most_productive_shift,
+        "most_used_category": most_used_category
+    }))
+}
+
+pub async fn get_task_stats_month_db(
+    db: &State<Pool>,
+    user_id: i32,
+    year: i32,
+    month: i32,
+) -> Result<Value, TaskError> {
+    let conn = db.inner();
+    let repo = TaskRepository::new(conn);
+
+    let (total_tasks, executed_tasks, percentage, year, month, most_productive_shift, most_used_category) = repo
+        .tasks_stats_month(user_id, year, month)
+        .await
+        .map_err(|e| TaskError::DatabaseError(e.to_string()))?;
+
+    Ok(json!({
+        "total_tasks": total_tasks,
+        "executed_tasks": executed_tasks,
+        "percentage": format!("{:.2}", percentage),
+        "year": year,
+        "month": month,
+        "most_productive_shift": most_productive_shift,
+        "most_used_category": most_used_category
+    }))
 }
 pub async fn register_task_db(
     db: &State<Pool>,

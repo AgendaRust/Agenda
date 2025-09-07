@@ -9,10 +9,9 @@ mod routes;
 mod service;
 mod repository;
 
-use crate::controller::auth::{login, register, user_info};
 use dotenvy::dotenv;
 use rocket::tokio::time::{sleep, Duration};
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors, CorsOptions};
+use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
 
 #[get("/")]
 fn index() -> &'static str {
