@@ -9,7 +9,7 @@ use crate::entity::task;
 use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError, update_status_task_db, get_task_stats_year_db, get_task_stats_month_db};
 use crate::dto::taskStatusDTO::StatusUpdateDto;
 
-#[get("/")]
+#[get("/all")]
 pub async fn get_all_tasks(db: &State<Pool>) -> Result<Json<Vec<task::Model>>, (Status, String)> {
     match get_all_tasks_db(db).await {
         Ok(tasks) => Ok(Json(tasks)),
@@ -28,7 +28,7 @@ pub async fn get_task_by_id(id: i32, db: &State<Pool>) -> Result<Json<task::Mode
     }
 }
 
-#[get("/user")]
+#[get("/")]
 pub async fn get_tasks_by_user_id(
     db: &State<Pool>,
     token: UserClaim,
@@ -101,9 +101,13 @@ pub async fn update_task(
     id: i32,
     task_dto: Json<TaskDto>,
     db: &State<Pool>,
-    _token: UserClaim,
+    token: UserClaim,
 ) -> Result<Json<task::Model>, (Status, String)> {
-    match update_task_db(db, id, &task_dto).await {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+
+    match update_task_db(db, id, &task_dto,user_id).await {
         Ok(task) => Ok(Json(task)),
         Err(TaskError::TaskNotFound(msg)) => Err((Status::NotFound, msg)),
         Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
@@ -116,9 +120,13 @@ pub async fn update_status_task(
     id: i32,
     status_dto: Json<StatusUpdateDto>,
     db: &State<Pool>,
-    _token: UserClaim,
+    token: UserClaim,
 ) -> Result<Json<task::Model>, (Status, String)> {
-    match update_status_task_db(db, id, &status_dto.status).await {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+
+    match update_status_task_db(db, id, &status_dto.status,user_id).await {
         Ok(task) => Ok(Json(task)),
         Err(TaskError::TaskNotFound(msg)) => Err((Status::NotFound, msg)),
         Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
@@ -127,8 +135,16 @@ pub async fn update_status_task(
 }
 
 #[delete("/<id>")]
-pub async fn delete_task(id: i32, db: &State<Pool>, _token: UserClaim) -> Result<Status, (Status, String)> {
-    match delete_task_db(db, id).await {
+pub async fn delete_task(
+    id: i32,
+    db: &State<Pool>,
+    token: UserClaim,
+) -> Result<Status, (Status, String)> {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+
+    match delete_task_db(db, id, user_id).await {
         Ok(_) => Ok(Status::NoContent),
         Err(TaskError::TaskNotFound(msg)) => Err((Status::NotFound, msg)),
         Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
