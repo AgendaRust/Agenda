@@ -2,6 +2,11 @@ use chrono::{Local, Duration, Utc, TimeZone};
 use rand::seq::SliceRandom;
 use rand::{thread_rng, Rng};
 use sea_orm::*;
+use argon2::{
+    password_hash::{PasswordHasher, SaltString},
+    Argon2,
+};
+use rand_core::OsRng;
 
 use crate::entity::{user, task, goal, notes, reminder};
 
@@ -73,10 +78,24 @@ impl DatabaseSeeder {
                 rng.gen_range(1..=999)
             );
 
+
+            let password = "senha123".as_bytes();
+
+            // 1. Gera um "salt" aleatório e único para este usuário
+            let salt = SaltString::generate(&mut OsRng);
+
+            // 2. Cria uma instância do Argon2 com parâmetros padrão
+            let argon2 = Argon2::default();
+
+            // 3. Gera o hash da senha com o salt específico
+            //    O .unwrap() é seguro aqui, pois uma falha no seeder deve parar o processo.
+            let password_hash = argon2.hash_password(password, &salt).unwrap().to_string();
+            // --- Fim da Lógica de Hashing ---
+
             let user_model = user::ActiveModel {
                 id: NotSet,
                 username: Set(email),
-                password: Set("$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj2idhqoUWkO".to_string()), // senha123
+                password: Set(password_hash), // senha123
             };
 
             let result = user::Entity::insert(user_model).exec(db).await?;
@@ -114,7 +133,7 @@ impl DatabaseSeeder {
             "Lazer", "Desenvolvimento", "Reuniões", "Projetos"
         ];
 
-        let statuses = vec!["Pending", "InProgress", "Completed", "PartiallyCompleted", "Postponed"];
+        let statuses = vec!["Pendente", "Executada", "ParcialmenteExecutada", "Adiada"];
         let priorities = vec!["Low", "Medium", "High", "Critical"];
 
         for _ in 1..=150 {
@@ -126,7 +145,7 @@ impl DatabaseSeeder {
 
             let days_offset = rng.gen_range(-30..60); // Tarefas dos últimos 30 dias aos próximos 60
             let begin_date = Utc::now() + Duration::days(days_offset);
-            
+
             let complete_date = if *status == "Completed" {
                 Some(begin_date + Duration::days(rng.gen_range(1..7)))
             } else {
