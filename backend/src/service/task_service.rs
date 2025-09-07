@@ -107,10 +107,11 @@ pub async fn update_task_db(
     db: &State<Pool>,
     id: i32,
     task_info: &TaskDto,
+    user_id: i32,
 ) -> Result<task::Model, TaskError> {
     let conn = db.inner();
     let repo = TaskRepository::new(conn);
-    repo.update_task(id, task_info)
+    repo.update_task(id, task_info, user_id)
         .await
         .map_err(|e| match e {
             sea_orm::DbErr::RecordNotFound(_) => TaskError::TaskNotFound(e.to_string()),
@@ -122,10 +123,11 @@ pub async fn update_status_task_db(
     db: &State<Pool>,
     id: i32,
     status: &str,
+    user_id: i32,
 ) -> Result<task::Model, TaskError> {
     let conn = db.inner();
     let repo = TaskRepository::new(conn);
-    repo.update_status_task(id, status)
+    repo.update_status_task(id, status, user_id)
         .await
         .map_err(|e| match e {
             sea_orm::DbErr::RecordNotFound(_) => TaskError::TaskNotFound(e.to_string()),
@@ -133,10 +135,14 @@ pub async fn update_status_task_db(
         })
 }
 
-pub async fn delete_task_db(db: &State<Pool>, id: i32) -> Result<DeleteResult, TaskError> {
+pub async fn delete_task_db(
+    db: &State<Pool>,
+    id: i32,
+    user_id: i32
+) -> Result<DeleteResult, TaskError> {
     let conn = db.inner();
     let repo = TaskRepository::new(conn);
-    let result = repo.delete_task(id)
+    let result = repo.delete_task(user_id, id)
         .await
         .map_err(|e| TaskError::DatabaseError(e.to_string()))?;
 

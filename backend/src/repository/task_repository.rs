@@ -114,7 +114,7 @@ impl<'a> TaskRepository<'a> {
         ))
     }
 
-    pub async fn tasks_stats_month(&self, user_id: i32, year: i32, month: i32) -> Result<(i64, i64, f64, i32, i32,String, String), DbErr> {
+    pub async fn tasks_stats_month(&self, user_id: i32, year: i32, month: i32) -> Result<(i64, i64, f64, i32, i32, String, String), DbErr> {
 
         let start_date = Utc.with_ymd_and_hms(year, month.try_into().unwrap(), 1, 0, 0, 0).unwrap();
 
@@ -276,7 +276,7 @@ impl<'a> TaskRepository<'a> {
         let new_task = task::ActiveModel {
             title: Set(task_info.title.clone()),
             user_id: Set(user_id),
-            description: Set(task_info.description.clone()),
+            description: Set(Some(task_info.description.clone())),
             status: Set("Pendente".to_string()),
             begin_date: Set(begin_date),
             complete_date: Set(complete_date),
@@ -291,13 +291,18 @@ impl<'a> TaskRepository<'a> {
         &self,
         id: i32,
         task_info: &TaskDto,
+        user_id: i32
     ) -> Result<task::Model, DbErr> {
         let task_to_update = self.find_by_id(id).await?
             .ok_or(DbErr::RecordNotFound(format!("Task with id {} not found", id)))?;
 
+        if task_to_update.user_id != user_id {
+            return Err(DbErr::Custom(format!("Usuário {} não está autorizado a atualizar a tarefa {}", user_id, id)));
+        }
+
         let mut active_task = task_to_update.into_active_model();
         active_task.title = Set(task_info.title.clone());
-        active_task.description = Set(task_info.description.clone());
+        active_task.description = Set(Some(task_info.description.clone()));
         active_task.begin_date = Set(task_info.begin_date);
         active_task.category = Set(task_info.category.clone());
         active_task.r#type = Set(task_info.r#type.clone());
@@ -309,9 +314,14 @@ impl<'a> TaskRepository<'a> {
         &self,
         id: i32,
         status: &str,
+        user_id: i32,
     ) -> Result<task::Model, DbErr> {
         let task_to_update = self.find_by_id(id).await?
             .ok_or(DbErr::RecordNotFound(format!("Task with id {} not found", id)))?;
+
+        if task_to_update.user_id != user_id {
+            return Err(DbErr::Custom(format!("Usuário {} não está autorizado a atualizar a tarefa {}", user_id, id)));
+        }
 
         let valid_status = match status {
             "Executada" | "ParcialmenteExecutada" | "Adiada" => Ok(status.to_string()),
@@ -324,7 +334,14 @@ impl<'a> TaskRepository<'a> {
         active_task.update(self.db).await
     }
 
-    pub async fn delete_task(&self, id: i32) -> Result<DeleteResult, DbErr> {
+    pub async fn delete_task(&self, user_id: i32, id: i32) -> Result<DeleteResult, DbErr> {
+        let task_to_delete = self.find_by_id(id).await?
+            .ok_or(DbErr::RecordNotFound(format!("Task with id {} not found", id)))?;
+
+        if task_to_delete.user_id != user_id {
+            return Err(DbErr::Custom(format!("Usuário {} não está autorizado a excluir a tarefa {}", user_id, id)));
+        }
+
         task::Entity::delete_by_id(id).exec(self.db).await
     }
 }
