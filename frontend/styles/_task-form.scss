@@ -1,0 +1,574 @@
+// Task Form Component Styles - Windows 98 Style
+.task-form {
+  display: flex;
+  flex-direction: column;
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  margin: 20px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  overflow: hidden;
+  position: relative;
+  font-family: 'MS Sans Serif', sans-serif;
+
+  // Windows 98 title bar header
+  .task-form-header {
+    background: linear-gradient(135deg, #00007B, #1085D2);
+    color: white;
+    padding: 2px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+    border-bottom: 1px solid #000080;
+    min-height: 18px;
+
+    .title-text {
+      margin-left: 4px;
+      font-family: 'MS Sans Serif', sans-serif;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 2px;
+
+      .control-button {
+        width: 16px;
+        height: 14px;
+        border: 1px outset #c0c0c0;
+        background: #c0c0c0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        font-weight: bold;
+        color: #000000;
+
+        &:hover {
+          background: #d4d4d4;
+        }
+
+        &:active {
+          border: 1px inset #c0c0c0;
+          background: #a8a8a8;
+        }
+
+        &.minimize::before {
+          content: '_';
+          margin-top: 4px;
+        }
+
+        &.maximize::before {
+          content: '□';
+          font-size: 10px;
+        }
+
+        &.close {
+          background: #ff6b6b;
+          border: 1px outset #ff6b6b;
+
+          &::before {
+            content: '×';
+            font-size: 10px;
+            font-weight: bold;
+          }
+
+          &:hover {
+            background: #ff5252;
+          }
+
+          &:active {
+            border: 1px inset #ff6b6b;
+            background: #e53935;
+          }
+        }
+      }
+    }
+  }
+
+  // Form content area
+  .task-form-content {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+    
+    // Full width elements
+    .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+
+  // Success animation - Windows 98 style
+  &.success {
+    .task-form-content {
+      border: 2px inset #008000;
+      background: #c0c0c0;
+    }
+  }
+
+  // Error animation - Windows 98 style  
+  &.error {
+    .task-form-content {
+      border: 2px inset #ff0000;
+      background: #c0c0c0;
+    }
+  }
+
+  .status-message {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    font-weight: normal;
+    font-size: 11px;
+    z-index: 10;
+    min-width: 120px;
+    text-align: center;
+    font-family: 'MS Sans Serif', sans-serif;
+    border: 1px outset #c0c0c0;
+    background: #c0c0c0;
+
+    &.success {
+      background: #008000;
+      color: white;
+      border: 1px outset #008000;
+    }
+
+    &.error {
+      background: #ff0000;
+      color: white;
+      border: 1px outset #ff0000;
+    }
+  }
+
+  label {
+    margin-bottom: 4px;
+    font-weight: normal;
+    color: #000000;
+    font-size: 11px;
+    font-family: 'MS Sans Serif', sans-serif;
+    background: linear-gradient(135deg, #00007B, #1085D2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: none;
+    letter-spacing: normal;
+    display: block;
+  }
+
+  input, textarea {
+    padding: 4px 6px;
+    border: 2px inset #c0c0c0;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-family: 'MS Sans Serif', sans-serif;
+    background: white;
+    color: #000000;
+    box-shadow: none;
+    width: 100%;
+    box-sizing: border-box;
+    
+    // Remove modern focus effects and add Windows 98 style
+    &:focus {
+      outline: 1px dotted #000000;
+      border: 2px inset #c0c0c0;
+      background: white;
+    }
+
+    &::placeholder {
+      color: #808080;
+      font-style: normal;
+      opacity: 1;
+    }
+  }
+
+  // Separate select styling is handled by .win98-select class below
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.2;
+    font-family: 'MS Sans Serif', sans-serif;
+    grid-column: 1 / -1;
+  }
+
+  // Generic select styling (fallback) - DISABLED for Windows 98
+  // select {
+  //   cursor: pointer;
+  //   appearance: none;
+  //   background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23000' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  //   background-repeat: no-repeat;
+  //   background-position: right 4px center;
+  //   background-size: 8px;
+  //   padding-right: 20px;
+  // }
+
+  // Ultra specific Windows 98 select styling
+  .task-form-modal .task-form-content .win98-select,
+  .task-form-content select.win98-select,
+  div.task-form-content select.win98-select,
+  select.win98-select {
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    -ms-appearance: none !important;
+    background: white !important;
+    background-color: white !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><polygon points='0,0 12,0 6,8' fill='%23000000'/></svg>") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 6px) center !important;
+    background-size: 8px 6px !important;
+    border: 2px inset #c0c0c0 !important;
+    border-radius: 0 !important;
+    padding: 4px 20px 4px 6px !important;
+    font-size: 11px !important;
+    font-family: 'MS Sans Serif', sans-serif !important;
+    color: #000000 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 5px !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    outline: none !important;
+    
+    // Override any inherited styles
+    border-top: 2px inset #c0c0c0 !important;
+    border-right: 2px inset #c0c0c0 !important;
+    border-bottom: 2px inset #c0c0c0 !important;
+    border-left: 2px inset #c0c0c0 !important;
+    border-style: inset !important;
+    border-width: 2px !important;
+    border-color: #c0c0c0 !important;
+    
+    &:focus {
+      outline: 1px dotted #000000 !important;
+      border: 2px inset #c0c0c0 !important;
+      background-color: white !important;
+      background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><polygon points='0,0 12,0 6,8' fill='%23000000'/></svg>") !important;
+      background-repeat: no-repeat !important;
+      background-position: calc(100% - 6px) center !important;
+      background-size: 8px 6px !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:hover {
+      border: 2px inset #c0c0c0 !important;
+      background-color: white !important;
+      border-radius: 0 !important;
+    }
+
+    &:active {
+      border: 2px inset #c0c0c0 !important;
+      background-color: white !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  // Specific Windows 98 option styling
+  .win98-option {
+    background: white !important;
+    color: #000000 !important;
+    font-family: 'MS Sans Serif', sans-serif !important;
+    font-size: 11px !important;
+    padding: 2px 4px !important;
+    
+    &:checked, &:hover {
+      background: #0078d4 !important;
+      color: white !important;
+    }
+  }
+
+  // Time input specific styling for the task form - Windows 98 style
+  .time-input {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 5px;
+
+    .event-popup-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .hour-input, .minute-input {
+        width: 40px;
+        height: 24px;
+        padding: 2px 4px;
+        border: 2px inset #c0c0c0;
+        text-align: center;
+        font-size: 11px;
+        font-weight: normal;
+        background: white;
+        color: #000000;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        font-family: 'MS Sans Serif', sans-serif;
+
+        &:focus {
+          outline: 1px dotted #000000;
+          border: 2px inset #c0c0c0;
+        }
+
+        &::placeholder {
+          color: #808080;
+          font-size: 11px;
+          opacity: 1;
+        }
+
+        // Remove spinner arrows for number inputs
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        // Firefox
+        &[type=number] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
+      }
+    }
+  }
+
+  // Button container for horizontal layout
+  .button-container {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  button[type="submit"] {
+    flex: 1;
+    padding: 8px 20px;
+    margin: 0;
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    border-radius: 0;
+    color: #000000;
+    font-size: 11px;
+    font-weight: normal;
+    font-family: 'MS Sans Serif', sans-serif;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-transform: none;
+    letter-spacing: normal;
+    min-height: 23px;
+
+    &:hover:not(:disabled) {
+      background: #c0c0c0;
+      border: 2px outset #c0c0c0;
+    }
+
+    &:active:not(:disabled) {
+      border: 2px inset #c0c0c0;
+      background: #c0c0c0;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #c0c0c0;
+      border: 2px outset #808080;
+      color: #808080;
+    }
+  }
+
+  button[type="button"] {
+    flex: 1;
+    padding: 8px 20px;
+    margin: 0;
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    border-radius: 0;
+    color: #000000;
+    font-size: 11px;
+    font-weight: normal;
+    font-family: 'MS Sans Serif', sans-serif;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-transform: none;
+    letter-spacing: normal;
+    min-height: 23px;
+
+    &:hover:not(:disabled) {
+      background: #c0c0c0;
+      border: 2px outset #c0c0c0;
+    }
+
+    &:active:not(:disabled) {
+      border: 2px inset #c0c0c0;
+      background: #c0c0c0;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #c0c0c0;
+      border: 2px outset #808080;
+      color: #808080;
+    }
+  }
+}
+
+// Task Popup (Event popup) styles - Modal Overlay Windows 98 style
+.task-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  
+  // The task form itself already has the styling we need
+  .task-form {
+    margin: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Responsive design for task forms - Windows 98 style
+@media (max-width: 768px) {
+  .task-form {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+
+    .task-form-content {
+      padding: 12px;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+  
+  .task-popup {
+    padding: 10px;
+    
+    .task-form {
+      margin: 0;
+      max-width: calc(100vw - 20px);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .task-form {
+    .task-form-content {
+      padding: 10px;
+      gap: 8px;
+      grid-template-columns: 1fr;
+    }
+    
+    input, textarea {
+      padding: 3px 4px;
+      font-size: 11px;
+    }
+    
+    // Select styling is handled by .win98-select class
+    
+    button[type="submit"], button[type="button"] {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    .button-container {
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+  
+  .task-popup {
+    padding: 15px;
+  }
+}
+
+// Windows 98 animations - simplified and authentic
+@keyframes win98Flash {
+  0%, 100% {
+    background: #c0c0c0;
+  }
+  50% {
+    background: #ffffff;
+  }
+}
+
+// Custom Windows 98 Select Component Styling
+.win98-select-container {
+  position: relative;
+  width: 100%;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+}
+
+.win98-select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  border: 2px outset #c0c0c0;
+  background: white;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  
+  &:active {
+    border: 2px inset #c0c0c0;
+  }
+}
+
+.win98-select-text {
+  color: #000000;
+  flex: 1;
+  text-align: left;
+}
+
+.win98-select-arrow {
+  color: #000000;
+  font-size: 8px;
+  margin-left: 8px;
+}
+
+.win98-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px outset #c0c0c0;
+  border-top: 1px solid #808080;
+  z-index: 1000;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.win98-select-option {
+  padding: 4px 6px;
+  cursor: pointer;
+  color: #000000;
+  background: white;
+  
+  &:hover {
+    background: #0000ff;
+    color: white;
+  }
+  
+  &.selected {
+    background: #0000ff;
+    color: white;
+  }
+}
