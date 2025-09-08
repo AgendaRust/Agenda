@@ -82,6 +82,18 @@ pub fn register() -> Html {
         })
     };
 
+    let on_password_keydown = {
+        let onclick = on_click_register.clone();
+        Callback::from(move |e: KeyboardEvent| {
+            if e.key() == "Enter" {
+                e.prevent_default();
+                // Trigger the login by creating a dummy MouseEvent
+                let dummy_event = web_sys::MouseEvent::new("click").unwrap();
+                onclick.emit(dummy_event);
+            }
+        })
+    };
+
     html! {
         <div class="register-page-wrapper">
             <div class="register-father-container">
@@ -106,7 +118,7 @@ pub fn register() -> Html {
                                     oninput={on_username_input_change} class="register-input" type="text" required=true minlength="3" />
                                 <label class="register-form-label"> {"Insira sua senha"} </label>
                                 <input value={(*password).clone()}
-                                    oninput={on_password_input_change} class="register-input-password" type="password" required=true minlength="6" />
+                                    oninput={on_password_input_change} onkeydown={on_password_keydown} class="register-input-password" type="password" required=true minlength="6" />
                                 <button disabled={(*button_pressed).clone()} onclick={on_click_register} class="register-button" type="button"> {"Cadastrar"} </button>
                                 <a class="register-login-link" onclick={on_click_login}> {"Já possui uma conta? entre aqui."} </a>
                             </div>

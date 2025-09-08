@@ -1,14 +1,61 @@
-use yew::{function_component, html, Html, use_state, Callback, MouseEvent};
+use wasm_bindgen_futures::spawn_local;
+use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent};
 use chrono::{Local, NaiveDate, Datelike};
 
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
-use crate::types::TaskDuration;
+use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard};
+use crate::types::{TaskDuration, Task};
+use crate::types::reminder::Reminder;
 
+#[derive(Clone, PartialEq)]
+pub enum ViewType {
+    Tasks,
+    Reminders,
+    Goals,
+}
+
+// Mock Goal struct for now
+#[derive(Clone, Debug)]
+pub struct Goal {
+    pub id: u32,
+    pub title: String,
+    pub description: String,
+    pub status: String,
+    pub due_date: String,
+}
 
 #[function_component(CalendarApp)]
 pub fn calendar_app() -> Html {
     let show_task_form = use_state(|| false);
-    
+    let tasks = use_state(|| Vec::<Task>::new());
+    let reminders = use_state(|| Vec::<Reminder>::new());
+    let goals = use_state(|| Vec::<Goal>::new());
+    let first_render = use_state(|| true);
+    let current_view = use_state(|| ViewType::Tasks);
+
+    // View switching callbacks
+    let switch_to_tasks = {
+        let current_view = current_view.clone();
+        Callback::from(move |_: MouseEvent| {
+            current_view.set(ViewType::Tasks);
+        })
+    };
+
+    let switch_to_reminders = {
+        let current_view = current_view.clone();
+        Callback::from(move |_: MouseEvent| {
+            current_view.set(ViewType::Reminders);
+        })
+    };
+
+    let switch_to_goals = {
+        let current_view = current_view.clone();
+        Callback::from(move |_: MouseEvent| {
+            current_view.set(ViewType::Goals);
+        })
+    };
+
+
     let toggle_task_form = {
         let show_task_form = show_task_form.clone();
         Callback::from(move |_: MouseEvent| {
@@ -23,11 +70,146 @@ pub fn calendar_app() -> Html {
         })
     };
 
+    let show_reminder_form = use_state(|| false);
+
+    let toggle_reminder_form = {
+        let show_reminder_form = show_reminder_form.clone();
+        Callback::from(move |_: MouseEvent| {
+            show_reminder_form.set(!*show_reminder_form);
+        })
+    };
+
+    let close_reminder_form = {
+        let show_reminder_form = show_reminder_form.clone();
+        Callback::from(move |_: ()| {
+            show_reminder_form.set(false);
+        })
+};
+    let on_task_delete = {
+        let tasks = tasks.clone();
+        Callback::from(move |task_id: u32| {
+            let tasks = tasks.clone();
+            spawn_local(async move {
+                match crate::services::tasks::delete_task(task_id).await {
+                    Ok(_) => {
+                        let updated_tasks: Vec<Task> = (*tasks)
+                            .iter()
+                            .cloned()
+                            .filter(|task| task.id != task_id)
+                            .collect();
+                        tasks.set(updated_tasks);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to delete task: {}", error).into());
+                    }
+                }
+            });
+        })
+    };
+
+    let on_reminder_delete = {
+        let reminders = reminders.clone();
+        Callback::from(move |reminder_id: i32| {
+            let reminders = reminders.clone();
+            spawn_local(async move {
+                match crate::services::reminder_service::delete_reminder(reminder_id as u32).await {
+                    Ok(_) => {
+                        let updated_reminders: Vec<Reminder> = (*reminders)
+                            .iter()
+                            .cloned()
+                            .filter(|reminder| reminder.id != reminder_id)
+                            .collect();
+                        reminders.set(updated_reminders);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to delete reminder: {}", error).into());
+                    }
+                }
+            });
+        })
+    };
+
+    let on_task_created = {
+        let tasks = tasks.clone();
+        Callback::from(move |new_task: Task| {
+            let mut current_tasks = (*tasks).clone();
+            current_tasks.push(new_task);
+            tasks.set(current_tasks);
+        })
+    };
+
+    let on_reminder_created = {
+        let reminders = reminders.clone();
+        Callback::from(move |new_reminder: Reminder| {
+            let mut current_reminders = (*reminders).clone();
+            current_reminders.push(new_reminder);
+            reminders.set(current_reminders);
+        })
+    };
+
+    {
+        let tasks = tasks.clone();
+        let reminders = reminders.clone();
+        let goals = goals.clone();
+        use_effect(move || {
+            if *first_render {
+                first_render.set(false);
+            } else {
+                return;
+            }
+            
+            // Initialize mock goals data once
+            let mock_goals = vec![
+                Goal {
+                    id: 1,
+                    title: "Aprender Rust".to_string(),
+                    description: "Concluir curso de Rust avançado".to_string(),
+                    status: "Em Progresso".to_string(),
+                    due_date: "Dezembro 2025".to_string(),
+                },
+                Goal {
+                    id: 2,
+                    title: "Projeto Agenda".to_string(),
+                    description: "Finalizar aplicação de agenda".to_string(),
+                    status: "Em Progresso".to_string(),
+                    due_date: "Novembro 2025".to_string(),
+                },
+                Goal {
+                    id: 3,
+                    title: "Exercícios".to_string(),
+                    description: "Fazer exercícios 3x por semana".to_string(),
+                    status: "Pendente".to_string(),
+                    due_date: "Contínuo".to_string(),
+                },
+            ];
+            goals.set(mock_goals);
+            
+            spawn_local(async move {
+                match crate::services::tasks::get_all_tasks().await {
+                    Ok(fetched_tasks) => {
+                        tasks.set(fetched_tasks);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to fetch tasks: {}", error).into());
+                    }
+                }
+                match crate::services::reminder_service::get_all_reminders().await {
+                    Ok(fetched_reminders) => {
+                        reminders.set(fetched_reminders);
+                    }
+                    Err(error) => {
+                        web_sys::console::log_1(&format!("Failed to fetch reminders: {}", error).into());
+                    }
+                }
+            });
+        });
+    }
+
     let current_date = Local::now().date_naive();
 
     let current_month = use_state(|| current_date.month());
     let current_year = use_state(|| current_date.year());
-    let selected_day = use_state(|| current_date.day()); // Track selected day
+    let selected_day = use_state(|| current_date.day());
 
     let on_day_click = {
         let selected_day = selected_day.clone();
@@ -99,7 +281,6 @@ pub fn calendar_app() -> Html {
                     <div class="calendar-buttons">
                         <button onclick={prev_month}>{ "<" }</button>
                         <button onclick={next_month}>{ ">" }</button>
-                        <button onclick={toggle_task_form}>{ "+" }</button>
                     </div>
                 </div>
                 <div class="weekdays">
@@ -147,60 +328,128 @@ pub fn calendar_app() -> Html {
                     }
                 </div>
             </div>
-            
-            <div class="sidebar">
+             <div class="sidebar">
                 <div class="sidebar-header">
-                    <h3>{ "Tarefas" }</h3>
+                    <div class="view-buttons">
+                        <button 
+                            class={if *current_view == ViewType::Tasks { "view-btn active" } else { "view-btn" }}
+                            onclick={switch_to_tasks}
+                        >
+                            { "Tarefas" }
+                        </button>
+                        <button 
+                            class={if *current_view == ViewType::Reminders { "view-btn active" } else { "view-btn" }}
+                            onclick={switch_to_reminders}
+                        >
+                            { "Lembretes" }
+                        </button>
+                        <button 
+                            class={if *current_view == ViewType::Goals { "view-btn active" } else { "view-btn" }}
+                            onclick={switch_to_goals}
+                        >
+                            { "Metas" }
+                        </button>
+                    </div>
+                    <div class="header-row">
+                        <h3>
+                            { match &*current_view {
+                                ViewType::Tasks => "Tarefas",
+                                ViewType::Reminders => "Lembretes", 
+                                ViewType::Goals => "Metas",
+                            }}
+                        </h3>
+                        <div class="action-buttons">
+                            { match &*current_view {
+                                ViewType::Tasks => html! {
+                                    <button class="add-btn" onclick={toggle_task_form}>{ "Nova Tarefa" }</button>
+                                },
+                                ViewType::Reminders => html! {
+                                    <button class="add-btn" onclick={toggle_reminder_form}>{ "Novo Lembrete" }</button>
+                                },
+                                ViewType::Goals => html! {
+                                    <button class="add-btn" onclick={Callback::from(|_: MouseEvent| {
+                                        web_sys::console::log_1(&"Add Goal clicked".into());
+                                    })}>{ "Nova Meta" }</button>
+                                },
+                            }}
+                        </div>
+                    </div>
                 </div>
-                <div class="task-list">
-                    <TaskCard 
-                        title={"Meeting with Team".to_string()}
-                        category={"Work".to_string()}
-                        description={"Weekly team sync to discuss project progress and upcoming deadlines".to_string()}
-                        date={"May 20, 2023".to_string()}
-                        time={"10:00".to_string()}
-                        duration={TaskDuration::UmaHora}
-                    />
-                    <TaskCard 
-                        title={"Project Review".to_string()}
-                        category={"Work".to_string()}
-                        description={"Review project deliverables and prepare for client presentation".to_string()}
-                        date={"May 21, 2023".to_string()}
-                        time={"14:30".to_string()}
-                        duration={TaskDuration::MeiaHora}
-                    />
-                    <TaskCard 
-                        title={"Morning Workout".to_string()}
-                        category={"Personal".to_string()}
-                        description={"Daily exercise routine and stretching".to_string()}
-                        date={"May 22, 2023".to_string()}
-                        time={"07:00".to_string()}
-                        duration={TaskDuration::Manha}
-                    />
-                    <TaskCard 
-                        title={"Lunch Meeting".to_string()}
-                        category={"Business".to_string()}
-                        description={"Client meeting to discuss new project requirements and timeline".to_string()}
-                        date={"May 23, 2023".to_string()}
-                        time={"12:00".to_string()}
-                        duration={TaskDuration::Tarde}
-                    />
-                    <TaskCard 
-                        title={"Code Review".to_string()}
-                        category={"Work".to_string()}
-                        description={"Review pull requests and provide feedback to team members".to_string()}
-                        date={"May 24, 2023".to_string()}
-                        time={"15:00".to_string()}
-                        duration={TaskDuration::UmaHora}
-                    />
+                <div class="content-list">
+                    { match &*current_view {
+                        ViewType::Tasks => {
+                            let task_cards: Vec<Html> = tasks.iter().enumerate().map(|(index, task)| {
+                                let duration = TaskDuration::from_value(&task.task_type).unwrap_or_default();
+                                let date_formatted = task.begin_date.format("%B %d, %Y").to_string();
+                                let time_formatted = task.begin_date.format("%H:%M").to_string();
+                                
+                                html! {
+                                    <TaskCard 
+                                        key={format!("task-{}-{}", index, task.title)}
+                                        id={task.id}
+                                        title={task.title.clone()}
+                                        category={task.category.clone()}
+                                        description={task.description.clone()}
+                                        on_task_delete={on_task_delete.clone()}
+                                        status={task.status.clone()}
+                                        date={date_formatted}
+                                        time={time_formatted}
+                                        duration={duration}
+                                    />
+                                }
+                            }).collect();
+                            
+                            html! { <>{task_cards}</> }
+                        },
+                        ViewType::Reminders => {
+                            let reminder_cards: Vec<Html> = reminders.iter().enumerate().map(|(index, reminder)| {
+                                html! {
+                                    <ReminderCard 
+                                        key={format!("reminder-{}-{}", index, reminder.name)}
+                                        id={reminder.id}
+                                        name={reminder.name.clone()}
+                                        category={reminder.category.clone()}
+                                        date_end={reminder.date_end}
+                                        on_reminder_delete={on_reminder_delete.clone()}
+                                    />
+                                }
+                            }).collect();
+                            
+                            html! { <>{reminder_cards}</> }
+                        },
+                        ViewType::Goals => {
+                            let goal_cards: Vec<Html> = goals.iter().enumerate().map(|(index, goal)| {
+                                html! {
+                                    <div key={format!("goal-{}-{}", index, goal.title)} class="goal-card">
+                                        <h4>{ &goal.title }</h4>
+                                        <p>{ &goal.description }</p>
+                                        <div class="goal-meta">
+                                            <span class={format!("status {}", goal.status.to_lowercase().replace(" ", "-"))}>
+                                                { &goal.status }
+                                            </span>
+                                            <span class="due-date">{ &goal.due_date }</span>
+                                        </div>
+                                    </div>
+                                }
+                            }).collect();
+                            
+                            html! { <>{goal_cards}</> }
+                        }
+                    }}
                 </div>
             </div>
             
-            // TaskForm as overlay/modal
             <TaskForm 
                 visible={*show_task_form} 
-                on_close={close_task_form} 
+                on_close={close_task_form}
+                on_task_created={on_task_created}
                 selected_date={NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day).unwrap_or_else(|| Local::now().date_naive())}
+            />
+
+            <ReminderForm 
+                visible={*show_reminder_form} 
+                on_close={close_reminder_form.clone()}
+                on_reminder_created={on_reminder_created}
             />
         </div>
     }

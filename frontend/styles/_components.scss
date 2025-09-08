@@ -42,32 +42,7 @@
   }
 }
 
-// Button styles
-button {
-  background: var(--button-gradient);
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  margin: 0 10px;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px var(--button-shadow);
-  min-width: 60px;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--button-hover-shadow);
-    background: var(--button-hover-gradient);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 15px var(--button-shadow);
-  }
-}
 
 // Counter display
 p {
@@ -317,7 +292,104 @@ p {
   padding: 8px;
   
   .sidebar-header {
-    h3 {
+    .view-buttons {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 4px;
+      background: #c0c0c0;
+      padding: 2px;
+      border: 1px inset #c0c0c0;
+      
+      .view-btn {
+        flex: 1;
+        background: #c0c0c0;
+        border: 1px outset #c0c0c0;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-family: "MS Sans Serif", sans-serif;
+        color: #000000;
+        cursor: pointer;
+        transition: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        min-width: auto;
+        height: auto;
+        
+        &:hover {
+          background: #d4d0c8;
+          transform: none;
+          box-shadow: none;
+        }
+        
+        &:active {
+          border: 1px inset #c0c0c0;
+          transform: none;
+          box-shadow: none;
+        }
+        
+        &.active {
+          background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+          color: white;
+          border: 1px inset #c0c0c0;
+          font-weight: bold;
+        }
+      }
+    }
+    
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      
+      h3 {
+        font-family: "MS Sans Serif", sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        margin: 0;
+        padding: 4px 8px;
+        background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+        border: 1px outset #c0c0c0;
+        flex: 1;
+        text-align: left;
+      }
+      
+      .action-buttons {
+        .add-btn {
+          background: #c0c0c0;
+          border: 1px outset #c0c0c0;
+          padding: 4px 8px;
+          font-size: 11px;
+          font-family: "MS Sans Serif", sans-serif;
+          color: #000000;
+          cursor: pointer;
+          transition: none;
+          border-radius: 0;
+          box-shadow: none;
+          margin: 0;
+          min-width: auto;
+          height: auto;
+          white-space: nowrap;
+          
+          &:hover {
+            background: #d4d0c8;
+            transform: none;
+            box-shadow: none;
+          }
+          
+          &:active {
+            border: 1px inset #c0c0c0;
+            transform: none;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+    
+    // Legacy h3 styling for backwards compatibility (remove if not needed)
+    h3:not(.header-row h3) {
       font-family: "MS Sans Serif", sans-serif;
       font-size: 11px;
       font-weight: bold;
@@ -331,7 +403,7 @@ p {
     }
   }
   
-  .task-list {
+  .content-list {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -340,6 +412,73 @@ p {
     border: 1px inset #c0c0c0;
     padding: 4px;
     min-height: 200px;
+    overflow-y: auto;
+    
+    .goal-card {
+      background: #f0f0ff;
+      border: 1px outset #c0c0c0;
+      padding: 4px;
+      margin-bottom: 2px;
+      font-family: "MS Sans Serif", sans-serif;
+      
+      h4 {
+        margin: 0 0 2px 0;
+        font-size: 11px;
+        font-weight: bold;
+        color: #000000;
+      }
+      
+      p {
+        margin: 1px 0 4px 0;
+        font-size: 11px;
+        color: #000000;
+      }
+      
+      .goal-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 4px;
+        
+        .status {
+          padding: 1px 4px;
+          font-size: 10px;
+          font-weight: bold;
+          border: 1px inset #c0c0c0;
+          background: #c0c0c0;
+          
+          &.pendente {
+            background: #ffcccc;
+            color: #800000;
+          }
+          
+          &.em-progresso {
+            background: #ffffcc;
+            color: #808000;
+          }
+          
+          &.concluído {
+            background: #ccffcc;
+            color: #008000;
+          }
+        }
+        
+        .due-date {
+          font-size: 10px;
+          color: #000080;
+          font-weight: bold;
+        }
+      }
+      
+      &:hover {
+        background: #e8e8ff;
+      }
+    }
+  }
+  
+  // Legacy task-list class for backwards compatibility
+  .task-list {
+    @extend .content-list;
   }
 }
 

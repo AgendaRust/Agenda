@@ -74,10 +74,10 @@
 }
 
 .login-control-button {
-  width: 2px;
-  height: 2px; // Make it square instead of rectangular
+  width: 16px;
+  height: 14px;
   background: #c0c0c0;
-  border: none; // Remove default border to add custom Windows 98 style
+  border: 1px outset #c0c0c0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -85,28 +85,18 @@
   font-size: 8px;
   color: #000000;
   font-family: 'MS Sans Serif', sans-serif;
-  
-  // Windows 98 style borders with black right/bottom edges
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #000000;
-  border-bottom: 2px solid #000000;
+  font-weight: bold;
 
   // Remove any transitions or animations
   transition: none;
   
   &:hover {
-    // Very subtle hover effect - just like Windows 98
-    background: #c0c0c0;
+    background: #d4d4d4;
   }
   
   &:active {
-    // Invert the border colors when pressed
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    border-right: 1px solid #ffffff;
-    border-bottom: 1px solid #ffffff;
-    background: #c0c0c0;
+    border: 1px inset #c0c0c0;
+    background: #a8a8a8;
   }
   
   &.minimize::before {
@@ -122,11 +112,24 @@
     line-height: 1;
   }
   
-  &.close::before {
-    content: '×';
-    font-size: 9px;
-    font-weight: bold;
-    line-height: 1;
+  &.close {
+    background: #ff6b6b;
+    border: 1px outset #ff6b6b;
+
+    &::before {
+      content: '×';
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: #ff5252;
+    }
+
+    &:active {
+      border: 1px inset #ff6b6b;
+      background: #e53935;
+    }
   }
 }
 
