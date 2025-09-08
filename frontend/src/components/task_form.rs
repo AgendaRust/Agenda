@@ -254,7 +254,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                                         max="23" 
                                         class="hour-input" 
                                         placeholder="HH" 
-                                        value={task_hour.to_string()}
+                                        value={format!("{:02}", *task_hour)}
                                         oninput={on_hour_change}
                                     />
                                     { ":" }
@@ -265,7 +265,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                                         max="59" 
                                         class="minute-input" 
                                         placeholder="MM" 
-                                        value={task_minute.to_string()}
+                                        value={format!("{:02}", *task_minute)}
                                         oninput={on_minute_change}
                                     />
                                 </div>
