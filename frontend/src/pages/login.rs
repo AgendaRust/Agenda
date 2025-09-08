@@ -82,6 +82,18 @@ pub fn login() -> Html {
         })
     };
 
+    let on_password_keydown = {
+        let onclick = onclick.clone();
+        Callback::from(move |e: KeyboardEvent| {
+            if e.key() == "Enter" {
+                e.prevent_default();
+                // Trigger the login by creating a dummy MouseEvent
+                let dummy_event = web_sys::MouseEvent::new("click").unwrap();
+                onclick.emit(dummy_event);
+            }
+        })
+    };
+
     html! {
         <div class="login-page-wrapper">
                 <div class="login-father-container">
@@ -106,7 +118,9 @@ pub fn login() -> Html {
                                         oninput={on_username_input_change} class="login-input" type="text" />
                                     <label class="login-form-label"> {"Insira sua senha"} </label>
                                     <input value={(*password).clone()}
-                                        oninput={on_password_input_change} class="login-input-password" type="password" />
+                                        oninput={on_password_input_change}
+                                        onkeydown={on_password_keydown}
+                                        class="login-input-password" type="password" />
                                     <button {onclick} class="login-button" type="button"> {"Entrar"} </button>
                                     <a class="login-register-link" onclick={onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
                                 </div>

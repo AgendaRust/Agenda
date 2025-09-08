@@ -75,9 +75,9 @@
 
 .register-control-button {
   width: 16px;
-  height: 16px;
+  height: 14px;
   background: #c0c0c0;
-  border: none;
+  border: 1px outset #c0c0c0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -85,25 +85,17 @@
   font-size: 8px;
   color: #000000;
   font-family: 'MS Sans Serif', sans-serif;
-  
-  // Windows 98 style borders with black right/bottom edges
-  border-top: 1px solid #ffffff;
-  border-left: 1px solid #ffffff;
-  border-right: 1px solid #000000;
-  border-bottom: 1px solid #000000;
+  font-weight: bold;
   
   transition: none;
   
   &:hover {
-    background: #c0c0c0;
+    background: #d4d4d4;
   }
   
   &:active {
-    border-top: 1px solid #000000;
-    border-left: 1px solid #000000;
-    border-right: 1px solid #ffffff;
-    border-bottom: 1px solid #ffffff;
-    background: #c0c0c0;
+    border: 1px inset #c0c0c0;
+    background: #a8a8a8;
   }
   
   &.minimize::before {
@@ -119,11 +111,24 @@
     line-height: 1;
   }
   
-  &.close::before {
-    content: '×';
-    font-size: 9px;
-    font-weight: bold;
-    line-height: 1;
+  &.close {
+    background: #ff6b6b;
+    border: 1px outset #ff6b6b;
+
+    &::before {
+      content: '×';
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: #ff5252;
+    }
+
+    &:active {
+      border: 1px inset #ff6b6b;
+      background: #e53935;
+    }
   }
 }
 

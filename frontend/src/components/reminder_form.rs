@@ -4,12 +4,15 @@ use chrono::{NaiveDate, NaiveDateTime, Utc, TimeZone, DateTime};
 use wasm_bindgen_futures::spawn_local;
 
 use crate::services::reminder_service::{ReminderDto, create_reminder, ReminderResult};
+use crate::types::reminder::Reminder;
 
 #[derive(Properties, PartialEq)]
 pub struct ReminderFormProps {
     pub visible: bool,
     #[prop_or_default]
     pub on_close: Option<Callback<()>>,
+    #[prop_or_default]
+    pub on_reminder_created: Option<Callback<Reminder>>,
 }
 
 
@@ -60,6 +63,7 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
         let reminder_date = reminder_date.clone();
         let form_status = form_status.clone();
         let on_close = props.on_close.clone();
+        let on_reminder_created = props.on_reminder_created.clone();
 
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -69,6 +73,7 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
             let reminder_date = reminder_date.clone();
             let form_status = form_status.clone();
             let on_close = on_close.clone();
+            let on_reminder_created = on_reminder_created.clone();
 
             spawn_local(async move {
                 // converte YYYY-MM-DD -> DateTime<Utc> (00:00h UTC)
@@ -93,6 +98,11 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                     ReminderResult::Success(rem) => {
                         web_sys::console::log_1(&format!("Reminder created successfully: {:?}", rem).into());
                         form_status.set("success".to_string());
+
+                        // Notify parent component about the new reminder
+                        if let Some(cb) = &on_reminder_created {
+                            cb.emit(rem);
+                        }
 
                         let reminder_name = reminder_name.clone();
                         let reminder_category = reminder_category.clone();
@@ -131,6 +141,8 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                     <div class="reminder-form-header">
                         <div class="title-text">{ "Criar Lembrete" }</div>
                         <div class="window-controls">
+                            <div class="control-button minimize"></div>
+                            <div class="control-button maximize"></div>
                             <div class="control-button close" onclick={on_close.clone()}></div>
                         </div>
                     </div>
