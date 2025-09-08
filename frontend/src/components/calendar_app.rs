@@ -283,8 +283,20 @@ pub fn calendar_app() -> Html {
     
     html! {
         <div class="calendar-app">
-            <div class="calendar">
-                <h2 class="calendar-heading">{ "Agenda" }</h2>
+            <div class="calendar-header">
+                <h1 class="calendar-title">{ "Agenda - Windows 98" }</h1>
+                <div class="calendar-header-controls">
+                    <button class="control-button minimize-btn" type="button">
+                    </button>
+                    <button class="control-button maximize-btn" type="button">
+                    </button>
+                    <button class="control-button close-btn" type="button">
+                    </button>
+                </div>
+            </div>
+            <div class="calendar-content">
+                <div class="calendar">
+                    <h2 class="calendar-heading">{ "Agenda" }</h2>
                 <div class="navigate-date">
                     <h2 class="month"> { months_of_year[*current_month as usize - 1] } </h2>
                     <h2 class="year"> { *current_year } </h2>
@@ -465,6 +477,7 @@ pub fn calendar_app() -> Html {
                         }
                     }}
                 </div>
+            </div>
             </div>
             
             <TaskForm 
