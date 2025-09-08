@@ -279,7 +279,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
 
                         // Task title - right column
                         <div>
-                            <label for="title">{ "Nova task:" }</label>
+                            <label for="title">{ "Título:" }</label>
                             <input 
                                 type="text" 
                                 id="title" 

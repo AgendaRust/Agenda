@@ -73,7 +73,6 @@ pub fn task_card(props: &TaskCardProps) -> Html {
             e.prevent_default();
             e.stop_propagation();
             web_sys::console::log_1(&"Delete button clicked".into());
-            // Just emit the task_id to parent - let parent handle the API call
             on_task_delete.emit(task_id);
         })
     };
