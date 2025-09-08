@@ -15,7 +15,7 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
                     let duration_minutes = match duration {
                         TaskDuration::MeiaHora => 30,
                         TaskDuration::UmaHora => 60,
-                        _ => 0, // This shouldn't happen given the outer match
+                        _ => 0,
                     };
                     
                     let total_minutes = hour * 60 + minute + duration_minutes;
@@ -25,11 +25,9 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
                     
                     format!("{} - {}", start_time, end_time)
                 } else {
-                    // Fallback if parsing fails
                     format!("Time: {}", time)
                 }
             } else {
-                // Fallback if time format is unexpected
                 format!("Time: {}", time)
             }
         }
@@ -38,12 +36,14 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
 
 #[derive(Properties, PartialEq)]
 pub struct TaskCardProps {
+    pub id: u32,
     pub title: String,
     pub category: String,
     pub description: String,
     pub date: String,
     pub time: String,
     pub duration: TaskDuration,
+    pub on_task_delete: Callback<u32>,
 }
 
 #[function_component(TaskCard)]
@@ -57,14 +57,34 @@ pub fn task_card(props: &TaskCardProps) -> Html {
         })
     };
 
+    let on_edit_click = {
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            // TODO: Implement edit functionality
+            web_sys::console::log_1(&"Edit button clicked".into());
+        })
+    };
+
+    let task_id = props.id;
+    let on_delete_click = {
+        let on_task_delete = props.on_task_delete.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            web_sys::console::log_1(&"Delete button clicked".into());
+            on_task_delete.emit(task_id);
+        })
+    };
+
     html! {
         <div class="task-card" onclick={toggle_info}>
             <div class="task-header">
                 <h3 class="task-title">{ &props.title }</h3>
                 if *show_info {
                     <div class="task-actions">
-                        <button class="edit-button">{ "Edit" }</button>
-                        <button class="delete-button">{ "Delete" }</button>
+                        <button class="edit-button" onclick={on_edit_click}>{ "Edit" }</button>
+                        <button class="delete-button" onclick={on_delete_click}>{ "Delete" }</button>
                     </div>
                 }
             </div>
