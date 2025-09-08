@@ -1,6 +1,6 @@
-// Task Card Component Styles - Windows 98 Style
-.task-card {
-  background: #c0c0c0;
+// Reminder Card Component Styles - Windows 98 Style
+.reminder-card {
+  background: #c0c0c0 !important;
   border: 1px outset #c0c0c0;
   border-radius: 0;
   padding: 8px;
@@ -14,7 +14,7 @@
   font-size: 11px;
   
   &:hover {
-    background: #d4d0c8;
+    background: #d4d0c8 !important;
     transform: none;
     box-shadow: none;
     border: 1px outset #d4d0c8;
@@ -22,7 +22,7 @@
 
   &:active {
     border: 1px inset #c0c0c0;
-    background: #b8b8b8;
+    background: #b8b8b8 !important;
     transform: none;
     transition: none;
   }
@@ -37,8 +37,8 @@
   }
 }
 
-// Task header section
-.task-header {
+// Reminder header section
+.reminder-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -49,9 +49,10 @@
   padding: 2px 4px;
   border: 1px outset #c0c0c0;
   margin: -8px -8px 4px -8px;
+  margin-top: -8px !important;
 }
 
-.task-title {
+.reminder-title {
   font-size: 11px;
   font-weight: bold;
   color: white;
@@ -62,8 +63,8 @@
   font-family: "MS Sans Serif", sans-serif;
 }
 
-// Task actions (Edit/Delete buttons)
-.task-actions {
+// Reminder actions (Edit/Delete buttons)
+.reminder-actions {
   display: flex;
   gap: 2px;
   opacity: 1;
@@ -71,15 +72,8 @@
   animation: none;
 }
 
-@keyframes slideInFade {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.edit-button,
-.delete-button {
+.reminder-card .edit-button,
+.reminder-card .delete-button {
   padding: 1px 4px;
   font-size: 9px;
   font-weight: normal;
@@ -105,7 +99,7 @@
   }
 }
 
-.edit-button {
+.reminder-card .edit-button {
   background: #c0c0c0;
   color: #000000;
   box-shadow: none;
@@ -116,7 +110,7 @@
   }
 }
 
-.delete-button {
+.reminder-card .delete-button {
   background: #c0c0c0;
   color: #000000;
   box-shadow: none;
@@ -127,12 +121,13 @@
   }
 }
 
-// Task body section
-.task-body {
+// Reminder body section
+.reminder-body {
   margin-top: 4px;
+  background: transparent;
 }
 
-.task-description {
+.reminder-category {
   font-size: 11px;
   color: #000000 !important;
   line-height: 1.2;
@@ -171,37 +166,14 @@
   background-size: initial !important;
 }
 
-// Task status section
-.task-status {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 0 0 4px 0;
-  padding: 2px 4px;
-  background: #c0c0c0;
-  border: 1px inset #c0c0c0;
-  font-family: "MS Sans Serif", sans-serif;
-  font-size: 11px;
-}
-
-.status-label {
-  font-weight: bold;
-  color: #000000;
-}
-
-.status-value {
-  color: #000080;
-  font-weight: normal;
-}
-
 // Date and time section
-.task-datetime {
+.reminder-datetime {
   display: flex;
   flex-direction: row;
   gap: 4px;
 }
 
-.task-date {
+.reminder-date {
   font-size: 11px;
   font-weight: normal;
   color: #000000;
@@ -214,7 +186,7 @@
   font-family: "MS Sans Serif", sans-serif;
 }
 
-.task-time {
+.reminder-time {
   font-size: 11px;
   color: #000000;
   padding: 2px 4px;
@@ -230,19 +202,19 @@
 }
 
 // Windows 98 style - no theme variations needed
-.dark-theme .task-card,
-.light-theme .task-card {
-  background: #c0c0c0;
+.dark-theme .reminder-card,
+.light-theme .reminder-card {
+  background: #c0c0c0 !important;
   border: 1px outset #c0c0c0;
   
   &:hover {
-    background: #d4d0c8;
+    background: #d4d0c8 !important;
     border: 1px outset #d4d0c8;
   }
 }
 
-.dark-theme .task-description,
-.light-theme .task-description {
+.dark-theme .reminder-category,
+.light-theme .reminder-category {
   background: #ffffff !important;
   color: #000000 !important;
   border: 1px inset #c0c0c0;
@@ -259,8 +231,15 @@
   background-image: none !important;
 }
 
-.dark-theme .task-date,
-.light-theme .task-date {
+.dark-theme .reminder-date,
+.light-theme .reminder-date {
+  background: #c0c0c0;
+  border: 1px inset #c0c0c0;
+  color: #000000;
+}
+
+.dark-theme .reminder-time,
+.light-theme .reminder-time {
   background: #c0c0c0;
   border: 1px inset #c0c0c0;
   color: #000000;
@@ -268,27 +247,27 @@
 
 // Responsive design - Windows 98 style
 @media (max-width: 768px) {
-  .task-card {
+  .reminder-card {
     padding: 6px;
     margin: 2px 0;
   }
 
-  .task-title {
+  .reminder-title {
     font-size: 11px;
   }
 
-  .task-header {
+  .reminder-header {
     flex-direction: row;
     align-items: center;
     gap: 4px;
   }
 
-  .task-actions {
+  .reminder-actions {
     align-self: center;
   }
 
-  .edit-button,
-  .delete-button {
+  .reminder-card .edit-button,
+  .reminder-card .delete-button {
     padding: 1px 3px;
     font-size: 9px;
   }
@@ -296,22 +275,22 @@
 
 // Accessibility improvements - minimal for Windows 98 style
 @media (prefers-reduced-motion: reduce) {
-  .task-card,
-  .task-actions,
-  .task-description,
-  .task-time {
+  .reminder-card,
+  .reminder-actions,
+  .reminder-category,
+  .reminder-time {
     transition: none;
   }
 }
 
 // Focus states for accessibility - Windows 98 style
-.task-card:focus-visible {
+.reminder-card:focus-visible {
   outline: 1px dotted #000000;
   outline-offset: 1px;
 }
 
-.edit-button:focus-visible,
-.delete-button:focus-visible {
+.reminder-card .edit-button:focus-visible,
+.reminder-card .delete-button:focus-visible {
   outline: 1px dotted #000000;
   outline-offset: 1px;
 }

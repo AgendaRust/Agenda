@@ -58,12 +58,15 @@
 
         &.minimize::before {
           content: '_';
-          margin-top: 4px;
+          font-weight: bold;
+          margin-top: -2px;
+          font-size: 8px;
         }
 
         &.maximize::before {
           content: '□';
-          font-size: 10px;
+          font-size: 8px;
+          line-height: 1;
         }
 
         &.close {

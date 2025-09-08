@@ -1,6 +1,8 @@
 use chrono::{DateTime, Utc};
 use gloo::net::http::Request;
 use serde::{Serialize, Deserialize};
+use crate::types::reminder::Reminder;
+
 use super::{API_URL, auth::get_token};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -11,9 +13,36 @@ pub struct ReminderDto {
 }
 
 pub enum ReminderResult {
-    Success(ReminderDto),
+    Success(Reminder),
     InvalidFields,
     NetworkError(String),
+}
+
+pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
+    let url = format!("{}/reminders/user", API_URL);
+    let token = get_token();
+
+    if token.token.is_empty() {
+        return Err("No authentication token found".to_string());
+    }
+
+    match Request::get(&url)
+        .header("Authorization", &format!("Bearer {}", token.token))
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status() == 200 {
+                let reminders: Vec<Reminder> = response.json().await.unwrap_or_else(|_| vec![]);
+                web_sys::console::log_1(&format!("Fetched {} reminders", reminders.len()).into());
+                Ok(reminders)
+            } else {
+                let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+                Err(format!("Failed to fetch reminders: HTTP {} - {}", response.status(), error_text))
+            }
+        }
+        Err(e) => Err(format!("Network error: {}", e)),
+    }
 }
 
 pub async fn create_reminder(reminder_info: &ReminderDto) -> ReminderResult {
@@ -35,7 +64,7 @@ pub async fn create_reminder(reminder_info: &ReminderDto) -> ReminderResult {
     {
         Ok(response) => match response.status() {
             200 | 201 => {
-                let reminder: ReminderDto = response.json().await.unwrap();
+                let reminder: Reminder = response.json().await.unwrap();
                 ReminderResult::Success(reminder)
             }
             400 => ReminderResult::InvalidFields,

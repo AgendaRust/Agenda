@@ -43,6 +43,7 @@ pub struct TaskCardProps {
     pub date: String,
     pub time: String,
     pub duration: TaskDuration,
+    pub status: String,
     pub on_task_delete: Callback<u32>,
 }
 
@@ -83,20 +84,24 @@ pub fn task_card(props: &TaskCardProps) -> Html {
                 <h3 class="task-title">{ &props.title }</h3>
                 if *show_info {
                     <div class="task-actions">
-                        <button class="edit-button" onclick={on_edit_click}>{ "Edit" }</button>
-                        <button class="delete-button" onclick={on_delete_click}>{ "Delete" }</button>
+                        <button class="edit-button" onclick={on_edit_click}>{ "Editar" }</button>
+                        <button class="delete-button" onclick={on_delete_click}>{ "Excluir" }</button>
                     </div>
                 }
             </div>
             <div class="task-body">
                 if *show_info {
                     <p class="task-description">{ &props.description }</p>
+                    <div class="task-status">
+                        <span class="status-label">{ "Status: " }</span>
+                        <span class="status-value">{ &props.status }</span>
+                    </div>
                 }
                 <div class="task-datetime">
                     <span class="task-date">{ format!("Due Date: {}", &props.date) }</span>
-                    if *show_info {
+                    // if *show_info {
                         <span class="task-time">{ format_time_display(&props.time, &props.duration) }</span>
-                    }
+                    // }
                 </div>
             </div>
         </div>

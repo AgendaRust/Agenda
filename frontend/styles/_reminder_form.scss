@@ -56,6 +56,19 @@
           background: #a8a8a8;
         }
 
+        &.minimize::before {
+          content: '_';
+          font-weight: bold;
+          margin-top: -2px;
+          font-size: 8px;
+        }
+
+        &.maximize::before {
+          content: '□';
+          font-size: 8px;
+          line-height: 1;
+        }
+
         &.close {
           background: #ff6b6b;
           border: 1px outset #ff6b6b;
