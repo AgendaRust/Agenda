@@ -270,6 +270,16 @@ pub fn calendar_app() -> Html {
     
     let total_cells_used = first_weekday + days_in_month as usize;
     let remaining_cells = if total_cells_used % 7 == 0 { 0 } else { 7 - (total_cells_used % 7) };
+
+    // Function to count tasks for a specific date
+    let count_tasks_for_date = |day: u32| -> usize {
+        let target_date = NaiveDate::from_ymd_opt(*current_year, *current_month, day)
+            .unwrap_or_else(|| Local::now().date_naive());
+        
+        tasks.iter().filter(|task| {
+            task.begin_date.date_naive() == target_date
+        }).count()
+    };
     
     html! {
         <div class="calendar-app">
@@ -302,6 +312,7 @@ pub fn calendar_app() -> Html {
                                       *current_month == current_date.month() && 
                                       *current_year == current_date.year();
                         let is_selected = day == *selected_day;
+                        let task_count = count_tasks_for_date(day);
                         
                         let class = match (is_today, is_selected) {
                             (true, true) => "unique-day current-day selected-day",
@@ -317,7 +328,12 @@ pub fn calendar_app() -> Html {
                                     on_day_click.emit(day);
                                 })}
                             >
-                                { day }
+                                <span class="day-number">{ day }</span>
+                                { if task_count > 0 {
+                                    html! { <span class="task-count">{ task_count }</span> }
+                                } else {
+                                    html! {}
+                                }}
                             </span>
                         }
                     }) }
@@ -378,7 +394,15 @@ pub fn calendar_app() -> Html {
                 <div class="content-list">
                     { match &*current_view {
                         ViewType::Tasks => {
-                            let task_cards: Vec<Html> = tasks.iter().enumerate().map(|(index, task)| {
+                            // Filter tasks by selected date
+                            let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
+                                .unwrap_or_else(|| Local::now().date_naive());
+                            
+                            let filtered_tasks: Vec<&Task> = tasks.iter()
+                                .filter(|task| task.begin_date.date_naive() == selected_date)
+                                .collect();
+                            
+                            let task_cards: Vec<Html> = filtered_tasks.iter().enumerate().map(|(index, task)| {
                                 let duration = TaskDuration::from_value(&task.task_type).unwrap_or_default();
                                 let date_formatted = task.begin_date.format("%B %d, %Y").to_string();
                                 let time_formatted = task.begin_date.format("%H:%M").to_string();
@@ -399,7 +423,11 @@ pub fn calendar_app() -> Html {
                                 }
                             }).collect();
                             
-                            html! { <>{task_cards}</> }
+                            if task_cards.is_empty() {
+                                html! { <></> }
+                            } else {
+                                html! { <>{task_cards}</> }
+                            }
                         },
                         ViewType::Reminders => {
                             let reminder_cards: Vec<Html> = reminders.iter().enumerate().map(|(index, reminder)| {

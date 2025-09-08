@@ -93,8 +93,10 @@ p {
   font-size: 11px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
   
-  // Enhanced shadow for better contrast against wallpaper
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+  // Remove all filter effects for crisp rendering
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   
   &:after {
     display: none; // Remove modern shadow effect
@@ -235,6 +237,9 @@ p {
   }
   
   .unique-day {
+    position: relative;
+    flex-direction: column;
+    
     &:hover {
       background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
       color: white;
@@ -260,6 +265,28 @@ p {
       color: white;
       border: 1px inset #c0c0c0;
       box-shadow: none;
+    }
+    
+    .day-number {
+      display: block;
+      line-height: 1;
+    }
+    
+    .task-count {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #ff4444;
+      color: white;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      font-size: 7px;
+      font-weight: bold;
+      line-height: 12px;
+      text-align: center;
+      border: 1px solid #cc0000;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
   }
   
@@ -413,6 +440,24 @@ p {
     padding: 4px;
     min-height: 200px;
     overflow-y: auto;
+    
+    // Ensure crisp rendering for all content
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    -webkit-font-smoothing: auto !important;
+    -moz-osx-font-smoothing: auto !important;
+    text-rendering: auto !important;
+    
+    // Apply to all children too
+    * {
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      -webkit-font-smoothing: auto !important;
+      -moz-osx-font-smoothing: auto !important;
+      text-rendering: auto !important;
+    }
     
     .goal-card {
       background: #f0f0ff;
