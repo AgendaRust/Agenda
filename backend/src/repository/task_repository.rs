@@ -28,7 +28,6 @@ impl<'a> TaskRepository<'a> {
             .await
     }
 
-
     pub async fn tasks_stats_year(
         &self,
         user_id: i32,
@@ -182,6 +181,14 @@ impl<'a> TaskRepository<'a> {
             .filter(task::Column::Status.eq("Executada"))
             .count(self.db)
             .await?;
+
+        // let late_tasks = task::Entity::find()
+        //     .filter(task::Column::UserId.eq(user_id))
+        //     .filter(task::Column::BeginDate.gte(start_date))
+        //     .filter(task::Column::BeginDate.lte(end_date))
+        //     .filter(task::Column::Status.eq("Atrasada"))
+        //     .count(self.db)
+        //     .await?;
 
         // Calcular porcentagem
         let percentage = if total_tasks > 0 {

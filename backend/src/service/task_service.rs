@@ -116,7 +116,7 @@ pub async fn get_task_stats_week_db(
         "week": week_num,
         "most_productive_shift": most_productive_shift,
         "most_used_category": most_used_category,
-        "most_productive_week": most_productive_day
+        "most_productive_day": most_productive_day
     }))
 }
 pub async fn register_task_db(
