@@ -10,7 +10,7 @@ use crate::controller::auth::UserClaim;
 use crate::db::Pool;
 use crate::dto::taskDTO::TaskDto;
 use crate::entity::task;
-use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError, update_status_task_db, get_task_stats_year_db, get_task_stats_month_db};
+use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError, update_status_task_db, get_task_stats_year_db, get_task_stats_month_db, get_task_stats_week_db};
 use crate::dto::taskStatusDTO::StatusUpdateDto;
 
 #[get("/all")]
@@ -77,6 +77,24 @@ pub async fn get_task_stats_month(
     })?;
 
     match get_task_stats_month_db(db, user_id, year, month).await {
+        Ok(stats) => Ok(Json(stats)),
+        Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
+        _ => Err((Status::InternalServerError, "Failed to get task statistics".to_string())),
+    }
+}
+
+#[get("/statsweek/<year>/<week>")]
+pub async fn get_task_stats_week(
+    db: &State<Pool>,
+    token: UserClaim,
+    year: i32,
+    week: i32,
+) -> Result<Json<Value>, (Status, String)> {
+    let user_id = token.get_id().parse::<i32>().map_err(|_| {
+        (Status::BadRequest, "Invalid token: user_id is not valid".to_string())
+    })?;
+
+    match get_task_stats_week_db(db, user_id, year, week).await {
         Ok(stats) => Ok(Json(stats)),
         Err(TaskError::DatabaseError(msg)) => Err((Status::InternalServerError, msg)),
         _ => Err((Status::InternalServerError, "Failed to get task statistics".to_string())),

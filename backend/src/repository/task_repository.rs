@@ -1,5 +1,5 @@
 use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set, PaginatorTrait};
-use chrono::{Timelike, Utc, TimeZone, Duration};
+use chrono::{Timelike, Utc, TimeZone, Duration, Weekday, NaiveDate, Datelike};
 use std::collections::HashMap;
 use crate::dto::taskDTO::TaskDto;
 use crate::entity::task;
@@ -28,8 +28,12 @@ impl<'a> TaskRepository<'a> {
             .await
     }
 
-    pub async fn tasks_stats_year(&self, user_id: i32, year: i32) -> Result<(i64, i64, f64, i32, String, String), DbErr> {
 
+    pub async fn tasks_stats_year(
+        &self,
+        user_id: i32,
+        year: i32,
+    ) -> Result<(i64, i64, f64, i32, String, String, String, String), DbErr> {
         let start_date = Utc.with_ymd_and_hms(year, 1, 1, 0, 0, 0).unwrap();
         let end_date = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap();
 
@@ -66,13 +70,16 @@ impl<'a> TaskRepository<'a> {
             .all(self.db)
             .await?;
 
-        // 2. Inicializar os contadores para turnos e categorias
+        // 2. Inicializar os contadores
         let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
         let mut category_counts: HashMap<String, i32> = HashMap::new();
+        // NOVO: Contadores para mês e semana
+        let mut month_counts: HashMap<u32, i32> = HashMap::new();
+        let mut week_counts: HashMap<u32, i32> = HashMap::new();
 
-        // 3. Iterar sobre as tarefas para contar turnos E categorias
+        // 3. Iterar sobre as tarefas para contar tudo
         for task in &executed_task_details {
-            // Lógica para contar o turno (sem alterações)
+            // Lógica para contar o turno
             let hour = task.complete_date.hour();
             let shift_name = match hour {
                 6..=11 => Some("Manhã"),
@@ -85,8 +92,16 @@ impl<'a> TaskRepository<'a> {
                 *shift_counts.entry(name).or_insert(0) += 1;
             }
 
-            // NOVO: Lógica para contar as categorias
+            // Lógica para contar as categorias
             *category_counts.entry(task.category.clone()).or_insert(0) += 1;
+
+            // NOVO: Lógica para contar os meses
+            let month = task.complete_date.month();
+            *month_counts.entry(month).or_insert(0) += 1;
+
+            // NOVO: Lógica para contar as semanas (usando o padrão ISO 8601)
+            let week = task.complete_date.iso_week().week();
+            *week_counts.entry(week).or_insert(0) += 1;
         }
 
         // 4. Encontrar o turno mais produtivo
@@ -96,14 +111,36 @@ impl<'a> TaskRepository<'a> {
             .map(|(shift_name, _)| shift_name.to_string())
             .unwrap_or_else(|| "N/A".to_string());
 
-
-        // 5. Encontrar a categoria com a maior contagem diretamente
+        // 5. Encontrar a categoria mais usada
         let most_used_category = category_counts
             .into_iter()
             .max_by_key(|&(_, count)| count)
             .map(|(category, _)| category)
             .unwrap_or_else(|| "N/A".to_string());
 
+        // NOVO: 6. Encontrar o mês mais produtivo
+        let most_productive_month = month_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(month_num, _)| {
+                match month_num {
+                    1 => "Janeiro", 2 => "Fevereiro", 3 => "Março", 4 => "Abril",
+                    5 => "Maio", 6 => "Junho", 7 => "Julho", 8 => "Agosto",
+                    9 => "Setembro", 10 => "Outubro", 11 => "Novembro", 12 => "Dezembro",
+                    _ => "Inválido",
+                }.to_string()
+            })
+            .unwrap_or_else(|| "N/A".to_string());
+
+        // NOVO: 7. Encontrar a semana mais produtiva
+        let most_productive_week = week_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(week_num, _)| format!("Semana {}", week_num))
+            .unwrap_or_else(|| "N/A".to_string());
+
+
+        // 8. Retornar todos os dados
         Ok((
             total_tasks as i64,
             executed_tasks as i64,
@@ -111,10 +148,12 @@ impl<'a> TaskRepository<'a> {
             year,
             most_productive_shift,
             most_used_category,
+            most_productive_month, // <- Novo
+            most_productive_week,   // <- Novo
         ))
     }
 
-    pub async fn tasks_stats_month(&self, user_id: i32, year: i32, month: i32) -> Result<(i64, i64, f64, i32, i32, String, String), DbErr> {
+    pub async fn tasks_stats_month(&self, user_id: i32, year: i32, month: i32) -> Result<(i64, i64, f64, i32, i32, String, String, String), DbErr> {
 
         let start_date = Utc.with_ymd_and_hms(year, month.try_into().unwrap(), 1, 0, 0, 0).unwrap();
 
@@ -163,6 +202,8 @@ impl<'a> TaskRepository<'a> {
         // 2. Inicializar os contadores para turnos e categorias
         let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
         let mut category_counts: HashMap<String, i32> = HashMap::new();
+        let mut week_counts: HashMap<u32, i32> = HashMap::new();
+
 
         // 3. Iterar sobre as tarefas para contar turnos E categorias
         for task in &executed_task_details {
@@ -181,6 +222,9 @@ impl<'a> TaskRepository<'a> {
 
             // NOVO: Lógica para contar as categorias
             *category_counts.entry(task.category.clone()).or_insert(0) += 1;
+
+            let week = task.complete_date.iso_week().week();
+            *week_counts.entry(week).or_insert(0) += 1;
         }
 
         // 4. Encontrar o turno mais produtivo
@@ -198,6 +242,12 @@ impl<'a> TaskRepository<'a> {
             .map(|(category, _)| category)
             .unwrap_or_else(|| "N/A".to_string());
 
+        let most_productive_week = week_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(week_num, _)| format!("Semana {}", week_num))
+            .unwrap_or_else(|| "N/A".to_string());
+
         Ok((
             total_tasks as i64,
             executed_tasks as i64,
@@ -206,6 +256,121 @@ impl<'a> TaskRepository<'a> {
             month,
             most_productive_shift,
             most_used_category,
+            most_productive_week,
+        ))
+    }
+
+    pub async fn tasks_stats_week(
+        &self,
+        user_id: i32,
+        year: i32,
+        week_num: i32,
+    ) -> Result<(i64, i64, f64, i32, i32, String, String, String), DbErr> {
+
+        // Calcula o primeiro dia (segunda-feira) da semana especificada
+        let start_of_week_naive = NaiveDate::from_isoywd_opt(year, week_num.try_into().unwrap(), Weekday::Mon)
+            .expect("Ano ou número de semana inválido.");
+        let start_date = start_of_week_naive.and_hms_opt(0, 0, 0).unwrap().and_utc();
+
+        // O fim da semana é o início da próxima semana menos 1 segundo
+        let end_date = start_date + Duration::weeks(1) - Duration::seconds(1);
+
+        // Total de tarefas do usuário na semana especificada
+        let total_tasks = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::BeginDate.gte(start_date))
+            .filter(task::Column::BeginDate.lte(end_date))
+            .count(self.db)
+            .await?;
+
+        // Tarefas executadas na semana
+        let executed_tasks = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::BeginDate.gte(start_date))
+            .filter(task::Column::BeginDate.lte(end_date))
+            .filter(task::Column::Status.eq("Executada"))
+            .count(self.db)
+            .await?;
+
+        // Calcular porcentagem
+        let percentage = if total_tasks > 0 {
+            (executed_tasks as f64 / total_tasks as f64) * 100.0
+        } else {
+            0.0
+        };
+
+        // 1. Buscar os detalhes das tarefas executadas no intervalo da semana
+        let executed_task_details = task::Entity::find()
+            .filter(task::Column::UserId.eq(user_id))
+            .filter(task::Column::Status.eq("Executada"))
+            .filter(task::Column::CompleteDate.gte(start_date))
+            .filter(task::Column::CompleteDate.lte(end_date))
+            .all(self.db)
+            .await?;
+
+        // 2. Inicializar contadores
+        let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
+        let mut category_counts: HashMap<String, i32> = HashMap::new();
+        let mut day_counts: HashMap<&'static str, i32> = HashMap::new(); // NOVO: para o dia mais produtivo
+
+        // 3. Iterar sobre as tarefas para contar turnos, categorias e dias
+        for task in &executed_task_details {
+            // Lógica para contar o turno (sem alterações)
+            let hour = task.complete_date.hour();
+            let shift_name = match hour {
+                6..=11 => "Manhã",
+                12..=17 => "Tarde",
+                18..=23 => "Noite",
+                _ => "Madrugada", // 0..=5
+            };
+            *shift_counts.entry(shift_name).or_insert(0) += 1;
+
+            // Lógica para contar as categorias (sem alterações)
+            *category_counts.entry(task.category.clone()).or_insert(0) += 1;
+
+            // NOVO: Lógica para contar os dias da semana
+            let day_name = match task.complete_date.weekday() {
+                Weekday::Mon => "Segunda-feira",
+                Weekday::Tue => "Terça-feira",
+                Weekday::Wed => "Quarta-feira",
+                Weekday::Thu => "Quinta-feira",
+                Weekday::Fri => "Sexta-feira",
+                Weekday::Sat => "Sábado",
+                Weekday::Sun => "Domingo",
+            };
+            *day_counts.entry(day_name).or_insert(0) += 1;
+        }
+
+        // 4. Encontrar o turno mais produtivo
+        let most_productive_shift = shift_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(shift_name, _)| shift_name.to_string())
+            .unwrap_or_else(|| "N/A".to_string());
+
+        // 5. Encontrar a categoria mais usada
+        let most_used_category = category_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(category, _)| category)
+            .unwrap_or_else(|| "N/A".to_string());
+
+        // 6. NOVO: Encontrar o dia mais produtivo da semana
+        let most_productive_day = day_counts
+            .into_iter()
+            .max_by_key(|&(_, count)| count)
+            .map(|(day_name, _)| day_name.to_string())
+            .unwrap_or_else(|| "N/A".to_string());
+
+        Ok((
+            total_tasks as i64,
+            executed_tasks as i64,
+            percentage,
+            year,
+            week_num, // Alterado de `month` para `week_num`
+            most_productive_shift,
+            most_used_category,
+            most_productive_day, // Alterado de `most_productive_week` para `most_productive_day`
         ))
     }
 
