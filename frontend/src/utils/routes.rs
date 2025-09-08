@@ -13,6 +13,7 @@ pub enum Route {
     Login,
     #[at("/register")]
     Register,
+
 }
 
 fn switch(route: Route) -> Html {
