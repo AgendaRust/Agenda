@@ -1,6 +1,11 @@
 .app-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: calc(100vh - 30px); // Account for taskbar
+    max-width: 100vw;
+    max-height: calc(100vh - 30px);
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

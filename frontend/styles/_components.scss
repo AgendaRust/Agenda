@@ -87,7 +87,7 @@ p {
   flex-direction: column;
   gap: 0;
   position: relative;
-  min-height: 60vh;
+  min-height: 400px;
   margin: 0 auto;
   font-family: "MS Sans Serif", sans-serif;
   font-size: 11px;
@@ -403,8 +403,8 @@ p {
 // Sidebar for tasks
 .calendar-app .sidebar {
   flex: 1;
-  min-width: 250px;
-  max-width: 300px;
+  min-width: 280px;
+  max-width: 350px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -533,7 +533,66 @@ p {
     border: 1px inset #c0c0c0;
     padding: 4px;
     min-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    
+    // Windows 98 scrollbar styling
+    scrollbar-width: 16px;
+    scrollbar-color: #c0c0c0 #dfdfdf;
+    
+    &::-webkit-scrollbar {
+      width: 16px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #dfdfdf;
+      border: 1px inset #c0c0c0;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #c0c0c0;
+      border: 1px outset #c0c0c0;
+      border-radius: 0;
+      
+      &:hover {
+        background: #a0a0a0;
+      }
+      
+      &:active {
+        background: #808080;
+        border: 1px inset #c0c0c0;
+      }
+    }
+    
+    &::-webkit-scrollbar-button {
+      background: #c0c0c0;
+      border: 1px outset #c0c0c0;
+      width: 16px;
+      height: 16px;
+      
+      &:hover {
+        background: #e0e0e0;
+      }
+      
+      &:active {
+        border: 1px inset #c0c0c0;
+      }
+    }
+    
+    &::-webkit-scrollbar-button:vertical:start:decrement {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8 4l-4 4h8z' fill='%23000'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    
+    &::-webkit-scrollbar-button:vertical:end:increment {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8 12l-4-4h8z' fill='%23000'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     
     // Ensure crisp rendering for all content
     filter: none !important;

@@ -12,6 +12,9 @@
   overflow: hidden;
   font-family: "MS Sans Serif", sans-serif;
   font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
   
   &:hover {
     background: #d4d0c8 !important;
@@ -182,8 +185,11 @@
   border-radius: 0;
   border: 1px inset #c0c0c0;
   display: inline-block;
-  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
   font-family: "MS Sans Serif", sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .reminder-time {
@@ -194,11 +200,14 @@
   border-radius: 0;
   border: 1px inset #c0c0c0;
   display: inline-block;
-  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
   font-weight: normal;
   font-family: "MS Sans Serif", sans-serif;
   transform: none;
   transition: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 // Windows 98 style - no theme variations needed
