@@ -9,15 +9,17 @@
 body {
   font-family: 'MS Sans Serif', sans-serif;
   font-size: 11px;
-  background: url('/wall-paper-top.jpg') no-repeat center center fixed;
+  // background: url('/wall-paper-top.jpg') no-repeat center center fixed;
+  background: url('/xp_wallpaper_2.png') no-repeat center center fixed;
   background-size: cover;
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0 20px 30px 20px; // Account for taskbar height
   color: #000000;
+  overflow: hidden; // Prevent scrolling
 
   // Windows 98 desktop overlay with blue gradient
   &::before {

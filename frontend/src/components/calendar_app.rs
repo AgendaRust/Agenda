@@ -1,5 +1,5 @@
 use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent};
+use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent, Properties};
 use chrono::{Local, NaiveDate, Datelike};
 
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
@@ -24,8 +24,14 @@ pub struct Goal {
     pub due_date: String,
 }
 
+#[derive(Properties, PartialEq)]
+pub struct CalendarAppProps {
+    pub visible: bool,
+    pub on_close: Callback<()>,
+}
+
 #[function_component(CalendarApp)]
-pub fn calendar_app() -> Html {
+pub fn calendar_app(props: &CalendarAppProps) -> Html {
     let show_task_form = use_state(|| false);
     let tasks = use_state(|| Vec::<Task>::new());
     let reminders = use_state(|| Vec::<Reminder>::new());
@@ -282,15 +288,28 @@ pub fn calendar_app() -> Html {
     };
     
     html! {
+        if !props.visible {
+            <div></div>
+        } else {
         <div class="calendar-app">
             <div class="calendar-header">
                 <h1 class="calendar-title">{ "Agenda - Windows 98" }</h1>
                 <div class="calendar-header-controls">
-                    <button class="control-button minimize-btn" type="button">
+                    <button class="control-button minimize-btn" type="button" onclick={
+                        let on_close = props.on_close.clone();
+                        Callback::from(move |_: MouseEvent| {
+                            on_close.emit(());
+                        })
+                    }>
                     </button>
                     <button class="control-button maximize-btn" type="button">
                     </button>
-                    <button class="control-button close-btn" type="button">
+                    <button class="control-button close-btn" type="button" onclick={
+                        let on_close = props.on_close.clone();
+                        Callback::from(move |_: MouseEvent| {
+                            on_close.emit(());
+                        })
+                    }>
                     </button>
                 </div>
             </div>
@@ -494,4 +513,5 @@ pub fn calendar_app() -> Html {
             />
         </div>
     }
+}
 }
