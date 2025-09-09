@@ -2,6 +2,7 @@ use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, Dele
 use chrono::{Timelike, Utc, TimeZone, Duration, Weekday, NaiveDate, Datelike};
 use std::collections::HashMap;
 use crate::dto::taskDTO::TaskDto;
+use crate::dto::taskUpdateDTO::TaskUpdateDto;
 use crate::entity::task;
 
 pub struct TaskRepository<'a> {
@@ -462,7 +463,7 @@ impl<'a> TaskRepository<'a> {
     pub async fn update_task(
         &self,
         id: i32,
-        task_info: &TaskDto,
+        task_info: &TaskUpdateDto,
         user_id: i32
     ) -> Result<task::Model, DbErr> {
         let task_to_update = self.find_by_id(id).await?
@@ -472,37 +473,32 @@ impl<'a> TaskRepository<'a> {
             return Err(DbErr::Custom(format!("Usuário {} não está autorizado a atualizar a tarefa {}", user_id, id)));
         }
 
+        let status = if let Some(status) = &task_info.status {
+            match status.as_str() {
+                "Executada" | "Adiada" => Ok(status.clone()),
+                _ => Err(DbErr::Custom(format!("Status inválido: {}", status))),
+            }?
+        } else {
+            task_to_update.status.clone() // Manter o status existente
+        };
+
         let mut active_task = task_to_update.into_active_model();
-        active_task.title = Set(task_info.title.clone());
-        active_task.description = Set(Some(task_info.description.clone()));
-        active_task.begin_date = Set(task_info.begin_date);
-        active_task.category = Set(task_info.category.clone());
-        active_task.r#type = Set(task_info.r#type.clone());
 
-        active_task.update(self.db).await
-    }
 
-    pub async fn update_status_task(
-        &self,
-        id: i32,
-        status: &str,
-        user_id: i32,
-    ) -> Result<task::Model, DbErr> {
-        let task_to_update = self.find_by_id(id).await?
-            .ok_or(DbErr::RecordNotFound(format!("Task with id {} not found", id)))?;
-
-        if task_to_update.user_id != user_id {
-            return Err(DbErr::Custom(format!("Usuário {} não está autorizado a atualizar a tarefa {}", user_id, id)));
+        if let Some(title) = &task_info.title {
+            active_task.title = Set(title.clone());
         }
 
-        let valid_status = match status {
-            "Executada" | "ParcialmenteExecutada" | "Adiada" => Ok(status.to_string()),
-            _ => Err(DbErr::Custom(format!("Invalid status: {}", status))),
-        }?;
+        match &task_info.description {
+            Some(desc) => active_task.description = Set(Some(desc.clone())),
+            None => {} // Manter a descrição existente
+        }
 
-        let mut active_task = task_to_update.into_active_model();
-        active_task.status = Set(valid_status);
+        if let Some(category) = &task_info.category {
+            active_task.category = Set(category.clone());
+        }
 
+        active_task.status = Set(status);
         active_task.update(self.db).await
     }
 
