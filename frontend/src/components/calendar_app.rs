@@ -5,6 +5,7 @@ use chrono::{Local, NaiveDate, Datelike};
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard};
 use crate::types::{TaskDuration, Task};
+use crate::services::tasks::{TaskDto, TaskUpdateDto};
 use crate::types::reminder::Reminder;
 
 #[derive(Clone, PartialEq)]
@@ -122,12 +123,10 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                 // First, find the current task to get all its fields
                 if let Some(current_task) = (*tasks_for_find).iter().find(|t| t.id == task_id) {
                     // Create TaskDto with all required fields, updating only title and description
-                    let task_dto = crate::services::tasks::TaskDto {
+                    let task_dto = TaskUpdateDto {
                         title: new_title.clone(),
-                        category: current_task.category.clone(),
                         description: new_description.clone(),
-                        begin_date: current_task.begin_date,
-                        task_type: current_task.task_type.clone(),
+                        status: current_task.status.clone(),
                     };
                     
                     match crate::services::tasks::update_task_with_dto(task_id, task_dto).await {
@@ -195,6 +194,41 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             let mut current_reminders = (*reminders).clone();
             current_reminders.push(new_reminder);
             reminders.set(current_reminders);
+        })
+    };
+
+    let on_status_update = {
+        let tasks = tasks.clone();
+        Callback::from(move |(task_id, new_status): (u32, String)| {
+            let tasks = tasks.clone();
+            spawn_local(async move {
+                if let Some(task_index) = (*tasks).iter().position(|t| t.id == task_id) {
+                    let mut task = (*tasks)[task_index].clone();
+                    task.status = new_status.clone();
+                    
+                    // Create TaskDto for update
+                    let task_dto = TaskUpdateDto {
+
+                        title: task.title.clone(),
+                        description: task.description.clone(),
+                        status: new_status,
+                    };
+
+                    match crate::services::tasks::update_task_with_dto(task_id, task_dto).await {
+                        Ok(_) => {
+                            // Update local state
+                            let mut updated_tasks = (*tasks).clone();
+                            updated_tasks[task_index] = task;
+                            tasks.set(updated_tasks);
+                        }
+                        Err(error) => {
+                            web_sys::console::log_1(&format!("Failed to update task status: {}", error).into());
+                        }
+                    }
+                } else {
+                    web_sys::console::log_1(&"Task not found for status update".into());
+                }
+            });
         })
     };
 
@@ -492,6 +526,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                                         description={task.description.clone()}
                                         on_task_delete={on_task_delete.clone()}
                                         on_task_update={Some(on_task_update.clone())}
+                                        on_status_update={Some(on_status_update.clone())}
                                         status={task.status.clone()}
                                         date={date_formatted}
                                         time={time_formatted}

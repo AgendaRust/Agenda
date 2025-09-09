@@ -47,6 +47,7 @@ pub struct TaskCardProps {
     pub status: String,
     pub on_task_delete: Callback<u32>,
     pub on_task_update: Option<Callback<(u32, String, String)>>, // (id, title, description)
+    pub on_status_update: Option<Callback<(u32, String)>>, // (id, new_status)
 }
 
 #[function_component(TaskCard)]
@@ -129,6 +130,26 @@ pub fn task_card(props: &TaskCardProps) -> Html {
         })
     };
 
+    let on_status_toggle = {
+        let on_status_update = props.on_status_update.clone();
+        let task_id = props.id;
+        let current_status = props.status.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            
+            let new_status = if current_status.to_lowercase() == "pendente" {
+                "Concluída".to_string()
+            } else {
+                "Pendente".to_string()
+            };
+            
+            if let Some(callback) = &on_status_update {
+                callback.emit((task_id, new_status));
+            }
+        })
+    };
+
     let task_id = props.id;
     let on_delete_click = {
         let on_task_delete = props.on_task_delete.clone();
@@ -191,10 +212,18 @@ pub fn task_card(props: &TaskCardProps) -> Html {
                 }
                 <div class="task-datetime">
                     <span class="task-date">{ format!("Due Date: {}", &props.date) }</span>
-                    // if *show_info {
-                        <span class="task-time">{ format_time_display(&props.time, &props.duration) }</span>
-                    // }
+                    <span class="task-time">{ format_time_display(&props.time, &props.duration) }</span>
                 </div>
+                if *show_info {
+                    <div class="task-status-actions">
+                        <button 
+                            class={if props.status.to_lowercase() == "pendente" { "complete-button" } else { "incomplete-button" }}
+                            onclick={on_status_toggle}
+                        >
+                            { if props.status.to_lowercase() == "pendente" { "Completar" } else { "Descompletar" } }
+                        </button>
+                    </div>
+                }
             </div>
         </div>
     }

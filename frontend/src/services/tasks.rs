@@ -15,6 +15,14 @@ pub struct TaskDto {
     pub task_type: String,
 }
 
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct TaskUpdateDto {
+    pub title: String,
+    pub description: String,
+    pub status: String,
+}
+
 pub enum TaskResult {
     Success(Task),
     InvalidFields,
@@ -166,7 +174,7 @@ pub async fn update_task(task_id: u32, title: String, description: String) -> Re
     }
 }
 
-pub async fn update_task_with_dto(task_id: u32, task_dto: TaskDto) -> Result<(), String> {
+pub async fn update_task_with_dto(task_id: u32, task_dto: TaskUpdateDto) -> Result<(), String> {
     let url = format!("{}/tasks/{}", API_URL, task_id);
     let token = get_token();
     if token.token.is_empty() {

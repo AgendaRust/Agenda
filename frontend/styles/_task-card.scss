@@ -244,6 +244,50 @@
   overflow-wrap: break-word;
 }
 
+// Status action buttons
+.task-status-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.complete-button,
+.incomplete-button {
+  font-family: "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  padding: 4px 12px;
+  border: 1px outset #c0c0c0;
+  background: #c0c0c0;
+  color: #000000;
+  cursor: pointer;
+  
+  &:hover {
+    background: #d4d0c8;
+    border: 1px outset #d4d0c8;
+  }
+  
+  &:active {
+    border: 1px inset #c0c0c0;
+    background: #b8b8b8;
+  }
+}
+
+.complete-button {
+  // Green accent for complete action
+  &:hover {
+    background: #90EE90;
+    border: 1px outset #90EE90;
+  }
+}
+
+.incomplete-button {
+  // Orange accent for incomplete action
+  &:hover {
+    background: #FFB347;
+    border: 1px outset #FFB347;
+  }
+}
+
 // Windows 98 style - no theme variations needed
 .dark-theme .task-card,
 .light-theme .task-card {
