@@ -332,7 +332,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
 
                         // Buttons - full width
                         <div class="button-container">
-                            <button type="submit" onclick={on_create}>{"Criar Task"}</button>
+                            <button type="submit" onclick={on_create}>{"Criar"}</button>
                             <button type="button" onclick={on_close}>{"Cancelar"}</button>
                         </div>
 
