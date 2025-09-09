@@ -347,4 +347,189 @@
       }
     }
   }
+  // Adicione no final do arquivo _report-app.scss
+
+  // Caixa de diálogo para seleção de data
+  .date-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .date-dialog {
+    width: 350px;
+    background: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+
+    .date-dialog-header {
+      background: linear-gradient(135deg, #00007B, #1085D2);
+      color: white;
+      padding: 2px 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: bold;
+      border-bottom: 1px solid #000080;
+      min-height: 18px;
+
+      h3 {
+        margin: 0;
+        padding: 0;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+      }
+
+      .close-dialog-btn {
+        width: 16px;
+        height: 14px;
+        border: 1px outset #c0c0c0;
+        background: #c0c0c0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        color: #000000;
+        transition: none;
+
+        &:hover {
+          background: #d4d4d4;
+        }
+
+        &:active {
+          border: 1px inset #c0c0c0;
+          background: #a8a8a8;
+        }
+      }
+    }
+
+    .date-dialog-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      label {
+        font-family: "MS Sans Serif", sans-serif;
+        font-size: 11px;
+        font-weight: normal;
+        color: #000000;
+        margin-bottom: 4px;
+      }
+
+      .date-input {
+        width: 100%;
+        padding: 2px 4px;
+        border: 1px inset #c0c0c0;
+        background: #ffffff;
+        font-family: "MS Sans Serif", sans-serif;
+        font-size: 11px;
+        color: #000000;
+        outline: none;
+        height: 20px;
+        box-sizing: border-box;
+
+        &:focus {
+          background: #ffffff;
+          border: 1px inset #000080;
+        }
+      }
+
+      .dialog-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 8px;
+
+        .btn-primary {
+          background: #c0c0c0;
+          border: 1px outset #c0c0c0;
+          padding: 4px 12px;
+          font-size: 11px;
+          font-family: "MS Sans Serif", sans-serif;
+          color: #000000;
+          cursor: pointer;
+          transition: none;
+          border-radius: 0;
+          min-width: 80px;
+
+          &:hover {
+            background: #d4d0c8;
+          }
+
+          &:active {
+            border: 1px inset #c0c0c0;
+            background: #a8a8a8;
+          }
+        }
+
+        .btn-secondary {
+          background: #c0c0c0;
+          border: 1px outset #c0c0c0;
+          padding: 4px 12px;
+          font-size: 11px;
+          font-family: "MS Sans Serif", sans-serif;
+          color: #000000;
+          cursor: pointer;
+          transition: none;
+          border-radius: 0;
+          min-width: 80px;
+
+          &:hover {
+            background: #d4d0c8;
+          }
+
+          &:active {
+            border: 1px inset #c0c0c0;
+            background: #a8a8a8;
+          }
+        }
+      }
+    }
+  }
+  .week-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .date-select-small {
+      width: 100%;
+      padding: 2px 4px;
+      border: 1px inset #c0c0c0;
+      background: #ffffff;
+      font-family: "MS Sans Serif", sans-serif;
+      font-size: 11px;
+      color: #000000;
+      outline: none;
+      height: 22px;
+      box-sizing: border-box;
+
+      &:focus {
+        background: #ffffff;
+        border: 1px inset #000080;
+      }
+    }
+  }
+
+  .week-hint {
+    font-size: 10px;
+    color: #666;
+    font-style: italic;
+    margin-top: -4px;
+  }
+
 }
