@@ -3,7 +3,7 @@ pub mod taskDTO;
 
 pub mod reminder_dto;
 pub mod goalDTO;
-pub mod taskStatusDTO;
+pub mod taskUpdateDTO;
 pub mod reportDTO;
 use serde::Deserialize;
 

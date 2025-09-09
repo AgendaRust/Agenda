@@ -1,6 +1,7 @@
 use rocket::State;
 use crate::db::Pool;
 use crate::dto::taskDTO::TaskDto;
+use crate::dto::taskUpdateDTO::TaskUpdateDto;
 use crate::entity::task;
 use crate::repository::task_repository::TaskRepository;
 use sea_orm::DeleteResult;
@@ -116,7 +117,7 @@ pub async fn get_task_stats_week_db(
         "week": week_num,
         "most_productive_shift": most_productive_shift,
         "most_used_category": most_used_category,
-        "most_productive_week": most_productive_day
+        "most_productive_day": most_productive_day
     }))
 }
 pub async fn register_task_db(
@@ -135,28 +136,12 @@ pub async fn register_task_db(
 pub async fn update_task_db(
     db: &State<Pool>,
     id: i32,
-    task_info: &TaskDto,
+    task_info: &TaskUpdateDto,
     user_id: i32,
 ) -> Result<task::Model, TaskError> {
     let conn = db.inner();
     let repo = TaskRepository::new(conn);
     repo.update_task(id, task_info, user_id)
-        .await
-        .map_err(|e| match e {
-            sea_orm::DbErr::RecordNotFound(_) => TaskError::TaskNotFound(e.to_string()),
-            _ => TaskError::DatabaseError(e.to_string()),
-        })
-}
-
-pub async fn update_status_task_db(
-    db: &State<Pool>,
-    id: i32,
-    status: &str,
-    user_id: i32,
-) -> Result<task::Model, TaskError> {
-    let conn = db.inner();
-    let repo = TaskRepository::new(conn);
-    repo.update_status_task(id, status, user_id)
         .await
         .map_err(|e| match e {
             sea_orm::DbErr::RecordNotFound(_) => TaskError::TaskNotFound(e.to_string()),
