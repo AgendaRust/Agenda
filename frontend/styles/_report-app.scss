@@ -1,6 +1,6 @@
 // _report-app.scss
 .report-app {
-  width: 800px;
+  width: 1000px;
   background: #c0c0c0;
   padding: 0;
   border: 2px outset #c0c0c0;
@@ -17,7 +17,6 @@
   font-size: 11px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
 
-  // Remove all filter effects for crisp rendering
   filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -115,15 +114,20 @@
   .report-content {
     padding: 8px;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    gap: 8px;
+    height: 500px;
 
-    .report-section {
+    .report-sidebar {
+      width: 200px;
       background: #ffffff;
       border: 1px inset #c0c0c0;
       padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
 
-      .section-header {
+      h3 {
         font-family: "MS Sans Serif", sans-serif;
         font-size: 11px;
         font-weight: bold;
@@ -134,92 +138,211 @@
         border: 1px outset #c0c0c0;
         text-align: left;
       }
+
+      .report-menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        li {
+          margin: 0;
+          padding: 0;
+
+          .menu-item {
+            width: 100%;
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-family: "MS Sans Serif", sans-serif;
+            color: #000000;
+            cursor: pointer;
+            transition: none;
+            border-radius: 0;
+            text-align: left;
+
+            &:hover {
+              background: #d4d0c8;
+            }
+
+            &:active {
+              border: 1px inset #c0c0c0;
+              background: #a8a8a8;
+            }
+
+            &.active {
+              background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+              color: white;
+              border: 1px inset #00007B;
+            }
+          }
+        }
+      }
     }
 
-    .report-list {
+    .report-main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      background: #ffffff;
-      border: 1px inset #c0c0c0;
-      padding: 4px;
-      min-height: 200px;
-      max-height: 400px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      width: 100%;
-      box-sizing: border-box;
+      gap: 8px;
 
-      // Windows 98 scrollbar styling
-      scrollbar-width: 16px;
-      scrollbar-color: #c0c0c0 #dfdfdf;
-
-      &::-webkit-scrollbar {
-        width: 16px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: #dfdfdf;
+      .report-view {
+        flex: 1;
+        background: #ffffff;
         border: 1px inset #c0c0c0;
-      }
+        padding: 8px;
+        overflow-y: auto;
 
-      &::-webkit-scrollbar-thumb {
-        background: #c0c0c0;
-        border: 1px outset #c0c0c0;
-        border-radius: 0;
-
-        &:hover {
-          background: #a0a0a0;
+        h2 {
+          font-family: "MS Sans Serif", sans-serif;
+          font-size: 11px;
+          font-weight: bold;
+          color: white;
+          margin: 0 0 8px 0;
+          padding: 4px 8px;
+          background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+          border: 1px outset #c0c0c0;
+          text-align: left;
         }
 
-        &:active {
-          background: #808080;
+        p {
+          margin: 0;
+          font-size: 11px;
+          font-family: "MS Sans Serif", sans-serif;
+          color: #000000;
+        }
+
+        scrollbar-width: 16px;
+        scrollbar-color: #c0c0c0 #dfdfdf;
+
+        &::-webkit-scrollbar {
+          width: 16px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #dfdfdf;
           border: 1px inset #c0c0c0;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #c0c0c0;
+          border: 1px outset #c0c0c0;
+          border-radius: 0;
+
+          &:hover {
+            background: #a0a0a0;
+          }
+
+          &:active {
+            background: #808080;
+            border: 1px inset #c0c0c0;
+          }
+        }
+      }
+
+      .report-summary {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        height: 150px;
+
+        .tasks-summary,
+        .goals-summary {
+          flex: 1;
+          background: #ffffff;
+          border: 1px inset #c0c0c0;
+          padding: 4px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          h3 {
+            font-family: "MS Sans Serif", sans-serif;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            margin: 0 0 4px 0;
+            padding: 2px 4px;
+            background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+            border: 1px outset #c0c0c0;
+            text-align: center;
+          }
+
+          .summary-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            .stat-item {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              padding: 2px;
+              background: #f0f0f0;
+              border: 1px inset #c0c0c0;
+              font-size: 10px;
+              font-family: "MS Sans Serif", sans-serif;
+              text-align: center;
+
+              .stat-label {
+                color: #000000;
+                font-weight: normal;
+                font-size: 9px;
+                margin-bottom: 1px;
+              }
+
+              .stat-value {
+                color: #000080;
+                font-weight: bold;
+                font-size: 11px;
+              }
+            }
+          }
         }
       }
     }
+  }
 
-    .action-buttons {
-      display: flex;
-      gap: 4px;
-      justify-content: flex-end;
-      margin-top: 8px;
+  .action-buttons {
+    padding: 8px;
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    border-top: 1px solid #808080;
+    background: #c0c0c0;
 
-      button {
-        background: #c0c0c0;
-        border: 1px outset #c0c0c0;
-        padding: 4px 8px;
-        font-size: 11px;
-        font-family: "MS Sans Serif", sans-serif;
-        color: #000000;
-        cursor: pointer;
-        transition: none;
-        border-radius: 0;
-        box-shadow: none;
-        min-width: 70px;
+    button {
+      background: #c0c0c0;
+      border: 1px outset #c0c0c0;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-family: "MS Sans Serif", sans-serif;
+      color: #000000;
+      cursor: pointer;
+      transition: none;
+      border-radius: 0;
+      box-shadow: none;
+      min-width: 70px;
 
-        &:hover {
-          background: #d4d0c8;
-          transform: none;
-          box-shadow: none;
-        }
+      &:hover {
+        background: #d4d0c8;
+      }
+
+      &:active {
+        border: 1px inset #c0c0c0;
+      }
+
+      &.primary {
+        background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+        color: white;
+        border: 1px outset #00007B;
+        font-weight: bold;
 
         &:active {
-          border: 1px inset #c0c0c0;
-          transform: none;
-          box-shadow: none;
-        }
-
-        &.primary {
-          background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
-          color: white;
-          border: 1px outset #00007B;
-          font-weight: bold;
-
-          &:active {
-            border: 1px inset #00007B;
-          }
+          border: 1px inset #00007B;
         }
       }
     }

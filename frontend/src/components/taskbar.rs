@@ -56,7 +56,7 @@ pub fn taskbar(props: &TaskbarProps) -> Html {
                     }
                 >
                     <span class="app-icon report-icon"></span>
-                    <span class="app-name">{ "Relatórios" }</span>
+                    <span class="app-name">{ "Relatório" }</span>
                 </button>
             </div>
             <div class="system-tray">
