@@ -1,4 +1,5 @@
-use yew::{function_component, html, Html, Properties, use_state, Callback, MouseEvent};
+use yew::{function_component, html, Html, Properties, use_state, Callback, MouseEvent, InputEvent, TargetCast};
+use web_sys::HtmlInputElement;
 use crate::types::TaskDuration;
 
 fn format_time_display(time: &str, duration: &TaskDuration) -> String {
@@ -45,25 +46,86 @@ pub struct TaskCardProps {
     pub duration: TaskDuration,
     pub status: String,
     pub on_task_delete: Callback<u32>,
+    pub on_task_update: Option<Callback<(u32, String, String)>>, // (id, title, description)
 }
 
 #[function_component(TaskCard)]
 pub fn task_card(props: &TaskCardProps) -> Html {
     let show_info = use_state(|| false);
+    let is_editing = use_state(|| false);
+    let edit_title = use_state(|| props.title.clone());
+    let edit_description = use_state(|| props.description.clone());
 
     let toggle_info = {
         let show_info = show_info.clone();
+        let is_editing = is_editing.clone();
         Callback::from(move |_: MouseEvent| {
-            show_info.set(!*show_info);
+            if !*is_editing {
+                show_info.set(!*show_info);
+            }
         })
     };
 
     let on_edit_click = {
+        let is_editing = is_editing.clone();
+        let edit_title = edit_title.clone();
+        let edit_description = edit_description.clone();
+        let props_title = props.title.clone();
+        let props_description = props.description.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             e.stop_propagation();
-            // TODO: Implement edit functionality
-            web_sys::console::log_1(&"Edit button clicked".into());
+            is_editing.set(true);
+            edit_title.set(props_title.clone());
+            edit_description.set(props_description.clone());
+        })
+    };
+
+    let on_save_click = {
+        let is_editing = is_editing.clone();
+        let edit_title = edit_title.clone();
+        let edit_description = edit_description.clone();
+        let on_task_update = props.on_task_update.clone();
+        let task_id = props.id;
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            
+            if let Some(callback) = &on_task_update {
+                callback.emit((task_id, (*edit_title).clone(), (*edit_description).clone()));
+            }
+            is_editing.set(false);
+        })
+    };
+
+    let on_cancel_click = {
+        let is_editing = is_editing.clone();
+        let edit_title = edit_title.clone();
+        let edit_description = edit_description.clone();
+        let props_title = props.title.clone();
+        let props_description = props.description.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            is_editing.set(false);
+            edit_title.set(props_title.clone());
+            edit_description.set(props_description.clone());
+        })
+    };
+
+    let on_title_input = {
+        let edit_title = edit_title.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            edit_title.set(input.value());
+        })
+    };
+
+    let on_description_input = {
+        let edit_description = edit_description.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            edit_description.set(input.value());
         })
     };
 
@@ -81,17 +143,47 @@ pub fn task_card(props: &TaskCardProps) -> Html {
     html! {
         <div class="task-card" onclick={toggle_info}>
             <div class="task-header">
-                <h3 class="task-title">{ &props.title }</h3>
+                if *is_editing {
+                    <input 
+                        class="task-title-input"
+                        type="text"
+                        value={(*edit_title).clone()}
+                        oninput={on_title_input}
+                        onclick={Callback::from(|e: MouseEvent| {
+                            e.prevent_default();
+                            e.stop_propagation();
+                        })}
+                    />
+                } else {
+                    <h3 class="task-title">{ &props.title }</h3>
+                }
                 if *show_info {
                     <div class="task-actions">
-                        <button class="edit-button" onclick={on_edit_click}>{ "Editar" }</button>
-                        <button class="delete-button" onclick={on_delete_click}>{ "Excluir" }</button>
+                        if *is_editing {
+                            <button class="save-button" onclick={on_save_click}>{ "Salvar" }</button>
+                            <button class="cancel-button" onclick={on_cancel_click}>{ "Cancelar" }</button>
+                        } else {
+                            <button class="edit-button" onclick={on_edit_click}>{ "Editar" }</button>
+                            <button class="delete-button" onclick={on_delete_click}>{ "Excluir" }</button>
+                        }
                     </div>
                 }
             </div>
             <div class="task-body">
                 if *show_info {
-                    <p class="task-description">{ &props.description }</p>
+                    if *is_editing {
+                        <textarea 
+                            class="task-description-input"
+                            value={(*edit_description).clone()}
+                            oninput={on_description_input}
+                            onclick={Callback::from(|e: MouseEvent| {
+                                e.prevent_default();
+                                e.stop_propagation();
+                            })}
+                        />
+                    } else {
+                        <p class="task-description">{ &props.description }</p>
+                    }
                     <div class="task-status">
                         <span class="status-label">{ "Status: " }</span>
                         <span class="status-value">{ &props.status }</span>

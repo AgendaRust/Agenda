@@ -113,6 +113,51 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         })
     };
 
+    let on_task_update = {
+        let tasks = tasks.clone();
+        Callback::from(move |(task_id, new_title, new_description): (u32, String, String)| {
+            let tasks = tasks.clone();
+            let tasks_for_find = tasks.clone();
+            spawn_local(async move {
+                // First, find the current task to get all its fields
+                if let Some(current_task) = (*tasks_for_find).iter().find(|t| t.id == task_id) {
+                    // Create TaskDto with all required fields, updating only title and description
+                    let task_dto = crate::services::tasks::TaskDto {
+                        title: new_title.clone(),
+                        category: current_task.category.clone(),
+                        description: new_description.clone(),
+                        begin_date: current_task.begin_date,
+                        task_type: current_task.task_type.clone(),
+                    };
+                    
+                    match crate::services::tasks::update_task_with_dto(task_id, task_dto).await {
+                        Ok(_) => {
+                            let updated_tasks: Vec<Task> = (*tasks)
+                                .iter()
+                                .map(|task| {
+                                    if task.id == task_id {
+                                        let mut updated_task = task.clone();
+                                        updated_task.title = new_title.clone();
+                                        updated_task.description = new_description.clone();
+                                        updated_task
+                                    } else {
+                                        task.clone()
+                                    }
+                                })
+                                .collect();
+                            tasks.set(updated_tasks);
+                        }
+                        Err(error) => {
+                            web_sys::console::log_1(&format!("Failed to update task: {}", error).into());
+                        }
+                    }
+                } else {
+                    web_sys::console::log_1(&"Task not found for update".into());
+                }
+            });
+        })
+    };
+
     let on_reminder_delete = {
         let reminders = reminders.clone();
         Callback::from(move |reminder_id: i32| {
@@ -446,6 +491,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                                         category={task.category.clone()}
                                         description={task.description.clone()}
                                         on_task_delete={on_task_delete.clone()}
+                                        on_task_update={Some(on_task_update.clone())}
                                         status={task.status.clone()}
                                         date={date_formatted}
                                         time={time_formatted}
