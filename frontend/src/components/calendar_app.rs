@@ -544,7 +544,26 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             }
                         },
                         ViewType::Reminders => {
-                            let reminder_cards: Vec<Html> = reminders.iter().enumerate().map(|(index, reminder)| {
+                            // Calcular início (domingo) e fim (sábado) da semana do dia selecionado
+                            let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
+                                .unwrap_or_else(|| Local::now().date_naive());
+                            let weekday = selected_date.weekday().number_from_sunday(); // 1 = domingo, 7 = sábado
+                            let start_of_week = selected_date - chrono::Duration::days((weekday - 1) as i64);
+                            let end_of_week = selected_date + chrono::Duration::days((7 - weekday) as i64);
+
+                            // Converter para DateTime<Utc> para comparar com reminder.date_end
+                            use chrono::{NaiveDateTime, Utc, TimeZone};
+                            let start_of_week_dt = Utc.from_utc_datetime(&start_of_week.and_hms_opt(0, 0, 0).unwrap());
+                            let end_of_week_dt = Utc.from_utc_datetime(&end_of_week.and_hms_opt(23, 59, 59).unwrap());
+
+                            // Filtrar lembretes da semana
+                            let weekly_reminders: Vec<&Reminder> = reminders.iter()
+                                .filter(|reminder| {
+                                    reminder.date_end >= start_of_week_dt && reminder.date_end <= end_of_week_dt
+                                })
+                                .collect();
+
+                            let reminder_cards: Vec<Html> = weekly_reminders.iter().enumerate().map(|(index, reminder)| {
                                 html! {
                                     <ReminderCard 
                                         key={format!("reminder-{}-{}", index, reminder.name)}
@@ -556,7 +575,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                                     />
                                 }
                             }).collect();
-                            
+
                             html! { <>{reminder_cards}</> }
                         },
                         ViewType::Goals => {
