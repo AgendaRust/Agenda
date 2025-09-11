@@ -132,4 +132,25 @@
             font-size: 12px;
         }
     }
+    .tray-icon.network-icon {
+        background-image: url('/ethernet_win_95_icon.png');
+    }
+    .tray-icon.sound-icon {
+        background-image: url('/win98_sound_icon.png');
+    }
+    .tray-icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 8px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        &:hover {
+            filter: brightness(1.2);
+        }
+        &:active {
+            filter: brightness(0.8);
+        }
+    }
 }

@@ -60,6 +60,8 @@ pub fn taskbar(props: &TaskbarProps) -> Html {
                 </button>
             </div>
             <div class="system-tray">
+                <icon class ="tray-icon network-icon"></icon>
+                <icon class ="tray-icon sound-icon"></icon>
                 <span class="time">{ (*time).clone() }</span>
             </div>
         </div>
