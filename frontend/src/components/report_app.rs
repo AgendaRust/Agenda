@@ -70,7 +70,33 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 })
                             }>{ "Anual" }</button></li>
                         </ul>
+
+                <div class="report-summary-section">
+                    <h3>{ "Resumo do Relatório" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Período Analisado:" }</span>
+                            <span class="summary-value">{ "Última Semana" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Atividades:" }</span>
+                            <span class="summary-value">{ "42" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Produtividade:" }</span>
+                            <span class="summary-value">{ "85%" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Total:" }</span>
+                            <span class="summary-value">{ "24h 30m" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Status Geral:" }</span>
+                            <span class="summary-value">{ "Bom" }</span>
+                        </div>
                     </div>
+                </div>
+            </div>
                     <div class="report-main">
                         <div class="report-view">
                             <h2>{ "Visualização de Relatório" }</h2>
