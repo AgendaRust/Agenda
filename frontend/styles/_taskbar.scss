@@ -99,6 +99,14 @@
                 background-position: center;
                 background-size: contain;
             }
+
+            &.report-icon {
+                background-image: url('/report-icon.png');
+                background-size: 16px 16px; /* Tamanho fixo para evitar distorções */
+                background-position: center;
+                background-repeat: no-repeat;
+                image-rendering: crisp-edges; /* Melhora a renderização de pixels */
+            }
         }
 
         .app-name {
