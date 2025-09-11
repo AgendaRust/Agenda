@@ -244,6 +244,50 @@
   overflow-wrap: break-word;
 }
 
+// Status action buttons
+.task-status-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.complete-button,
+.incomplete-button {
+  font-family: "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  padding: 4px 12px;
+  border: 1px outset #c0c0c0;
+  background: #c0c0c0;
+  color: #000000;
+  cursor: pointer;
+  
+  &:hover {
+    background: #d4d0c8;
+    border: 1px outset #d4d0c8;
+  }
+  
+  &:active {
+    border: 1px inset #c0c0c0;
+    background: #b8b8b8;
+  }
+}
+
+.complete-button {
+  // Green accent for complete action
+  &:hover {
+    background: #90EE90;
+    border: 1px outset #90EE90;
+  }
+}
+
+.incomplete-button {
+  // Orange accent for incomplete action
+  &:hover {
+    background: #FFB347;
+    border: 1px outset #FFB347;
+  }
+}
+
 // Windows 98 style - no theme variations needed
 .dark-theme .task-card,
 .light-theme .task-card {
@@ -329,4 +373,97 @@
 .delete-button:focus-visible {
   outline: 1px dotted #000000;
   outline-offset: 1px;
+}
+
+// Edit mode styles
+.task-title-input {
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000;
+  margin: 0;
+  padding: 2px 4px;
+  background: #ffffff;
+  border: 1px inset #c0c0c0;
+  border-radius: 0;
+  font-family: "MS Sans Serif", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  
+  &:focus {
+    outline: 1px dotted #000000;
+    outline-offset: 1px;
+  }
+}
+
+.task-description-input {
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  margin: 0 0 4px 0;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px inset #c0c0c0;
+  border-radius: 0;
+  font-family: "MS Sans Serif", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 60px;
+  resize: vertical;
+  word-wrap: break-word;
+  
+  &:focus {
+    outline: 1px dotted #000000;
+    outline-offset: 1px;
+  }
+}
+
+.save-button,
+.cancel-button {
+  padding: 1px 4px;
+  font-size: 9px;
+  font-weight: normal;
+  border-radius: 0;
+  cursor: pointer;
+  transition: none;
+  min-width: auto;
+  margin: 0;
+  font-family: "MS Sans Serif", sans-serif;
+  
+  &:hover {
+    transform: none;
+  }
+  
+  &:active {
+    transform: none;
+  }
+}
+
+.save-button {
+  background: #90ee90;
+  border: 1px outset #90ee90;
+  color: #000000;
+  
+  &:hover {
+    background: #98fb98;
+  }
+  
+  &:active {
+    border: 1px inset #90ee90;
+    background: #7ccd7c;
+  }
+}
+
+.cancel-button {
+  background: #ffb6c1;
+  border: 1px outset #ffb6c1;
+  color: #000000;
+  
+  &:hover {
+    background: #ffc0cb;
+  }
+  
+  &:active {
+    border: 1px inset #ffb6c1;
+    background: #f08080;
+  }
 }

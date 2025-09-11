@@ -475,7 +475,7 @@ impl<'a> TaskRepository<'a> {
 
         let status = if let Some(status) = &task_info.status {
             match status.as_str() {
-                "Executada" | "Adiada" => Ok(status.clone()),
+                "Concluída" | "Adiada" | "Pendente" => Ok(status.clone()),
                 _ => Err(DbErr::Custom(format!("Status inválido: {}", status))),
             }?
         } else {
