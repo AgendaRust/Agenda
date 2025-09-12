@@ -22,31 +22,8 @@ pub async fn get_tasks_stats_year(
     let result = report_service.tasks_stats_year(user_id, year).await;
 
     match result {
-        Ok((total, executed, percentage, year, shift, category, month, week)) => {
-            Ok(Json(TaskStatsYearResponse {
-                total_tasks: total,
-                executed_tasks: executed,
-                percentage,
-                year,
-                most_productive_shift: shift,
-                most_used_category: category,
-                most_productive_month: month,
-                most_productive_week: week,
-            }))
-        },
-        Err(_) => {
-            // Em caso de erro, retorna valores padrão
-            Ok(Json(TaskStatsYearResponse {
-                total_tasks: 0,
-                executed_tasks: 0,
-                percentage: 0.0,
-                year,
-                most_productive_shift: "N/A".to_string(),
-                most_used_category: "N/A".to_string(),
-                most_productive_month: "N/A".to_string(),
-                most_productive_week: "N/A".to_string(),
-            }))
-        }
+        Ok(response) => Ok(Json(response)),
+        Err(_) => Ok(Json(TaskStatsYearResponse::default_for_year(year)))
     }
 }
 
@@ -66,31 +43,8 @@ pub async fn get_tasks_stats_month(
     let result = report_service.tasks_stats_month(user_id, year, month).await;
 
     match result {
-        Ok((total, executed, percentage, year, month, shift, category, week)) => {
-            Ok(Json(TaskStatsMonthResponse {
-                total_tasks: total,
-                executed_tasks: executed,
-                percentage,
-                year,
-                month,
-                most_productive_shift: shift,
-                most_used_category: category,
-                most_productive_week: week,
-            }))
-        },
-        Err(_) => {
-            // Em caso de erro, retorna valores padrão
-            Ok(Json(TaskStatsMonthResponse {
-                total_tasks: 0,
-                executed_tasks: 0,
-                percentage: 0.0,
-                year,
-                month,
-                most_productive_shift: "N/A".to_string(),
-                most_used_category: "N/A".to_string(),
-                most_productive_week: "N/A".to_string(),
-            }))
-        }
+        Ok(response) => Ok(Json(response)),
+        Err(_) => Ok(Json(TaskStatsMonthResponse::default_for_month(year, month)))
     }
 }
 
@@ -110,30 +64,8 @@ pub async fn get_tasks_stats_week(
     let result = report_service.tasks_stats_week(user_id, year, week).await;
 
     match result {
-        Ok((total, executed, percentage, year, week, shift, category, day)) => {
-           Ok(Json(TaskStatsWeekResponse {
-                total_tasks: total,
-                executed_tasks: executed,
-                percentage,
-                year,
-                week,
-                most_productive_shift: shift,
-                most_used_category: category,
-                most_productive_day: day,
-            }))
-        },
-        Err(_) => {
-            // Em caso de erro, retorna valores padrão
-            Ok(Json(TaskStatsWeekResponse {
-                total_tasks: 0,
-                executed_tasks: 0,
-                percentage: 0.0,
-                year,
-                week,
-                most_productive_shift: "N/A".to_string(),
-                most_used_category: "N/A".to_string(),
-                most_productive_day: "N/A".to_string(),
-            }))
-        }
+        Ok(response) => Ok(Json(response)),
+        Err(_) => Ok(Json(TaskStatsWeekResponse::default_for_week(year, week)))
     }
 }
+
