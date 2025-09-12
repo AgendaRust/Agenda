@@ -1,0 +1,92 @@
+// _bar_chart.scss
+
+// Container do gráfico
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  background: #f0f0f0;
+  border: 1px inset #757474; // Borda mais fina
+  margin: 8px 0;
+  position: relative;
+
+  // Efeito de profundidade mais sutil
+  box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+// Canvas do gráfico
+.bar-chart-canvas {
+  background: white;
+  border: 1px inset #7a7a7a; // Borda mais fina
+  max-width: 100%;
+  height: auto;
+}
+
+// Legendas
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 2px;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 11px;
+
+    .color-box {
+      width: 10px;
+      height: 10px;
+      margin-right: 3px;
+      border: 1px inset #858484;
+    }
+
+    &.primary .color-box {
+      background-color: #4CAF50;
+    }
+
+    &.secondary .color-box {
+      background-color: #2196F3;
+    }
+  }
+}
+
+// Controles do gráfico
+.chart-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: 2px;
+
+  button {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 1px 4px;
+    font-size: 10px;
+    font-family: "MS Sans Serif", sans-serif;
+
+    &:hover {
+      background: #d4d0c8;
+    }
+
+    &:active {
+      border: 1px inset #c0c0c0;
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 4px;
+  }
+
+  .bar-chart-canvas {
+    height: 250px;
+  }
+}
