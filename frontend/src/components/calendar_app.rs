@@ -1,7 +1,7 @@
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent, Properties};
 use chrono::{Local, NaiveDate, Datelike};
-
+use chrono::TimeZone;
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard};
 use crate::types::{TaskDuration, Task};
@@ -158,6 +158,42 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         })
     };
 
+    let on_reminder_update = {
+        let reminders = reminders.clone();
+        Callback::from(move |(reminder_id, new_name, new_category, new_date_end): (i32, String, String, String)| {
+            let reminders = reminders.clone();
+            let new_date = chrono::NaiveDate::parse_from_str(&new_date_end, "%Y-%m-%d")
+                .map(|d| chrono::NaiveDateTime::new(d, chrono::NaiveTime::from_hms_opt(0,0,0).unwrap()))
+                .ok()
+                .map(|naive| chrono::Utc.from_utc_datetime(&naive));
+            if let Some(date_end) = new_date {
+                let dto = crate::services::reminder_service::ReminderUpdateDto {
+                    name: new_name.clone(),
+                    category: new_category.clone(),
+                    date_end,
+                };
+                wasm_bindgen_futures::spawn_local({
+                    let reminders = reminders.clone();
+                    async move {
+                        let _ = crate::services::reminder_service::update_reminder(reminder_id as u32, dto).await;
+                        let updated_reminders: Vec<Reminder> = (*reminders)
+                            .iter()
+                            .cloned()
+                            .map(|mut reminder| {
+                                if reminder.id == reminder_id {
+                                    reminder.name = new_name.clone();
+                                    reminder.category = new_category.clone();
+                                    reminder.date_end = date_end;
+                                }
+                                reminder
+                            })
+                            .collect();
+                        reminders.set(updated_reminders);
+                    }
+                });
+            }
+        })
+    };
     let on_reminder_delete = {
         let reminders = reminders.clone();
         Callback::from(move |reminder_id: i32| {
@@ -572,6 +608,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                                         category={reminder.category.clone()}
                                         date_end={reminder.date_end}
                                         on_reminder_delete={on_reminder_delete.clone()}
+                                        on_reminder_update={Some(on_reminder_update.clone())}
                                     />
                                 }
                             }).collect();

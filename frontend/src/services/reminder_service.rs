@@ -22,6 +22,7 @@ pub enum ReminderResult {
 pub struct ReminderUpdateDto {
     pub name: String,
     pub category: String,
+    pub date_end: DateTime<Utc>,
 }
 
 pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
