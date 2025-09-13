@@ -25,6 +25,161 @@ pub fn report_app(props: &ReportAppProps) -> Html {
         })
     };
 
+    // Função auxiliar para renderizar o resumo com base no tipo selecionado
+    let render_report_summary = {
+        let selected_type = (*selected_report_type).clone();
+        match selected_type.as_deref() {
+            Some("Semanal") => html! {
+                <div class="report-summary-section">
+                    <h3>{ "Resumo Semanal de Tarefas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana Analisada:" }</span>
+                            <span class="summary-value">{ "Semana 37" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "12" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Dia mais Produtivo:" }</span>
+                            <span class="summary-value">{ "Quarta-feira" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Médio Diário:" }</span>
+                            <span class="summary-value">{ "3h 30m" }</span>
+                        </div>
+                    </div>
+                <h3>{ "Resumo Semanal de Metas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana Analisada:" }</span>
+                            <span class="summary-value">{ "Semana 37" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "12" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Dia mais Produtivo:" }</span>
+                            <span class="summary-value">{ "Quarta-feira" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Médio Diário:" }</span>
+                            <span class="summary-value">{ "3h 30m" }</span>
+                        </div>
+                    </div>
+                </div>
+            },
+            Some("Mensal") => html! {
+                <div class="report-summary-section">
+                    <h3>{ "Resumo Mensal de Tarefas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Mês Analisado:" }</span>
+                            <span class="summary-value">{ "Setembro" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "42" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana mais Produtiva:" }</span>
+                            <span class="summary-value">{ "Segunda semana" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Categoria Dominante:" }</span>
+                            <span class="summary-value">{ "Projetos" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Taxa de Conclusão:" }</span>
+                            <span class="summary-value">{ "78%" }</span>
+                        </div>
+                    </div>
+                 <h3>{ "Resumo Semanal de Metas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana Analisada:" }</span>
+                            <span class="summary-value">{ "Semana 37" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "12" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Dia mais Produtivo:" }</span>
+                            <span class="summary-value">{ "Quarta-feira" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Médio Diário:" }</span>
+                            <span class="summary-value">{ "3h 30m" }</span>
+                        </div>
+                    </div>
+                </div>
+            },
+            Some("Anual") => html! {
+                <div class="report-summary-section">
+                    <h3>{ "Resumo Anual de Tarefas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Ano Analisado:" }</span>
+                            <span class="summary-value">{ "2023" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "486" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Mês mais Produtivo:" }</span>
+                            <span class="summary-value">{ "Março" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Média Mensal:" }</span>
+                            <span class="summary-value">{ "40.5 tarefas" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Progresso Anual:" }</span>
+                            <span class="summary-value">{ "92%" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tendência:" }</span>
+                            <span class="summary-value">{ "Crescente" }</span>
+                        </div>
+                    </div>
+                 <h3>{ "Resumo Semanal de Metas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana Analisada:" }</span>
+                            <span class="summary-value">{ "Semana 37" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "12" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Dia mais Produtivo:" }</span>
+                            <span class="summary-value">{ "Quarta-feira" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Médio Diário:" }</span>
+                            <span class="summary-value">{ "3h 30m" }</span>
+                        </div>
+                    </div>
+                </div>
+            },
+            _ => html! {
+                <div class="report-summary-section">
+                    <h3>{ "Resumo das Tarefas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Selecione um tipo de relatório" }</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    };
+
     html! {
         if !props.visible {
             <div></div>
@@ -71,48 +226,7 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 })
                             }>{ "Anual" }</button></li>
                         </ul>
-
-                <div class="report-summary-section">
-                    <h3>{ "Resumo das Tarefas" }</h3>
-                    <div class="summary-data">
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Período Analisado:" }</span>
-                            <span class="summary-value">{ "Última Semana" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Total de Tarefas:" }</span>
-                            <span class="summary-value">{ "42" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Produtividade:" }</span>
-                            <span class="summary-value">{ "85%" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Horário mais produtivo:" }</span>
-                            <span class="summary-value">{ "Noite" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Categoria mais Recorrente:" }</span>
-                            <span class="summary-value">{ "Reuniões" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Mês mais produtivo:" }</span>
-                            <span class="summary-value">{ "Janeiro" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Tempo Total:" }</span>
-                            <span class="summary-value">{ "24h 30m" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Semana mais produtiva:" }</span>
-                            <span class="summary-value">{ "Semana 37" }</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">{ "Status Geral:" }</span>
-                            <span class="summary-value">{ "Bom" }</span>
-                        </div>
-                    </div>
-                </div>
+                        { render_report_summary }
             </div>
                     <div class="report-main">
                         <div class="report-view">
@@ -120,14 +234,23 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                     <div class="chart-container">
                                         <BarChart
                                             data={vec![
-                                                ("Segunda".to_string(), 8.5),
-                                                ("Terça".to_string(), 6.2),
-                                                ("Quarta".to_string(), 9.1),
-                                                ("Quinta".to_string(), 7.8),
-                                                ("Sexta".to_string(), 5.4),
-                                                ("Sábado".to_string(), 3.2),
+                                                ("Concluídas".to_string(), 10 as f64),
+                                                ("Pendentes".to_string(), 5 as f64),
+                                                ("Adiadas".to_string(), 4 as f64),
                                             ]}
-                                            title="Horas Trabalhadas por Dia"
+                                            title="Tarefas"
+                                            width={600}
+                                            height={400}
+                                        />
+                                    </div>
+                                    <div class="chart-container">
+                                        <BarChart
+                                            data={vec![
+                                                ("Concluídas".to_string(), 8.5),
+                                                ("Pendentes".to_string(), 6.2),
+                                                ("Adiadas".to_string(), 9.1),
+                                            ]}
+                                            title="Metas"
                                             width={600}
                                             height={400}
                                         />

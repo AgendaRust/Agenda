@@ -79,7 +79,10 @@ fn draw_bar_chart(
         return;
     }
 
-    // Encontrar valor máximo
+    // Calcular a soma total para determinar as percentagens
+    let total_value: f64 = data.iter().map(|(_, v)| *v).sum();
+
+    // Encontrar valor máximo para a escala
     let max_value = data.iter().map(|(_, v)| *v).fold(0.0, f64::max);
 
     // Desenhar título
@@ -98,17 +101,28 @@ fn draw_bar_chart(
         let bar_height = (value / max_value) * chart_height;
         let y = margin + 40.0 + chart_height - bar_height;
 
+        // Calcular a percentagem
+        let percentage = (value / total_value) * 100.0;
+
         // Cor da barra (alternando cores)
-        let color = if i % 2 == 0 { "#4CAF50" } else { "#2196F3" };
+        let color = match i {
+            0 => "#01cb26",
+            1 => "#ff7e33",
+            2 => "#ff3333",
+            3 => "#01cb26",
+            4 => "#ff7e33",
+            5 => "#ff3333",
+            _ => "#9C27B0",
+        };
         context.set_fill_style(&color.into());
         context.fill_rect(x, y, bar_width, bar_height);
 
-        // Valor acima da barra
+        // Percentagem acima da barra
         context.set_font("12px Arial");
         context.set_fill_style(&"#333".into());
         context.set_text_align("center");
         context.fill_text(
-            &value.to_string(),
+            &format!("{:.1}%", percentage),
             x + bar_width / 2.0,
             y - 5.0
         ).unwrap();
