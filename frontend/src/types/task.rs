@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 pub enum TaskDuration {
     MeiaHora,
     UmaHora,
+    DuasHoras,
     Manha,
     Tarde,
     Noite,
+    Madrugada,
 }
 
 impl TaskDuration {
@@ -16,9 +18,11 @@ impl TaskDuration {
         vec![
             TaskDuration::MeiaHora,
             TaskDuration::UmaHora,
+            TaskDuration::DuasHoras,
             TaskDuration::Manha,
             TaskDuration::Tarde,
             TaskDuration::Noite,
+            TaskDuration::Madrugada,
         ]
     }
 
@@ -26,9 +30,11 @@ impl TaskDuration {
         match self {
             TaskDuration::MeiaHora => "Meia Hora",
             TaskDuration::UmaHora => "Uma Hora",
+            TaskDuration::DuasHoras => "Duas Horas",
             TaskDuration::Manha => "Manhã",
             TaskDuration::Tarde => "Tarde",
             TaskDuration::Noite => "Noite",
+            TaskDuration::Madrugada => "Madrugada",
         }
     }
 
@@ -36,20 +42,23 @@ impl TaskDuration {
         match self {
             TaskDuration::MeiaHora => "MeiaHora",
             TaskDuration::UmaHora => "UmaHora",
-            TaskDuration::Manha => "Manhã",
+            TaskDuration::DuasHoras => "DuasHoras",
+            TaskDuration::Manha => "Manha",
             TaskDuration::Tarde => "Tarde",
             TaskDuration::Noite => "Noite",
+            TaskDuration::Madrugada => "Madrugada",
         }
     }
 
     pub fn from_value(value: &str) -> Option<TaskDuration> {
         match value {
-            // to do duas horas e madrugada
             "MeiaHora" => Some(TaskDuration::MeiaHora),
             "UmaHora" => Some(TaskDuration::UmaHora),
-            "Manhã" => Some(TaskDuration::Manha),
+            "DuasHoras" => Some(TaskDuration::DuasHoras),   
+            "Manhã" | "Manha" => Some(TaskDuration::Manha),
             "Tarde" => Some(TaskDuration::Tarde),
             "Noite" => Some(TaskDuration::Noite),
+            "Madrugada" => Some(TaskDuration::Madrugada),
             _ => None,
         }
     }
