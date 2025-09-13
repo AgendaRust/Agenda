@@ -169,7 +169,7 @@ pub fn report_app(props: &ReportAppProps) -> Html {
             },
             _ => html! {
                 <div class="report-summary-section">
-                    <h3>{ "Resumo das Tarefas" }</h3>
+                    <h3>{ "Estatísticas do Relatório" }</h3>
                     <div class="summary-data">
                         <div class="summary-item">
                             <span class="summary-label">{ "Selecione um tipo de relatório" }</span>
@@ -256,41 +256,55 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                         />
                                     </div>
                             </div>
-                        <div class="report-summary">
-                            <div class="tasks-summary">
-                                <h3>{ "Tarefas" }</h3>
-                                <div class="summary-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Concluídas:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Adiadas:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Pendentes:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="goals-summary">
-                                <h3>{ "Metas" }</h3>
-                                <div class="summary-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Total de Metas:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Alcançadas:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">{ "Em Progresso:" }</span>
-                                        <span class="stat-value">{ "0" }</span>
-                                    </div>
-                                </div>
-                            </div>
+                                                <div class="report-summary">
+                            {
+                                if (*selected_report_type).is_some() {
+                                    html! {
+                                        <>
+                                            <div class="tasks-summary">
+                                                <h3>{ "Tarefas" }</h3>
+                                                <div class="summary-stats">
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Concluídas:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Adiadas:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Pendentes:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="goals-summary">
+                                                <h3>{ "Metas" }</h3>
+                                                <div class="summary-stats">
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Total de Metas:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Alcançadas:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <span class="stat-label">{ "Em Progresso:" }</span>
+                                                        <span class="stat-value">{ "0" }</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
+                                } else {
+                                    html! {
+                                        <div class="empty-summary">
+                                            <h3>{ "Selecione um tipo de relatório para visualizar o resumo." }</h3>
+                                        </div>
+                                    }
+                                }
+                            }
                         </div>
                     </div>
                 </div>
