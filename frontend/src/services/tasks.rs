@@ -134,46 +134,6 @@ pub async fn create_task(task_info: &TaskDto) -> TaskResult {
     }
 }
 
-pub async fn update_task(task_id: u32, title: String, description: String) -> Result<(), String> {
-    let url = format!("{}/tasks/{}", API_URL, task_id);
-    let token = get_token();
-    if token.token.is_empty() {
-        return Err("No authentication token found".to_string());
-    }
-
-    #[derive(Serialize)]
-    struct UpdateTaskRequest {
-        title: String,
-        description: String,
-    }
-
-    let update_data = UpdateTaskRequest {
-        title,
-        description,
-    };
-
-    match Request::put(&url)
-        .header("Authorization", &format!("Bearer {}", token.token))
-        .header("Content-Type", "application/json")
-        .json(&update_data)
-        .unwrap()
-        .send()
-        .await
-    {
-        Ok(response) => {
-            if response.status() == 200 || response.status() == 204 {
-                Ok(())
-            } else {
-                let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
-                let error_msg = format!("Failed to update task: HTTP {} - {}", response.status(), error_text);
-                web_sys::console::log_1(&error_msg.clone().into());
-                Err(error_msg)
-            }
-        }
-        Err(e) => Err(format!("Network error: {}", e)),
-    }
-}
-
 pub async fn update_task_with_dto(task_id: u32, task_dto: TaskUpdateDto) -> Result<(), String> {
     let url = format!("{}/tasks/{}", API_URL, task_id);
     let token = get_token();
