@@ -7,6 +7,7 @@ use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard
 use crate::types::{TaskDuration, Task};
 use crate::services::tasks::{TaskDto, TaskUpdateDto};
 use crate::types::reminder::Reminder;
+use web_sys::HtmlAudioElement;
 
 #[derive(Clone, PartialEq)]
 pub enum ViewType {
@@ -243,7 +244,8 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                 return;
             }
             
-            // Initialize mock goals data once
+            let audio_element = HtmlAudioElement::new_with_src("/Windows_XP_Startup.wav").unwrap();
+            let _ = audio_element.play().unwrap();
             let mock_goals = vec![
                 Goal {
                     id: 1,
