@@ -135,7 +135,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         let on_close = on_close.clone();
                         
                         wasm_bindgen_futures::spawn_local(async move {
-                            gloo_timers::future::TimeoutFuture::new(1500).await;
+                            gloo_timers::future::TimeoutFuture::new(500).await;
                             task_title.set(String::new());
                             task_category.set(String::new());
                             task_description.set(String::new());
