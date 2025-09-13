@@ -1,5 +1,5 @@
 use yew::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
-use crate::components::bar_chart::BarChart; // Ajuste o caminho conforme sua estrutura
+use crate::components::bar_chart::BarChart;
 
 #[derive(Properties, PartialEq)]
 pub struct ReportAppProps {
@@ -230,33 +230,47 @@ pub fn report_app(props: &ReportAppProps) -> Html {
             </div>
                     <div class="report-main">
                         <div class="report-view">
-                                <h2>{ "Visualização de Relatório" }</h2>
-                                    <div class="chart-container">
-                                        <BarChart
-                                            data={vec![
-                                                ("Concluídas".to_string(), 10 as f64),
-                                                ("Pendentes".to_string(), 5 as f64),
-                                                ("Adiadas".to_string(), 4 as f64),
-                                            ]}
-                                            title="Tarefas"
-                                            width={600}
-                                            height={400}
-                                        />
-                                    </div>
-                                    <div class="chart-container">
-                                        <BarChart
-                                            data={vec![
-                                                ("Concluídas".to_string(), 8.5),
-                                                ("Pendentes".to_string(), 6.2),
-                                                ("Adiadas".to_string(), 9.1),
-                                            ]}
-                                            title="Metas"
-                                            width={600}
-                                            height={400}
-                                        />
-                                    </div>
-                            </div>
-                                                <div class="report-summary">
+                            <h2>{ "Visualização de Relatório" }</h2>
+                            {
+                                if (*selected_report_type).is_some() {
+                                    html! {
+                                        <>
+                                            <div class="chart-container">
+                                                <BarChart
+                                                    data={vec![
+                                                        ("Concluídas".to_string(), 10 as f64),
+                                                        ("Pendentes".to_string(), 5 as f64),
+                                                        ("Adiadas".to_string(), 4 as f64),
+                                                    ]}
+                                                    title="Tarefas"
+                                                    width={600}
+                                                    height={400}
+                                                />
+                                            </div>
+                                            <div class="chart-container">
+                                                <BarChart
+                                                    data={vec![
+                                                        ("Concluídas".to_string(), 8.5),
+                                                        ("Pendentes".to_string(), 6.2),
+                                                        ("Adiadas".to_string(), 9.1),
+                                                    ]}
+                                                    title="Metas"
+                                                    width={600}
+                                                    height={400}
+                                                />
+                                            </div>
+                                        </>
+                                    }
+                                } else {
+                                    html! {
+                                        <div class="select-message">
+                                            <p>{ "Selecione um tipo de relatório para visualizar os gráficos" }</p>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                       <div class="report-summary">
                             {
                                 if (*selected_report_type).is_some() {
                                     html! {
