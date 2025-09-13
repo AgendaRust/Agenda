@@ -57,8 +57,8 @@ pub fn get_goal_routes() -> Vec<rocket::Route> {
 
 pub fn get_report_routes() -> Vec<rocket::Route> {
     routes![
-        report::get_tasks_stats_year,
-        report::get_tasks_stats_month,
-        report::get_tasks_stats_week
+        report::get_stats_year,
+        report::get_stats_month,
+        report::get_stats_week
     ]
 }

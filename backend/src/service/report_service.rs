@@ -17,11 +17,11 @@ impl ReportService {
     }
 
     /// Obtém estatísticas de tarefas para um ano específico
-    pub async fn tasks_stats_year(
+    pub async fn stats_year(
         &self,
         user_id: i32,
         year: i32,
-    ) -> Result<TaskStatsYearResponse, DbErr> {
+    ) -> Result<StatsYearResponse, DbErr> {
         let start_date = Utc.with_ymd_and_hms(year, 1, 1, 0, 0, 0).unwrap();
         let end_date = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap();
 
@@ -59,7 +59,7 @@ impl ReportService {
             .await?;
 
         // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
         );
@@ -96,34 +96,34 @@ impl ReportService {
         }
 
         // Resto do código permanece o mesmo...
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_month = self.find_most_productive_month(month_counts);
-        let most_productive_week = self.find_most_productive_week(week_counts);
-        let classification = self.classify_performance(percentage);
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_month_tasks = self.find_most_productive_month(month_counts);
+        let most_productive_week_tasks = self.find_most_productive_week(week_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
 
-        Ok(TaskStatsYearResponse {
+        Ok(StatsYearResponse {
             total_tasks: total_tasks as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
-            most_productive_shift,
-            most_used_category,
-            most_productive_month,
-            most_productive_week,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_month_tasks,
+            most_productive_week_tasks,
+            classification_tasks,
         })
     }
 
     /// Obtém estatísticas de tarefas para um mês específico
-    pub async fn tasks_stats_month(
+    pub async fn stats_month(
         &self,
         user_id: i32,
         year: i32,
         month: i32
-    ) -> Result<TaskStatsMonthResponse, DbErr> {
+    ) -> Result<StatsMonthResponse, DbErr> {
         let start_date = Utc.with_ymd_and_hms(year, month.try_into().unwrap(), 1, 0, 0, 0).unwrap();
 
         let (next_year, next_month) = if month == 12 {
@@ -169,7 +169,7 @@ impl ReportService {
             .await?;
 
         // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
         );
@@ -201,33 +201,33 @@ impl ReportService {
         }
 
         // Encontrar estatísticas mais relevantes
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_week = self.find_most_productive_week(week_counts);
-        let classification = self.classify_performance(percentage);
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_week_tasks = self.find_most_productive_week(week_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
 
-        Ok(TaskStatsMonthResponse {
+        Ok(StatsMonthResponse {
             total_tasks: total_tasks as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
             month,
-            most_productive_shift,
-            most_used_category,
-            most_productive_week,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_week_tasks,
+            classification_tasks,
         })
     }
 
     /// Obtém estatísticas de tarefas para uma semana específica
-    pub async fn tasks_stats_week(
+    pub async fn stats_week(
         &self,
         user_id: i32,
         year: i32,
         week_num: i32,
-    ) -> Result<TaskStatsWeekResponse, DbErr> {
+    ) -> Result<StatsWeekResponse, DbErr> {
         // Calcula o primeiro dia da semana especificada
         let start_of_week_naive = NaiveDate::from_isoywd_opt(year, week_num.try_into().unwrap(), Weekday::Mon)
             .expect("Ano ou número de semana inválido.");
@@ -270,7 +270,7 @@ impl ReportService {
             .await?;
 
         // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
         );
@@ -302,23 +302,23 @@ impl ReportService {
         }
 
         // Encontrar estatísticas mais relevantes
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_day = self.find_most_productive_day(day_counts);
-        let classification = self.classify_performance(percentage);
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_day_tasks = self.find_most_productive_day(day_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
 
-        Ok(TaskStatsWeekResponse {
+        Ok(StatsWeekResponse {
             total_tasks: total_tasks as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
             week: week_num,
-            most_productive_shift,
-            most_used_category,
-            most_productive_day,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_day_tasks,
+            classification_tasks,
         })
     }
 
