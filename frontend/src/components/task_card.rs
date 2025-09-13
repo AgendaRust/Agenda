@@ -1,13 +1,14 @@
 use yew::{function_component, html, Html, Properties, use_state, Callback, MouseEvent, InputEvent, TargetCast};
 use web_sys::HtmlInputElement;
-use crate::types::TaskDuration;
+use crate::types::{Task, TaskDuration};
 
 fn format_time_display(time: &str, duration: &TaskDuration) -> String {
     match duration {
         TaskDuration::Manha => "Manhã".to_string(),
         TaskDuration::Tarde => "Tarde".to_string(),
         TaskDuration::Noite => "Noite".to_string(),
-        TaskDuration::MeiaHora | TaskDuration::UmaHora => {
+        TaskDuration::Madrugada => "Madrugada".to_string(),
+        TaskDuration::MeiaHora | TaskDuration::UmaHora | TaskDuration::DuasHoras => {
             // Parse the time (format: "HH:MM")
             if let Some((hour_str, minute_str)) = time.split_once(':') {
                 if let (Ok(hour), Ok(minute)) = (hour_str.parse::<u32>(), minute_str.parse::<u32>()) {
@@ -16,6 +17,7 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
                     let duration_minutes = match duration {
                         TaskDuration::MeiaHora => 30,
                         TaskDuration::UmaHora => 60,
+                        TaskDuration::DuasHoras => 120,
                         _ => 0,
                     };
                     
