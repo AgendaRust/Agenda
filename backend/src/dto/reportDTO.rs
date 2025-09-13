@@ -1,83 +1,102 @@
 use rocket::serde::{Deserialize, Serialize};
 use chrono::NaiveDate;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum ReportType {
-    Weekly,
-    Monthly,
-    Annual,
+#[derive(Debug, serde::Serialize)]
+pub struct TaskStatsYearResponse {
+    pub total_tasks: i64,
+    pub executed_tasks: i64,
+    pub pendent_tasks: i64,
+    pub delayed_tasks: i64,
+    pub percentage: f64,
+    pub year: i32,
+    pub most_productive_shift: String,
+    pub most_used_category: String,
+    pub most_productive_month: String,
+    pub most_productive_week: String,
+    pub classification: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ReportRequestDto {
-    pub report_type: ReportType,
-    pub start_date: NaiveDate,
-    pub end_date: NaiveDate,
-    pub user_id: Option<i32>,
+#[derive(Debug, serde::Serialize)]
+pub struct TaskStatsMonthResponse {
+    pub total_tasks: i64,
+    pub executed_tasks: i64,
+    pub pendent_tasks: i64,
+    pub delayed_tasks: i64,
+    pub percentage: f64,
+    pub year: i32,
+    pub month: i32,
+    pub most_productive_shift: String,
+    pub most_used_category: String,
+    pub most_productive_week: String,
+    pub classification: String
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ReportResponseDto {
-    pub period: String,
-    pub report_type: ReportType,
-    pub goal_summary: GoalSummary,
-    pub task_summary: TaskSummary,
-    pub productivity_insights: ProductivityInsights,
-    pub category_analysis: CategoryAnalysis,
+#[derive(Debug, serde::Serialize)]
+pub struct TaskStatsWeekResponse {
+    pub total_tasks: i64,
+    pub executed_tasks: i64,
+    pub pendent_tasks: i64,
+    pub delayed_tasks: i64,
+    pub percentage: f64,
+    pub year: i32,
+    pub week: i32,
+    pub most_productive_shift: String,
+    pub most_used_category: String,
+    pub most_productive_day: String,
+    pub classification: String
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GoalSummary {
-    pub total_goals: i32,
-    pub completed_goals: i32,
-    pub partially_completed_goals: i32,
-    pub not_completed_goals: i32,
-    pub completion_percentage: f32,
-    pub partial_completion_percentage: f32,
+
+impl TaskStatsYearResponse {
+    pub fn default_for_year(year: i32) -> Self {
+        Self {
+            total_tasks: 0,
+            executed_tasks: 0,
+            pendent_tasks: 0,
+            delayed_tasks: 0,
+            percentage: 0.0,
+            year,
+            most_productive_shift: "N/A".to_string(),
+            most_used_category: "N/A".to_string(),
+            most_productive_month: "N/A".to_string(),
+            most_productive_week: "N/A".to_string(),
+            classification: "N/A".to_string(),
+        }
+    }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TaskSummary {
-    pub total_tasks: i32,
-    pub completed_tasks: i32,
-    pub partially_completed_tasks: i32,
-    pub postponed_tasks: i32,
-    pub completion_percentage: f32,
-    pub partial_completion_percentage: f32,
+impl TaskStatsMonthResponse {
+    pub fn default_for_month(year: i32, month: i32) -> Self {
+        Self {
+            total_tasks: 0,
+            executed_tasks: 0,
+            pendent_tasks: 0,
+            delayed_tasks: 0,
+            percentage: 0.0,
+            year,
+            month,
+            most_productive_shift: "N/A".to_string(),
+            most_used_category: "N/A".to_string(),
+            most_productive_week: "N/A".to_string(),
+            classification: "N/A".to_string(),
+        }
+    }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductivityInsights {
-    pub most_productive_periods: Vec<ProductivePeriod>,
-    pub most_productive_time_slots: Vec<TimeSlotProductivity>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductivePeriod {
-    pub period: String,
-    pub completed_tasks: i32,
-    pub completed_goals: i32,
-    pub total_score: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TimeSlotProductivity {
-    pub time_slot: String, // "morning", "afternoon", "evening"
-    pub completed_tasks: i32,
-    pub total_tasks: i32,
-    pub productivity_percentage: f32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CategoryAnalysis {
-    pub top_task_categories: Vec<CategoryStats>,
-    pub top_goal_categories: Vec<CategoryStats>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CategoryStats {
-    pub category_name: String,
-    pub total_items: i32,
-    pub completed_items: i32,
-    pub completion_percentage: f32,
+impl TaskStatsWeekResponse {
+    pub fn default_for_week(year: i32, week: i32) -> Self {
+        Self {
+            total_tasks: 0,
+            executed_tasks: 0,
+            pendent_tasks: 0,
+            delayed_tasks: 0,
+            percentage: 0.0,
+            year,
+            week,
+            most_productive_shift: "N/A".to_string(),
+            most_used_category: "N/A".to_string(),
+            most_productive_day: "N/A".to_string(),
+            classification: "N/A".to_string(),
+        }
+    }
 }

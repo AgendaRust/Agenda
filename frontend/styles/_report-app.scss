@@ -1,6 +1,6 @@
 // _report-app.scss
 .report-app {
-  width: 1000px;
+  width: 900px;
   background: #c0c0c0;
   padding: 0;
   border: 2px outset #c0c0c0;
@@ -116,10 +116,10 @@
     display: flex;
     flex-direction: row;
     gap: 8px;
-    height: 500px;
+    height: 615px;
 
     .report-sidebar {
-      width: 200px;
+      width: 220px;
       background: #ffffff;
       border: 1px inset #c0c0c0;
       padding: 4px;
@@ -247,7 +247,7 @@
         display: flex;
         flex-direction: row;
         gap: 8px;
-        height: 150px;
+        height: 112.5px;
 
         .tasks-summary,
         .goals-summary {
@@ -261,11 +261,11 @@
 
           h3 {
             font-family: "MS Sans Serif", sans-serif;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             color: white;
             margin: 0 0 4px 0;
-            padding: 2px 4px;
+            padding: 2px 3.5px;
             background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
             border: 1px outset #c0c0c0;
             text-align: center;
@@ -274,30 +274,29 @@
           .summary-stats {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1.5px;
 
             .stat-item {
               display: flex;
-              flex-direction: column;
+              flex-direction: row;
               align-items: center;
-              padding: 2px;
+              justify-content: space-between;
+              padding: 2px 4px;
               background: #f0f0f0;
               border: 1px inset #c0c0c0;
-              font-size: 10px;
+              font-size: 13.8px;
               font-family: "MS Sans Serif", sans-serif;
-              text-align: center;
 
               .stat-label {
                 color: #000000;
                 font-weight: normal;
-                font-size: 9px;
-                margin-bottom: 1px;
+                font-size: 13.00px;
               }
 
               .stat-value {
                 color: #000080;
                 font-weight: bold;
-                font-size: 11px;
+                font-size: 15.0px;
               }
             }
           }
@@ -530,6 +529,56 @@
     color: #666;
     font-style: italic;
     margin-top: -4px;
+  }
+
+  .report-summary-section {
+    background: #ffffff;
+    border: 1px inset #c0c0c0;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+
+    h3 {
+      font-family: "MS Sans Serif", sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+      margin: 0 0 4px 0;
+      padding: 4px 8px;
+      background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
+      border: 1px outset #c0c0c0;
+      text-align: left;
+    }
+
+    .summary-data {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .summary-item {
+        background: #f0f0f0;
+        border: 1px inset #c0c0c0;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-family: "MS Sans Serif", sans-serif;
+        color: #000000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .summary-label {
+          font-weight: normal;
+          color: #000000;
+        }
+
+        .summary-value {
+          font-weight: bold;
+          color: #000080;
+        }
+      }
+    }
   }
 
 }

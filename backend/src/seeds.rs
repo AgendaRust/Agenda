@@ -133,7 +133,7 @@ impl DatabaseSeeder {
             "Lazer", "Desenvolvimento", "Reuniões", "Projetos"
         ];
 
-        let statuses = vec!["Pendente", "Executada", "ParcialmenteExecutada", "Adiada"];
+        let statuses = vec!["Pendente", "Concluída", "Adiada"];
         let priorities = vec!["Low", "Medium", "High", "Critical"];
 
         for _ in 1..=150 {

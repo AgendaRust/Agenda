@@ -30,10 +30,7 @@ pub fn get_task_routes() -> Vec<rocket::Route> {
         task::register_task,
         task::update_task,
         task::delete_task,
-        task::get_tasks_by_user_id,
-        task::get_task_stats_year,
-        task::get_task_stats_month,
-        task::get_task_stats_week
+        task::get_tasks_by_user_id
     ]
 }
 
@@ -60,11 +57,8 @@ pub fn get_goal_routes() -> Vec<rocket::Route> {
 
 pub fn get_report_routes() -> Vec<rocket::Route> {
     routes![
-        report::test_endpoint,
-        report::generate_report,
-        report::weekly_report,
-        report::monthly_report,
-        report::annual_report,
-        report::get_date_suggestions,
+        report::get_tasks_stats_year,
+        report::get_tasks_stats_month,
+        report::get_tasks_stats_week
     ]
 }

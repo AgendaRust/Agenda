@@ -1,4 +1,5 @@
 use yew::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
+use crate::components::bar_chart::BarChart; // Ajuste o caminho conforme sua estrutura
 
 #[derive(Properties, PartialEq)]
 pub struct ReportAppProps {
@@ -70,22 +71,78 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 })
                             }>{ "Anual" }</button></li>
                         </ul>
+
+                <div class="report-summary-section">
+                    <h3>{ "Resumo das Tarefas" }</h3>
+                    <div class="summary-data">
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Período Analisado:" }</span>
+                            <span class="summary-value">{ "Última Semana" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Total de Tarefas:" }</span>
+                            <span class="summary-value">{ "42" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Produtividade:" }</span>
+                            <span class="summary-value">{ "85%" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Horário mais produtivo:" }</span>
+                            <span class="summary-value">{ "Noite" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Categoria mais Recorrente:" }</span>
+                            <span class="summary-value">{ "Reuniões" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Mês mais produtivo:" }</span>
+                            <span class="summary-value">{ "Janeiro" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Tempo Total:" }</span>
+                            <span class="summary-value">{ "24h 30m" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Semana mais produtiva:" }</span>
+                            <span class="summary-value">{ "Semana 37" }</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{ "Status Geral:" }</span>
+                            <span class="summary-value">{ "Bom" }</span>
+                        </div>
                     </div>
+                </div>
+            </div>
                     <div class="report-main">
                         <div class="report-view">
-                            <h2>{ "Visualização de Relatório" }</h2>
-                            <p>{ "Selecione um tipo de relatório no menu lateral para visualizar os dados." }</p>
-                        </div>
+                                <h2>{ "Visualização de Relatório" }</h2>
+                                    <div class="chart-container">
+                                        <BarChart
+                                            data={vec![
+                                                ("Segunda".to_string(), 8.5),
+                                                ("Terça".to_string(), 6.2),
+                                                ("Quarta".to_string(), 9.1),
+                                                ("Quinta".to_string(), 7.8),
+                                                ("Sexta".to_string(), 5.4),
+                                                ("Sábado".to_string(), 3.2),
+                                            ]}
+                                            title="Horas Trabalhadas por Dia"
+                                            width={600}
+                                            height={400}
+                                        />
+                                    </div>
+                            </div>
                         <div class="report-summary">
                             <div class="tasks-summary">
                                 <h3>{ "Tarefas" }</h3>
                                 <div class="summary-stats">
                                     <div class="stat-item">
-                                        <span class="stat-label">{ "Total de Tarefas:" }</span>
+                                        <span class="stat-label">{ "Concluídas:" }</span>
                                         <span class="stat-value">{ "0" }</span>
                                     </div>
                                     <div class="stat-item">
-                                        <span class="stat-label">{ "Concluídas:" }</span>
+                                        <span class="stat-label">{ "Adiadas:" }</span>
                                         <span class="stat-value">{ "0" }</span>
                                     </div>
                                     <div class="stat-item">

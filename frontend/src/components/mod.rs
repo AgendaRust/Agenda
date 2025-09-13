@@ -7,3 +7,4 @@ pub mod reminder_card;
 pub mod reminder_form;
 pub mod taskbar;
 pub mod report_app;
+pub mod bar_chart;
