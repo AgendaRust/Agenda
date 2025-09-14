@@ -13,6 +13,7 @@ pub struct Model {
     pub description: Option<String>,
     pub category: Option<String>,
     pub status: String,
+    #[serde(rename = "goal_type")] 
     pub r#type: String,
     pub date_end: DateTimeUtc,
     pub date_start: DateTimeUtc,
