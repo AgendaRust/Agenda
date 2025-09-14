@@ -36,8 +36,8 @@ impl ReportService {
         // Total de metas do usuário no ano especificado
         let total_goals = goal::Entity::find()
             .filter(goal::Column::UserId.eq(user_id))
-            .filter(goal::Column::BeginDate.gte(start_date))
-            .filter(goal::Column::BeginDate.lte(end_date))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -66,10 +66,41 @@ impl ReportService {
             .count(&self.db)
             .await?;
 
-        // Calcular porcentagem
+        // metas executadas no ano
+        let executed_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Concluída"))
+            .count(&self.db)
+            .await?;
+
+        let pendent_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Em andamento"))
+            .count(&self.db)
+            .await?;
+
+        let delayed_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Cancelada"))
+            .count(&self.db)
+            .await?;
+
+        // Calcular porcentagem tasks
         let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
+        );
+
+        // Calcular porcentagem metas
+        let percentage_goals = self.calculate_percentage(
+            executed_goals.try_into().unwrap(),
+            total_goals.try_into().unwrap()
         );
 
         // Buscar os detalhes das tarefas executadas
@@ -78,14 +109,29 @@ impl ReportService {
             .filter(task::Column::Status.eq("Concluída"))
             .filter(task::Column::CompleteDate.gte(start_date))
             .filter(task::Column::CompleteDate.lte(end_date))
-            .all(&self.db) // Adicionado &
+            .all(&self.db)
             .await?;
 
-        // Inicializar os contadores
+        // metas executadas no ano
+        let executed_goals_details = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::Status.eq("Concluída"))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .all(&self.db)
+            .await?;
+
+        // Inicializar os contadores tasks
         let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
         let mut category_counts: HashMap<String, i32> = HashMap::new();
         let mut month_counts: HashMap<u32, i32> = HashMap::new();
         let mut week_counts: HashMap<u32, i32> = HashMap::new();
+
+        // Inicializar os contadores metas
+        let mut shift_counts_goals: HashMap<&'static str, i32> = HashMap::new();
+        let mut category_counts_goals: HashMap<String, i32> = HashMap::new();
+        let mut month_counts_goals: HashMap<u32, i32> = HashMap::new();
+        let mut week_counts_goals: HashMap<u32, i32> = HashMap::new();
 
         // Processar todas as tarefas
         for task in &executed_task_details {
@@ -103,7 +149,22 @@ impl ReportService {
             *week_counts.entry(week).or_insert(0) += 1;
         }
 
-        // Resto do código permanece o mesmo...
+        // Processar todas as tarefas
+        for goal in &executed_goals_details {
+            self.count_shift(&mut shift_counts_goals, goal.date_end.hour());
+
+            // Contar categorias
+            *category_counts_goals.entry(goal.category.clone().expect("REASON")).or_insert(0) += 1;
+
+            // Contar meses
+            let month = goal.date_end.month();
+            *month_counts_goals.entry(month).or_insert(0) += 1;
+
+            // Contar semanas
+            let week = goal.date_end.iso_week().week();
+            *week_counts_goals.entry(week).or_insert(0) += 1;
+        }
+
         let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
         let most_used_category_tasks = self.find_most_used_category(category_counts);
         let most_productive_month_tasks = self.find_most_productive_month(month_counts);
@@ -155,8 +216,8 @@ impl ReportService {
         // Total de metas do usuário no mês especificado
         let total_goals = goal::Entity::find()
             .filter(goal::Column::UserId.eq(user_id))
-            .filter(goal::Column::BeginDate.gte(start_date))
-            .filter(goal::Column::BeginDate.lte(end_date))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -265,8 +326,8 @@ impl ReportService {
         // Total de metas do usuário na semana especificada
         let total_goals = goal::Entity::find()
             .filter(goal::Column::UserId.eq(user_id))
-            .filter(goal::Column::BeginDate.gte(start_date))
-            .filter(goal::Column::BeginDate.lte(end_date))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
             .count(&self.db)
             .await?;
 
