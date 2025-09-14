@@ -30,7 +30,15 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
-            .count(&self.db) // Adicionado &
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário no ano especificado
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::BeginDate.gte(start_date))
+            .filter(goal::Column::BeginDate.lte(end_date))
+            .count(&self.db)
             .await?;
 
         // Tarefas executadas no ano
@@ -39,7 +47,7 @@ impl ReportService {
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
             .filter(task::Column::Status.eq("Concluída"))
-            .count(&self.db) // Adicionado &
+            .count(&self.db)
             .await?;
 
         let pendent_tasks = task::Entity::find()
@@ -104,6 +112,7 @@ impl ReportService {
 
         Ok(StatsYearResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
@@ -140,6 +149,14 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário no mês especificado
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::BeginDate.gte(start_date))
+            .filter(goal::Column::BeginDate.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -208,6 +225,7 @@ impl ReportService {
 
         Ok(StatsMonthResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
@@ -241,6 +259,14 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário na semana especificada
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::BeginDate.gte(start_date))
+            .filter(goal::Column::BeginDate.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -309,6 +335,7 @@ impl ReportService {
 
         Ok(StatsWeekResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,

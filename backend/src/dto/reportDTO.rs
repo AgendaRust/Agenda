@@ -4,6 +4,7 @@ use chrono::NaiveDate;
 #[derive(Debug, serde::Serialize)]
 pub struct StatsYearResponse {
     pub total_tasks: i64,
+    pub total_goals: i64,
     pub executed_tasks: i64,
     pub pendent_tasks: i64,
     pub delayed_tasks: i64,
@@ -19,6 +20,7 @@ pub struct StatsYearResponse {
 #[derive(Debug, serde::Serialize)]
 pub struct StatsMonthResponse {
     pub total_tasks: i64,
+    pub total_goals: i64,
     pub executed_tasks: i64,
     pub pendent_tasks: i64,
     pub delayed_tasks: i64,
@@ -34,6 +36,7 @@ pub struct StatsMonthResponse {
 #[derive(Debug, serde::Serialize)]
 pub struct StatsWeekResponse {
     pub total_tasks: i64,
+    pub total_goals: i64,
     pub executed_tasks: i64,
     pub pendent_tasks: i64,
     pub delayed_tasks: i64,
@@ -51,6 +54,7 @@ impl StatsYearResponse {
     pub fn default_for_year(year: i32) -> Self {
         Self {
             total_tasks: 0,
+            total_goals: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
             delayed_tasks: 0,
@@ -69,6 +73,7 @@ impl StatsMonthResponse {
     pub fn default_for_month(year: i32, month: i32) -> Self {
         Self {
             total_tasks: 0,
+            total_goals: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
             delayed_tasks: 0,
@@ -87,6 +92,7 @@ impl StatsWeekResponse {
     pub fn default_for_week(year: i32, week: i32) -> Self {
         Self {
             total_tasks: 0,
+            total_goals: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
             delayed_tasks: 0,
