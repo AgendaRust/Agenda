@@ -2,5 +2,6 @@
 pub mod note;
 pub mod task;
 pub mod reminder;
+pub mod goal;
 // Re-export commonly used types
 pub use task::{Task, TaskDuration};

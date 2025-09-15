@@ -17,11 +17,11 @@ impl ReportService {
     }
 
     /// Obtém estatísticas de tarefas para um ano específico
-    pub async fn tasks_stats_year(
+    pub async fn stats_year(
         &self,
         user_id: i32,
         year: i32,
-    ) -> Result<TaskStatsYearResponse, DbErr> {
+    ) -> Result<StatsYearResponse, DbErr> {
         let start_date = Utc.with_ymd_and_hms(year, 1, 1, 0, 0, 0).unwrap();
         let end_date = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap();
 
@@ -30,7 +30,15 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
-            .count(&self.db) // Adicionado &
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário no ano especificado
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .count(&self.db)
             .await?;
 
         // Tarefas executadas no ano
@@ -39,7 +47,7 @@ impl ReportService {
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
             .filter(task::Column::Status.eq("Concluída"))
-            .count(&self.db) // Adicionado &
+            .count(&self.db)
             .await?;
 
         let pendent_tasks = task::Entity::find()
@@ -58,10 +66,41 @@ impl ReportService {
             .count(&self.db)
             .await?;
 
-        // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        // metas executadas no ano
+        let executed_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Concluída"))
+            .count(&self.db)
+            .await?;
+
+        let pendent_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Em andamento"))
+            .count(&self.db)
+            .await?;
+
+        let delayed_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .filter(goal::Column::Status.eq("Cancelada"))
+            .count(&self.db)
+            .await?;
+
+        // Calcular porcentagem tasks
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
+        );
+
+        // Calcular porcentagem metas
+        let percentage_goals = self.calculate_percentage(
+            executed_goals.try_into().unwrap(),
+            total_goals.try_into().unwrap()
         );
 
         // Buscar os detalhes das tarefas executadas
@@ -70,14 +109,29 @@ impl ReportService {
             .filter(task::Column::Status.eq("Concluída"))
             .filter(task::Column::CompleteDate.gte(start_date))
             .filter(task::Column::CompleteDate.lte(end_date))
-            .all(&self.db) // Adicionado &
+            .all(&self.db)
             .await?;
 
-        // Inicializar os contadores
+        // metas executadas no ano
+        let executed_goals_details = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::Status.eq("Concluída"))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
+            .all(&self.db)
+            .await?;
+
+        // Inicializar os contadores tasks
         let mut shift_counts: HashMap<&'static str, i32> = HashMap::new();
         let mut category_counts: HashMap<String, i32> = HashMap::new();
         let mut month_counts: HashMap<u32, i32> = HashMap::new();
         let mut week_counts: HashMap<u32, i32> = HashMap::new();
+
+        // Inicializar os contadores metas
+        let mut shift_counts_goals: HashMap<&'static str, i32> = HashMap::new();
+        let mut category_counts_goals: HashMap<String, i32> = HashMap::new();
+        let mut month_counts_goals: HashMap<u32, i32> = HashMap::new();
+        let mut week_counts_goals: HashMap<u32, i32> = HashMap::new();
 
         // Processar todas as tarefas
         for task in &executed_task_details {
@@ -95,35 +149,51 @@ impl ReportService {
             *week_counts.entry(week).or_insert(0) += 1;
         }
 
-        // Resto do código permanece o mesmo...
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_month = self.find_most_productive_month(month_counts);
-        let most_productive_week = self.find_most_productive_week(week_counts);
-        let classification = self.classify_performance(percentage);
+        // Processar todas as tarefas
+        for goal in &executed_goals_details {
+            self.count_shift(&mut shift_counts_goals, goal.date_end.hour());
 
-        Ok(TaskStatsYearResponse {
+            // Contar categorias
+            *category_counts_goals.entry(goal.category.clone().expect("REASON")).or_insert(0) += 1;
+
+            // Contar meses
+            let month = goal.date_end.month();
+            *month_counts_goals.entry(month).or_insert(0) += 1;
+
+            // Contar semanas
+            let week = goal.date_end.iso_week().week();
+            *week_counts_goals.entry(week).or_insert(0) += 1;
+        }
+
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_month_tasks = self.find_most_productive_month(month_counts);
+        let most_productive_week_tasks = self.find_most_productive_week(week_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
+
+        Ok(StatsYearResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
-            most_productive_shift,
-            most_used_category,
-            most_productive_month,
-            most_productive_week,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_month_tasks,
+            most_productive_week_tasks,
+            classification_tasks,
         })
     }
 
     /// Obtém estatísticas de tarefas para um mês específico
-    pub async fn tasks_stats_month(
+    pub async fn stats_month(
         &self,
         user_id: i32,
         year: i32,
         month: i32
-    ) -> Result<TaskStatsMonthResponse, DbErr> {
+    ) -> Result<StatsMonthResponse, DbErr> {
         let start_date = Utc.with_ymd_and_hms(year, month.try_into().unwrap(), 1, 0, 0, 0).unwrap();
 
         let (next_year, next_month) = if month == 12 {
@@ -140,6 +210,14 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário no mês especificado
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -169,7 +247,7 @@ impl ReportService {
             .await?;
 
         // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
         );
@@ -201,33 +279,34 @@ impl ReportService {
         }
 
         // Encontrar estatísticas mais relevantes
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_week = self.find_most_productive_week(week_counts);
-        let classification = self.classify_performance(percentage);
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_week_tasks = self.find_most_productive_week(week_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
 
-        Ok(TaskStatsMonthResponse {
+        Ok(StatsMonthResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
             month,
-            most_productive_shift,
-            most_used_category,
-            most_productive_week,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_week_tasks,
+            classification_tasks,
         })
     }
 
     /// Obtém estatísticas de tarefas para uma semana específica
-    pub async fn tasks_stats_week(
+    pub async fn stats_week(
         &self,
         user_id: i32,
         year: i32,
         week_num: i32,
-    ) -> Result<TaskStatsWeekResponse, DbErr> {
+    ) -> Result<StatsWeekResponse, DbErr> {
         // Calcula o primeiro dia da semana especificada
         let start_of_week_naive = NaiveDate::from_isoywd_opt(year, week_num.try_into().unwrap(), Weekday::Mon)
             .expect("Ano ou número de semana inválido.");
@@ -241,6 +320,14 @@ impl ReportService {
             .filter(task::Column::UserId.eq(user_id))
             .filter(task::Column::BeginDate.gte(start_date))
             .filter(task::Column::BeginDate.lte(end_date))
+            .count(&self.db)
+            .await?;
+
+        // Total de metas do usuário na semana especificada
+        let total_goals = goal::Entity::find()
+            .filter(goal::Column::UserId.eq(user_id))
+            .filter(goal::Column::DateStart.gte(start_date))
+            .filter(goal::Column::DateStart.lte(end_date))
             .count(&self.db)
             .await?;
 
@@ -270,7 +357,7 @@ impl ReportService {
             .await?;
 
         // Calcular porcentagem
-        let percentage = self.calculate_percentage(
+        let percentage_tasks = self.calculate_percentage(
             executed_tasks.try_into().unwrap(),
             total_tasks.try_into().unwrap()
         );
@@ -302,23 +389,24 @@ impl ReportService {
         }
 
         // Encontrar estatísticas mais relevantes
-        let most_productive_shift = self.find_most_productive_shift(shift_counts);
-        let most_used_category = self.find_most_used_category(category_counts);
-        let most_productive_day = self.find_most_productive_day(day_counts);
-        let classification = self.classify_performance(percentage);
+        let most_productive_shift_tasks = self.find_most_productive_shift(shift_counts);
+        let most_used_category_tasks = self.find_most_used_category(category_counts);
+        let most_productive_day_tasks = self.find_most_productive_day(day_counts);
+        let classification_tasks = self.classify_performance(percentage_tasks);
 
-        Ok(TaskStatsWeekResponse {
+        Ok(StatsWeekResponse {
             total_tasks: total_tasks as i64,
+            total_goals: total_goals as i64,
             executed_tasks: executed_tasks as i64,
             pendent_tasks: pendent_tasks as i64,
             delayed_tasks: delayed_tasks as i64,
-            percentage,
+            percentage_tasks,
             year,
             week: week_num,
-            most_productive_shift,
-            most_used_category,
-            most_productive_day,
-            classification,
+            most_productive_shift_tasks,
+            most_used_category_tasks,
+            most_productive_day_tasks,
+            classification_tasks,
         })
     }
 

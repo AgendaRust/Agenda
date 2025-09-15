@@ -47,18 +47,19 @@ pub fn get_reminder_routes() -> Vec<rocket::Route> {
 
 pub fn get_goal_routes() -> Vec<rocket::Route> {
     routes![
-        goal::create_goal,
-        goal::list_goals,
+        goal::get_user_goals,
         goal::get_goal,
+        goal::create_goal,
         goal::update_goal,
-        goal::delete_goal
+        goal::delete_goal,
+        goal::list_goals,
     ]
 }
 
 pub fn get_report_routes() -> Vec<rocket::Route> {
     routes![
-        report::get_tasks_stats_year,
-        report::get_tasks_stats_month,
-        report::get_tasks_stats_week
+        report::get_stats_year,
+        report::get_stats_month,
+        report::get_stats_week
     ]
 }

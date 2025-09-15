@@ -580,5 +580,35 @@
       }
     }
   }
+  .empty-summary {
+    flex: 1;
+    background: #ffffff;
+    border: 1px inset #c0c0c0;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h3 {
+      font-family: "MS Sans Serif", sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #000080;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+
+    p {
+      font-family: "MS Sans Serif", sans-serif;
+      font-size: 11px;
+      color: #000000;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+  }
 
 }
