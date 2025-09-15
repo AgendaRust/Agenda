@@ -9,5 +9,4 @@ pub mod taskbar;
 pub mod report_app;
 pub mod goal_card;
 pub mod goal_form;
-
 pub mod bar_chart;

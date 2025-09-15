@@ -9,7 +9,9 @@ use crate::types::{TaskDuration, Task};
 use crate::services::tasks::{TaskDto, TaskUpdateDto};
 use crate::types::reminder::Reminder;
 use crate::types::goal::Goal;
-use crate::services::goal_service::{get_all_goals, delete_goal, update_goal, GoalDto};
+use crate::services::goal_service::{get_user_goals, get_all_goals, delete_goal, update_goal, GoalDto};
+use web_sys::HtmlAudioElement;
+
 
 #[derive(Clone, PartialEq)]
 pub enum ViewType {
@@ -392,8 +394,15 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         let error_message = error_message.clone(); // Agora esta linha funciona!
 
         use_effect(move || {
-            if !*first_render { return; }
-            first_render.set(false);
+            if *first_render {
+                first_render.set(false);
+            } else {
+                return;
+            }
+            
+            let audio_element = HtmlAudioElement::new_with_src("/Windows_XP_Startup.wav").unwrap();
+            let _ = audio_element.play().unwrap();
+
 
             spawn_local(async move {
                 match crate::services::tasks::get_all_tasks().await {
