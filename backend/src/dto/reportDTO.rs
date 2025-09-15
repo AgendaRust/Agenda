@@ -52,13 +52,13 @@ pub struct StatsMonthResponse {
 
 #[derive(Debug, serde::Serialize)]
 pub struct StatsWeekResponse {
+    pub year: i32,
+    pub week: i32,
     pub total_tasks: i64,
     pub executed_tasks: i64,
     pub pendent_tasks: i64,
     pub delayed_tasks: i64,
     pub percentage_tasks: f64,
-    pub year: i32,
-    pub week: i32,
     pub most_productive_shift_tasks: String,
     pub most_used_category_tasks: String,
     pub most_productive_day_tasks: String,
