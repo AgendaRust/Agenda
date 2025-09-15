@@ -8,12 +8,9 @@ use crate::components::{goal_form::GoalForm, goal_card::GoalCard};
 use crate::types::{TaskDuration, Task};
 use crate::services::tasks::{TaskDto, TaskUpdateDto};
 use crate::types::reminder::Reminder;
-<<<<<<< Updated upstream
 use web_sys::HtmlAudioElement;
-=======
 use crate::types::goal::Goal;
 use crate::services::goal_service::{get_user_goals};
->>>>>>> Stashed changes
 
 #[derive(Clone, PartialEq)]
 pub enum ViewType {
@@ -305,36 +302,9 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                 return;
             }
             
-<<<<<<< Updated upstream
             let audio_element = HtmlAudioElement::new_with_src("/Windows_XP_Startup.wav").unwrap();
             let _ = audio_element.play().unwrap();
-            let mock_goals = vec![
-                Goal {
-                    id: 1,
-                    title: "Aprender Rust".to_string(),
-                    description: "Concluir curso de Rust avançado".to_string(),
-                    status: "Em Progresso".to_string(),
-                    due_date: "Dezembro 2025".to_string(),
-                },
-                Goal {
-                    id: 2,
-                    title: "Projeto Agenda".to_string(),
-                    description: "Finalizar aplicação de agenda".to_string(),
-                    status: "Em Progresso".to_string(),
-                    due_date: "Novembro 2025".to_string(),
-                },
-                Goal {
-                    id: 3,
-                    title: "Exercícios".to_string(),
-                    description: "Fazer exercícios 3x por semana".to_string(),
-                    status: "Pendente".to_string(),
-                    due_date: "Contínuo".to_string(),
-                },
-            ];
-            goals.set(mock_goals);
-            
-=======
->>>>>>> Stashed changes
+
             spawn_local(async move {
                 match crate::services::tasks::get_all_tasks().await {
                     Ok(fetched_tasks) => {
