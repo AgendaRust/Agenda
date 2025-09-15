@@ -8,9 +8,10 @@ use crate::components::{goal_form::GoalForm, goal_card::GoalCard};
 use crate::types::{TaskDuration, Task};
 use crate::services::tasks::{TaskDto, TaskUpdateDto};
 use crate::types::reminder::Reminder;
-use web_sys::HtmlAudioElement;
 use crate::types::goal::Goal;
-use crate::services::goal_service::{get_user_goals};
+use crate::services::goal_service::{get_user_goals, get_all_goals, delete_goal, update_goal, GoalDto};
+use web_sys::HtmlAudioElement;
+
 
 #[derive(Clone, PartialEq)]
 pub enum ViewType {
@@ -29,18 +30,85 @@ pub struct CalendarAppProps {
 
 #[function_component(CalendarApp)]
 pub fn calendar_app(props: &CalendarAppProps) -> Html {
-    let show_task_form = use_state(|| false);
     let tasks = use_state(|| Vec::<Task>::new());
     let reminders = use_state(|| Vec::<Reminder>::new());
     let goals = use_state(|| Vec::<Goal>::new());
     let first_render = use_state(|| true);
     let current_view = use_state(|| ViewType::Tasks);
+    let show_task_form = use_state(|| false);
+    let show_reminder_form = use_state(|| false);
+    let show_goal_form = use_state(|| false);
+    let goal_to_edit = use_state(|| None::<Goal>);
+    let error_message = use_state(String::new);
 
     // View switching callbacks
     let switch_to_tasks = {
         let current_view = current_view.clone();
         Callback::from(move |_: MouseEvent| {
             current_view.set(ViewType::Tasks);
+        })
+    };
+
+    let reload_goals = {
+        let goals = goals.clone();
+        Callback::from(move |_: ()| {
+            let goals = goals.clone();
+            spawn_local(async move {
+                if let Ok(fetched_goals) = get_all_goals().await {
+                    goals.set(fetched_goals);
+                }
+            });
+        })
+    };
+
+    let on_new_goal_click = {
+        let show_goal_form = show_goal_form.clone();
+        let goal_to_edit = goal_to_edit.clone();
+        Callback::from(move |_: MouseEvent| {
+            goal_to_edit.set(None);
+            show_goal_form.set(true);
+        })
+    };
+
+    let on_edit_goal = {
+        let show_goal_form = show_goal_form.clone();
+        let goal_to_edit = goal_to_edit.clone();
+        Callback::from(move |goal: Goal| {
+            goal_to_edit.set(Some(goal));
+            show_goal_form.set(true);
+        })
+    };
+
+
+    let on_save_goal = {
+        let show_goal_form = show_goal_form.clone();
+        let reload_goals = reload_goals.clone();
+        Callback::from(move |_goal: Goal| {
+            show_goal_form.set(false);
+            reload_goals.emit(());
+        })
+    };
+
+    let on_goal_status_update = {
+        let goals = goals.clone();
+        let reload_goals = reload_goals.clone();
+        Callback::from(move |(goal_id, new_status): (i32, String)| {
+            let goals = goals.clone();
+            let reload_goals = reload_goals.clone();
+            if let Some(goal_to_update) = (*goals).iter().find(|g| g.id == goal_id).cloned() {
+                spawn_local(async move {
+                    let goal_dto = GoalDto {
+                        name: goal_to_update.name,
+                        description: goal_to_update.description,
+                        category: goal_to_update.category,
+                        status: new_status,
+                        goal_type: goal_to_update.goal_type,
+                    };
+                    if update_goal(goal_id, goal_dto).await.is_ok() {
+                        reload_goals.emit(());
+                    }
+                });
+            }
         })
     };
 
@@ -89,6 +157,34 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             show_goal_form.set(!*show_goal_form);
         })
     };
+
+    let on_edit_goal = {
+        let show_goal_form = show_goal_form.clone();
+        let goal_to_edit = goal_to_edit.clone();
+        Callback::from(move |goal: Goal| {
+            goal_to_edit.set(Some(goal));
+            show_goal_form.set(true);
+        })
+    };
+
+    let on_delete_goal = {
+        let reload_goals = reload_goals.clone();
+        Callback::from(move |goal_id: i32| {
+            let reload_goals = reload_goals.clone();
+            spawn_local(async move {
+                if crate::services::goal_service::delete_goal(goal_id).await.is_ok() {
+                    reload_goals.emit(());
+                }
+            });
+        })
+    };
+    let on_close_goal_form = {
+        let show_goal_form = show_goal_form.clone();
+        Callback::from(move |_| {
+            show_goal_form.set(false);
+        })
+    };
+
 
     let close_reminder_form = {
         let show_reminder_form = show_reminder_form.clone();
@@ -295,6 +391,8 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         let reminders = reminders.clone();
         let goals = goals.clone();
         let first_render = first_render.clone();
+        let error_message = error_message.clone(); // Agora esta linha funciona!
+
         use_effect(move || {
             if *first_render {
                 first_render.set(false);
@@ -305,30 +403,19 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             let audio_element = HtmlAudioElement::new_with_src("/Windows_XP_Startup.wav").unwrap();
             let _ = audio_element.play().unwrap();
 
+
             spawn_local(async move {
                 match crate::services::tasks::get_all_tasks().await {
-                    Ok(fetched_tasks) => {
-                        tasks.set(fetched_tasks);
-                    }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("Failed to fetch tasks: {}", error).into());
-                    }
+                    Ok(fetched_tasks) => tasks.set(fetched_tasks),
+                    Err(err) => error_message.set(format!("Erro ao buscar tarefas: {}", err)),
                 }
                 match crate::services::reminder_service::get_all_reminders().await {
-                    Ok(fetched_reminders) => {
-                        reminders.set(fetched_reminders);
-                    }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("Failed to fetch reminders: {}", error).into());
-                    }
+                    Ok(fetched_reminders) => reminders.set(fetched_reminders),
+                    Err(err) => error_message.set(format!("Erro ao buscar lembretes: {}", err)),
                 }
-                match crate::services::goal_service::get_all_goals().await {
-                    Ok(fetched_goals) => {
-                        goals.set(fetched_goals);
-                    }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("Failed to fetch goals: {}", error).into());
-                    }
+                match get_all_goals().await {
+                    Ok(fetched_goals) => goals.set(fetched_goals),
+                    Err(err) => error_message.set(format!("Erro ao buscar metas: {}", err)),
                 }
             });
         });
@@ -599,29 +686,33 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             
                             html! { <>{reminder_cards}</> }
                         },
-                        ViewType::Goals => {
-                            let goal_cards: Vec<Html> = goals.iter().enumerate().map(|(index, goal)| {
-                                html! {
-                                    <GoalCard
-                                        key={format!("goal-{}-{}", index, goal.name)}
-                                        id={goal.id}
-                                        name={goal.name.clone()}
-                                        description={goal.description.clone()}
-                                        category={goal.category.clone()}
-                                        status={goal.status.clone()}
-                                        goal_type={goal.goal_type.clone()}
-                                        date_start={goal.date_start.clone()}
-                                        date_end={goal.date_end.clone()}
-                                        days_remaining={goal.days_remaining}
-                                        progress_percentage={goal.progress_percentage}
-                                        on_goal_delete={on_goal_delete.clone()}
-                                        on_goal_updated={Some(on_goal_updated.clone())} 
-                                    />
-                                }
-                            }).collect();
-                            
-                            html! { <>{goal_cards}</> }
-                        }
+                             ViewType::Goals => {
+                                let goal_cards: Vec<Html> = goals.iter().map(|goal| {
+                                    let on_edit_goal = on_edit_goal.clone();
+                                    let goal_clone_for_edit = goal.clone();
+                                    html! {
+                                        <GoalCard
+                                            key={goal.id}
+                                            // ...todas as props do goal
+                                            id={goal.id}
+                                            name={goal.name.clone()}
+                                            description={goal.description.clone()}
+                                            category={goal.category.clone()}
+                                            status={goal.status.clone()}
+                                            goal_type={goal.goal_type.clone()}
+                                            date_start={goal.date_start.clone()}
+                                            date_end={goal.date_end.clone()}
+                                            days_remaining={goal.days_remaining}
+                                            progress_percentage={goal.progress_percentage}
+                                            on_goal_delete={on_delete_goal.clone()}
+                                            on_edit={Callback::from(move |_| on_edit_goal.emit(goal_clone_for_edit.clone()))}
+                                            on_status_change={on_goal_status_update.clone()}
+                                        />
+                                    }
+                                }).collect();
+
+                                html! { <>{goal_cards}</> }
+                            }
                     }}
                 </div>
             </div>
@@ -642,8 +733,9 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
 
             <GoalForm 
                 visible={*show_goal_form}
-                on_close={Some(close_goal_form.clone())}
-                on_goal_created={Some(on_goal_created)}
+                goal_to_edit={(*goal_to_edit).clone()}
+                on_close={on_close_goal_form}
+                on_save={on_save_goal}
             />
         </div>
     }
