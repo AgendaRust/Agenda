@@ -65,7 +65,7 @@ pub struct GoalCardProps {
             Callback::from(move |e: MouseEvent| {
                 e.prevent_default();
                 e.stop_propagation();
-                on_status_change.emit((goal_id, "Completed".to_string()));
+                on_status_change.emit((goal_id, "Concluída".to_string()));
             })
         };
 
@@ -75,7 +75,7 @@ pub struct GoalCardProps {
             Callback::from(move |e: MouseEvent| {
                 e.prevent_default();
                 e.stop_propagation();
-                on_status_change.emit((goal_id, "Cancelled".to_string()));
+                on_status_change.emit((goal_id, "Cancelada".to_string()));
             })
         };
 
@@ -129,7 +129,7 @@ pub struct GoalCardProps {
                 <div class="status-indicator-container">
                     <span class="date-label">{ "Status:" }</span>
                     <span class={classes!("status-indicator", status_class.clone())}>{ &props.status }</span>
-                    { if props.status == "InProgress" || props.status == "NotStarted" {
+                    { if props.status == "Em andamento" || props.status == "NotStarted" {
                         html! {
                             <div class="quick-actions">
                                 <button class="complete-btn" onclick={on_complete_click}>{ "✓ Concluir" }</button>

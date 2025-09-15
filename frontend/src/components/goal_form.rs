@@ -114,7 +114,7 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
                 states.0.set(String::new());
                 states.1.set(String::new());
                 states.2.set(String::new());
-                states.3.set("NotStarted".to_string()); // Padrão para novas metas
+                states.3.set("Em andamento".to_string()); // Padrão para novas metas
                 states.4.set("monthly".to_string()); // Padrão para novas metas
             }
         });

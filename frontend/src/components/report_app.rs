@@ -388,56 +388,6 @@ pub fn report_app(props: &ReportAppProps) -> Html {
         }
     };
 
-    // Função para obter dados dos gráficos
-    let get_chart_data = || {
-        if let Some(stats) = (*year_stats).clone() {
-            (
-                vec![
-                    ("Concluídas".to_string(), stats.executed_tasks as f64),
-                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
-                ],
-                vec![
-                    ("Executadas".to_string(), stats.executed_goals as f64),
-                    ("Pendentes".to_string(), stats.pendent_goals as f64),
-                    ("Adiadas".to_string(), stats.delayed_goals as f64),
-                ]
-            )
-        } else if let Some(stats) = (*month_stats).clone() {
-            (
-                vec![
-                    ("Concluídas".to_string(), stats.executed_tasks as f64),
-                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
-                ],
-                vec![
-                    ("Executadas".to_string(), stats.executed_goals as f64),
-                    ("Pendentes".to_string(), stats.pendent_goals as f64),
-                    ("Adiadas".to_string(), stats.delayed_goals as f64),
-                ]
-            )
-        } else if let Some(stats) = (*week_stats).clone() {
-            (
-                vec![
-                    ("Concluídas".to_string(), stats.executed_tasks as f64),
-                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
-                ],
-                vec![
-                    ("Executadas".to_string(), stats.executed_goals as f64),
-                    ("Pendentes".to_string(), stats.pendent_goals as f64),
-                    ("Adiadas".to_string(), stats.delayed_goals as f64),
-                ]
-            )
-        } else {
-            (
-                vec![("Sem dados".to_string(), 0.0)],
-                vec![("Sem dados".to_string(), 0.0)]
-            )
-        }
-    };
-
-    // Função para renderizar o resumo dinâmico
     let render_dynamic_summary = {
         let year_stats = (*year_stats).clone();
         let month_stats = (*month_stats).clone();
@@ -454,12 +404,12 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 <span class="stat-value">{ stats.executed_tasks }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Adiadas:" }</span>
-                                <span class="stat-value">{ stats.delayed_tasks }</span>
-                            </div>
-                            <div class="stat-item">
                                 <span class="stat-label">{ "Pendentes:" }</span>
                                 <span class="stat-value">{ stats.pendent_tasks }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Adiadas:" }</span>
+                                <span class="stat-value">{ stats.delayed_tasks }</span>
                             </div>
                         </div>
                     </div>
@@ -467,16 +417,16 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                         <h3>{ "Metas" }</h3>
                         <div class="summary-stats">
                             <div class="stat-item">
-                                <span class="stat-label">{ "Total de Metas:" }</span>
-                                <span class="stat-value">{ stats.total_goals }</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">{ "Alcançadas:" }</span>
+                                <span class="stat-label">{ "Concluídas:" }</span>
                                 <span class="stat-value">{ stats.executed_goals }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Em Progresso:" }</span>
+                                <span class="stat-label">{ "Em andamento:" }</span>
                                 <span class="stat-value">{ stats.pendent_goals }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Canceladas:" }</span>
+                                <span class="stat-value">{ stats.delayed_goals }</span>
                             </div>
                         </div>
                     </div>
@@ -493,12 +443,12 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 <span class="stat-value">{ stats.executed_tasks }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Adiadas:" }</span>
-                                <span class="stat-value">{ stats.delayed_tasks }</span>
-                            </div>
-                            <div class="stat-item">
                                 <span class="stat-label">{ "Pendentes:" }</span>
                                 <span class="stat-value">{ stats.pendent_tasks }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Adiadas:" }</span>
+                                <span class="stat-value">{ stats.delayed_tasks }</span>
                             </div>
                         </div>
                     </div>
@@ -506,16 +456,16 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                         <h3>{ "Metas" }</h3>
                         <div class="summary-stats">
                             <div class="stat-item">
-                                <span class="stat-label">{ "Total de Metas:" }</span>
-                                <span class="stat-value">{ stats.total_goals }</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">{ "Alcançadas:" }</span>
+                                <span class="stat-label">{ "Concluídas:" }</span>
                                 <span class="stat-value">{ stats.executed_goals }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Em Progresso:" }</span>
+                                <span class="stat-label">{ "Em andamento:" }</span>
                                 <span class="stat-value">{ stats.pendent_goals }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Canceladas:" }</span>
+                                <span class="stat-value">{ stats.delayed_goals }</span>
                             </div>
                         </div>
                     </div>
@@ -532,12 +482,12 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                                 <span class="stat-value">{ stats.executed_tasks }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Adiadas:" }</span>
-                                <span class="stat-value">{ stats.delayed_tasks }</span>
-                            </div>
-                            <div class="stat-item">
                                 <span class="stat-label">{ "Pendentes:" }</span>
                                 <span class="stat-value">{ stats.pendent_tasks }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Adiadas:" }</span>
+                                <span class="stat-value">{ stats.delayed_tasks }</span>
                             </div>
                         </div>
                     </div>
@@ -545,16 +495,16 @@ pub fn report_app(props: &ReportAppProps) -> Html {
                         <h3>{ "Metas" }</h3>
                         <div class="summary-stats">
                             <div class="stat-item">
-                                <span class="stat-label">{ "Total de Metas:" }</span>
-                                <span class="stat-value">{ stats.total_goals }</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">{ "Alcançadas:" }</span>
+                                <span class="stat-label">{ "Concluídas:" }</span>
                                 <span class="stat-value">{ stats.executed_goals }</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">{ "Em Progresso:" }</span>
+                                <span class="stat-label">{ "Em andamento:" }</span>
                                 <span class="stat-value">{ stats.pendent_goals }</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">{ "Canceladas:" }</span>
+                                <span class="stat-value">{ stats.delayed_goals }</span>
                             </div>
                         </div>
                     </div>
@@ -568,6 +518,56 @@ pub fn report_app(props: &ReportAppProps) -> Html {
             }
         }
     };
+
+    // Função para obter dados dos gráficos
+    let get_chart_data = || {
+        if let Some(stats) = (*year_stats).clone() {
+            (
+                vec![
+                    ("Concluídas".to_string(), stats.executed_tasks as f64),
+                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
+                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
+                ],
+                vec![
+                    ("Concluídas".to_string(), stats.executed_goals as f64),
+                    ("Em andamento".to_string(), stats.pendent_goals as f64),
+                    ("Canceladas".to_string(), stats.delayed_goals as f64),
+                ]
+            )
+        } else if let Some(stats) = (*month_stats).clone() {
+            (
+                vec![
+                    ("Concluídas".to_string(), stats.executed_tasks as f64),
+                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
+                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
+                ],
+                vec![
+                    ("Concluídas".to_string(), stats.executed_goals as f64),
+                    ("Em andamento".to_string(), stats.pendent_goals as f64),
+                    ("Canceladas".to_string(), stats.delayed_goals as f64),
+                ]
+            )
+        } else if let Some(stats) = (*week_stats).clone() {
+            (
+                vec![
+                    ("Concluídas".to_string(), stats.executed_tasks as f64),
+                    ("Pendentes".to_string(), stats.pendent_tasks as f64),
+                    ("Adiadas".to_string(), stats.delayed_tasks as f64),
+                ],
+                vec![
+                    ("Concluídas".to_string(), stats.executed_goals as f64),
+                    ("Em andamento".to_string(), stats.pendent_goals as f64),
+                    ("Canceladas".to_string(), stats.delayed_goals as f64),
+                ]
+            )
+        } else {
+            (
+                vec![("Sem dados".to_string(), 0.0)],
+                vec![("Sem dados".to_string(), 0.0)]
+            )
+        }
+    };
+
 
     html! {
         if !props.visible {

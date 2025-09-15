@@ -668,10 +668,11 @@ impl ReportService {
     fn classify_performance(&self, percentage: f64) -> String {
         match percentage {
             p if p >= 100.0 => "Perfeito".to_string(),
-            p if p > 80.0 => "Boa".to_string(),
-            p if p > 60.0 => "Média".to_string(),
-            p if p > 40.0 => "Ruim".to_string(),
-            p if p > 20.0 => "Péssima".to_string(),
+            p if p >= 80.0 => "Ótima".to_string(),
+            p if p >= 60.0 => "Ok".to_string(),
+            p if p >= 40.0 => "Ruim".to_string(),
+            p if p >= 20.0 => "Péssima".to_string(),
+            p if p > 0.0 => "Horroroso".to_string(),
             _ => "Nem tentou".to_string(),
         }
     }
