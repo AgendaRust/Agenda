@@ -13,6 +13,7 @@ pub struct ReminderFormProps {
     pub on_close: Option<Callback<()>>,
     #[prop_or_default]
     pub on_reminder_created: Option<Callback<Reminder>>,
+    // pub current_day: Option<NaiveDate>,
 }
 
 

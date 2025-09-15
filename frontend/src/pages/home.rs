@@ -3,7 +3,7 @@ use yew::{prelude::*, Callback};
 
 #[function_component(Home)]
 pub fn home_component() -> Html {
-    let calendar_visible = use_state(|| false);
+    let calendar_visible = use_state(|| true);
     let report_visible = use_state(|| false);
 
     let toggle_calendar = {
