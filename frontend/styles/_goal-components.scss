@@ -65,7 +65,10 @@
   animation: none;
 }
 
-.goal-actions button {
+
+.goal-actions button,
+.complete-btn,
+.cancel-btn {
   padding: 1px 4px;
   font-size: 9px;
   font-weight: normal;
@@ -75,19 +78,25 @@
   background: #c0c0c0;
   color: #000000;
   font-family: "MS Sans Serif", sans-serif;
-  min-width: auto;
+  min-width: 60px;
+  flex: 1 1 0;
   margin: 0;
   transition: none;
   box-shadow: none;
-  &:hover {
-    background: #d4d0c8;
-    box-shadow: none;
-  }
-  &:active {
-    border: 1px inset #c0c0c0;
-    background: #b8b8b8;
-    box-shadow: none;
-  }
+  text-align: center;
+}
+.goal-actions button:hover,
+.complete-btn:hover,
+.cancel-btn:hover {
+  background: #d4d0c8;
+  box-shadow: none;
+}
+.goal-actions button:active,
+.complete-btn:active,
+.cancel-btn:active {
+  border: 1px inset #c0c0c0;
+  background: #b8b8b8;
+  box-shadow: none;
 }
 
 
