@@ -18,6 +18,13 @@ pub enum ReminderResult {
     NetworkError(String),
 }
 
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ReminderUpdateDto {
+    pub name: String,
+    pub category: String,
+    pub date_end: DateTime<Utc>,
+}
+
 pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
     let url = format!("{}/reminders/user", API_URL);
     let token = get_token();
@@ -106,5 +113,34 @@ pub async fn delete_reminder(reminder_id: u32) -> Result<(), String> {
             },
         },
         Err(e) => Err(e.to_string()),
+    }
+}
+
+pub async fn update_reminder(reminder_id: u32, dto: ReminderUpdateDto) -> Result<(), String> {
+    let url = format!("{}/reminders/{}", API_URL, reminder_id);
+    let token = get_token();
+    if token.token.is_empty() {
+        return Err("No authentication token found".to_string());
+    }
+
+    match Request::put(&url)
+        .header("Authorization", &format!("Bearer {}", token.token))
+        .header("Content-Type", "application/json")
+        .json(&dto)
+        .unwrap()
+        .send()
+        .await
+    {
+        Ok(response) => {
+            if response.status() == 200 || response.status() == 204 {
+                Ok(())
+            } else {
+                let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+                let error_msg = format!("Failed to update reminder: HTTP {} - {}", response.status(), error_text);
+                web_sys::console::log_1(&error_msg.clone().into());
+                Err(error_msg)
+            }
+        }
+        Err(e) => Err(format!("Network error: {}", e)),
     }
 }

@@ -1,7 +1,7 @@
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, html, use_effect, use_state, Callback, Html, MouseEvent, Properties};
 use chrono::{Local, NaiveDate, Datelike};
-
+use chrono::TimeZone;
 use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard};
 use crate::components::{goal_form::GoalForm, goal_card::GoalCard};
@@ -264,6 +264,43 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         })
     };
 
+
+    let on_reminder_update = {
+        let reminders = reminders.clone();
+        Callback::from(move |(reminder_id, new_name, new_category, new_date_end): (i32, String, String, String)| {
+            let reminders = reminders.clone();
+            let new_date = chrono::NaiveDate::parse_from_str(&new_date_end, "%Y-%m-%d")
+                .map(|d| chrono::NaiveDateTime::new(d, chrono::NaiveTime::from_hms_opt(0,0,0).unwrap()))
+                .ok()
+                .map(|naive| chrono::Utc.from_utc_datetime(&naive));
+            if let Some(date_end) = new_date {
+                let dto = crate::services::reminder_service::ReminderUpdateDto {
+                    name: new_name.clone(),
+                    category: new_category.clone(),
+                    date_end,
+                };
+                wasm_bindgen_futures::spawn_local({
+                    let reminders = reminders.clone();
+                    async move {
+                        let _ = crate::services::reminder_service::update_reminder(reminder_id as u32, dto).await;
+                        let updated_reminders: Vec<Reminder> = (*reminders)
+                            .iter()
+                            .cloned()
+                            .map(|mut reminder| {
+                                if reminder.id == reminder_id {
+                                    reminder.name = new_name.clone();
+                                    reminder.category = new_category.clone();
+                                    reminder.date_end = date_end;
+                                }
+                                reminder
+                            })
+                            .collect();
+                        reminders.set(updated_reminders);
+                    }
+                });
+            }
+        })
+    };
     let on_goal_delete = {
         let goals = goals.clone();
         Callback::from(move |goal_id: i32| {
@@ -309,6 +346,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             let mut current_goals = (*goals).clone();
             current_goals.push(new_goal);
             goals.set(current_goals);
+
         })
     };
     let on_reminder_delete = {
@@ -671,7 +709,26 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             }
                         },
                         ViewType::Reminders => {
-                            let reminder_cards: Vec<Html> = reminders.iter().enumerate().map(|(index, reminder)| {
+                            // Calcular início (domingo) e fim (sábado) da semana do dia selecionado
+                            let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
+                                .unwrap_or_else(|| Local::now().date_naive());
+                            let weekday = selected_date.weekday().number_from_sunday(); // 1 = domingo, 7 = sábado
+                            let start_of_week = selected_date - chrono::Duration::days((weekday - 1) as i64);
+                            let end_of_week = selected_date + chrono::Duration::days((7 - weekday) as i64);
+
+                            // Converter para DateTime<Utc> para comparar com reminder.date_end
+                            use chrono::{NaiveDateTime, Utc, TimeZone};
+                            let start_of_week_dt = Utc.from_utc_datetime(&start_of_week.and_hms_opt(0, 0, 0).unwrap());
+                            let end_of_week_dt = Utc.from_utc_datetime(&end_of_week.and_hms_opt(23, 59, 59).unwrap());
+
+                            // Filtrar lembretes da semana
+                            let weekly_reminders: Vec<&Reminder> = reminders.iter()
+                                .filter(|reminder| {
+                                    reminder.date_end >= start_of_week_dt && reminder.date_end <= end_of_week_dt
+                                })
+                                .collect();
+
+                            let reminder_cards: Vec<Html> = weekly_reminders.iter().enumerate().map(|(index, reminder)| {
                                 html! {
                                     <ReminderCard 
                                         key={format!("reminder-{}-{}", index, reminder.name)}
@@ -680,10 +737,11 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                                         category={reminder.category.clone()}
                                         date_end={reminder.date_end}
                                         on_reminder_delete={on_reminder_delete.clone()}
+                                        on_reminder_update={Some(on_reminder_update.clone())}
                                     />
                                 }
                             }).collect();
-                            
+
                             html! { <>{reminder_cards}</> }
                         },
                              ViewType::Goals => {
