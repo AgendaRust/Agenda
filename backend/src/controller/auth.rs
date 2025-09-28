@@ -1,16 +1,11 @@
 use crate::db::Pool;
-use crate::dto::authDTO::AuthDto;
-// use crate::entity::user;
-// use crate::entity::user;
+use crate::dto::auth_dto::AuthDto;
 use crate::repository::auth_repository:: UserError;
 use crate::repository::auth_repository;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
 use rocket::post;
 use rocket::get;
-// use sea_orm::{ActiveModelTrait, EntityTrait, Set};
-// #[macro_use]
-// extern crate rocket;
 use rocket_jwt::jwt;
 use std::env::{var, VarError};
 use crate::service::auth_service;
@@ -104,4 +99,9 @@ pub async fn login(
 #[get("/user_info")]
 pub async fn user_info(user_claim: UserClaim) -> String {
     format!("User id: {}", user_claim.id)
+}
+
+#[get("/")]
+pub async fn index() -> &'static str {
+    "Welcome to the Productivity App API!"
 }

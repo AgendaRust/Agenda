@@ -1,4 +1,4 @@
-use crate::dto::reportDTO::*;
+use crate::dto::report_dto::*;
 use chrono::{NaiveDate, Datelike, Duration, Utc, Weekday, Timelike, TimeZone};
 use sea_orm::*;
 use std::collections::HashMap;

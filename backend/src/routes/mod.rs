@@ -10,7 +10,8 @@ pub fn get_auth_routes() -> Vec<rocket::Route> {
     routes![
         auth::login,
         auth::register,
-        auth::user_info
+        auth::user_info,
+        auth::index
     ]
 }
 

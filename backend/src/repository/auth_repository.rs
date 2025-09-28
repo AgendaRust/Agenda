@@ -1,5 +1,5 @@
 use crate::db::Pool;
-use crate::dto::authDTO::AuthDto;
+use crate::dto::auth_dto::AuthDto;
 use crate::entity::prelude::*;
 use crate::entity::user;
 use argon2::{
@@ -10,6 +10,7 @@ use rocket::State;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use crate::entity::user::Model;
 
+#[allow(dead_code)]
 pub enum UserError {
     InvalidUser(String),
     UserAlreadyExists(String),
@@ -72,6 +73,7 @@ pub async fn find_user_by_credentials(
     }
 }
 
+#[allow(dead_code)]
 pub async fn find_by_username(db: &State<Pool>, username: &str) -> Result<Option<Model>, UserError> {
     let conn = db.inner();
     let user = User::find()

@@ -10,19 +10,7 @@ mod service;
 mod repository;
 
 use dotenvy::dotenv;
-use rocket::tokio::time::{sleep, Duration};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
-
-#[get("/")]
-fn index() -> &'static str {
-    "Olá, mundo com Rocket! 🚀"
-}
-
-#[get("/delay/<seconds>")]
-async fn delay_response(seconds: u64) -> String {
-    sleep(Duration::from_secs(seconds)).await;
-    format!("Waited after {} seconds", seconds)
-}
 
 #[launch]
 fn rocket() -> _ {

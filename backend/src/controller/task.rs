@@ -4,14 +4,13 @@ use rocket::delete;
 use rocket::get;
 use rocket::post;
 use rocket::put;
-use serde_json::Value;
 use rocket::State;
 use crate::controller::auth::UserClaim;
 use crate::db::Pool;
-use crate::dto::taskDTO::TaskDto;
+use crate::dto::task_dto::TaskDto;
 use crate::entity::task;
 use crate::service::task_service::{delete_task_db, get_all_tasks_db, get_task_by_id_db, register_task_db, update_task_db, get_tasks_by_user_id_db, TaskError};
-use crate::dto::taskUpdateDTO::TaskUpdateDto;
+use crate::dto::task_update_dto::TaskUpdateDto;
 
 #[get("/all")]
 pub async fn get_all_tasks(db: &State<Pool>) -> Result<Json<Vec<task::Model>>, (Status, String)> {

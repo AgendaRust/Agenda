@@ -1,8 +1,9 @@
 use crate::db::Pool;
-use crate::dto::authDTO::AuthDto;
+use crate::dto::auth_dto::AuthDto;
 use crate::repository::auth_repository::{self, UserError};
 use crate::entity::user;
 use rocket::State;
+#[allow(dead_code)]
 
 pub async fn register_user(
     db: &State<Pool>,

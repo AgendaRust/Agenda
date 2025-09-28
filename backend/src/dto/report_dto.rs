@@ -1,5 +1,3 @@
-use rocket::serde::{Deserialize, Serialize};
-use chrono::NaiveDate;
 
 #[derive(Debug, serde::Serialize)]
 pub struct StatsYearResponse {

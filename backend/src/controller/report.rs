@@ -2,9 +2,8 @@ use rocket::serde::json::Json;
 use rocket::{get, State};
 use rocket::http::Status;
 use sea_orm::DatabaseConnection;
-use chrono::{NaiveDate, Duration, Local, Datelike};
 use crate::controller::auth::UserClaim;
-use crate::dto::reportDTO::*;
+use crate::dto::report_dto::*;
 use crate::service::report_service::ReportService;
 
 /// Endpoint para obter estatísticas de tarefas por ano

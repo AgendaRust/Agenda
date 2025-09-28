@@ -1,8 +1,7 @@
-use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set, PaginatorTrait};
-use chrono::{Timelike, Utc, TimeZone, Duration, Weekday, NaiveDate, Datelike};
-use std::collections::HashMap;
-use crate::dto::taskDTO::TaskDto;
-use crate::dto::taskUpdateDTO::TaskUpdateDto;
+use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set};
+use chrono::{Timelike, Utc, Duration};
+use crate::dto::task_dto::TaskDto;
+use crate::dto::task_update_dto::TaskUpdateDto;
 use crate::entity::task;
 
 pub struct TaskRepository<'a> {

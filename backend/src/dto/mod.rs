@@ -1,10 +1,10 @@
-pub mod authDTO;
-pub mod taskDTO;
+pub mod auth_dto;
+pub mod task_dto;
 
 pub mod reminder_dto;
-pub mod goalDTO;
-pub mod taskUpdateDTO;
-pub mod reportDTO;
+pub mod goal_dto;
+pub mod task_update_dto;
+pub mod report_dto;
 use serde::Deserialize;
 
 #[derive(Deserialize)]

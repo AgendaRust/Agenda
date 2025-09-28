@@ -1,7 +1,7 @@
 use rocket::State;
 use sea_orm::{ActiveModelTrait, Set};
 use crate::db::Pool;
-use crate::dto::reminder_dto::reminder_DTO;
+use crate::dto::reminder_dto::ReminderDto;
 use crate::entity::reminder;
 use rocket::http::Status;
 use sea_orm::QueryFilter;
@@ -10,15 +10,13 @@ use sea_orm::QueryFilter;
  use sea_orm::EntityTrait;
 /// Enum para erros específicos do serviço de reminders
 pub enum ReminderError {
-    ReminderNotFound(String),
     DatabaseError(String),
-    Unauthorized(String),
 }
 
 /// Função que cria um novo reminder no banco
 pub async fn create_reminder_db(
     db: &State<Pool>,
-    reminder_info: &reminder_DTO,
+    reminder_info: &ReminderDto,
     user_id: i32, // Recebe o user_id diretamente
 ) -> Result<reminder::Model, ReminderError> {
     let conn = db.inner();
@@ -81,7 +79,7 @@ pub async fn get_reminder_db(
 pub async fn update_reminder_db(
     db: &Pool,
     id: i32,
-    reminder_dto: &reminder_DTO,
+    reminder_dto: &ReminderDto,
 ) -> Result<reminder::Model, (Status, String)> {
   
     let date_end = reminder_dto.date_end;

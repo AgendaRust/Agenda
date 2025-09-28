@@ -1,9 +1,9 @@
 use crate::db::Pool;
-use crate::dto::goalDTO::{GoalDto, GoalResponseDto};
+use crate::dto::goal_dto::{GoalDto, GoalResponseDto};
 use crate::entity::goal;
 use rocket::http::Status;
 use sea_orm::{ActiveModelTrait, EntityTrait, Set, ColumnTrait, QueryFilter};
-use chrono::{Utc, NaiveDate};
+use chrono::{Utc};
 
 fn convert_to_response_dto(goal: goal::Model) -> GoalResponseDto {
     let now = Utc::now();
