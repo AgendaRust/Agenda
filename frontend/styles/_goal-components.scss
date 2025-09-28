@@ -29,19 +29,20 @@
 }
 
 
+/* AFTER */
 .goal-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 4px;
   gap: 8px;
   background: linear-gradient(135deg, #00007B 0%, #1085D2 100%);
   color: white;
   padding: 2px 4px;
-  border-bottom: 1px solid #808080;
   font-weight: bold;
-  width: 100%;
-  box-sizing: border-box;
+
+  /* These are the key changes */
+  border: 1px outset #c0c0c0;
+  margin: -8px -8px 4px -8px;
 }
 
 
@@ -66,38 +67,38 @@
 }
 
 
-.goal-actions button,
-.complete-btn,
-.cancel-btn {
-  padding: 1px 4px;
-  font-size: 9px;
-  font-weight: normal;
-  border-radius: 0;
-  border: 1px outset #c0c0c0;
-  cursor: pointer;
-  background: #c0c0c0;
-  color: #000000;
-  font-family: "MS Sans Serif", sans-serif;
-  min-width: 60px;
-  flex: 1 1 0;
-  margin: 0;
-  transition: none;
-  box-shadow: none;
-  text-align: center;
-}
-.goal-actions button:hover,
-.complete-btn:hover,
-.cancel-btn:hover {
-  background: #d4d0c8;
-  box-shadow: none;
-}
-.goal-actions button:active,
-.complete-btn:active,
-.cancel-btn:active {
-  border: 1px inset #c0c0c0;
-  background: #b8b8b8;
-  box-shadow: none;
-}
+// .goal-actions button,
+// .complete-btn,
+// .cancel-btn {
+//   padding: 1px 4px;
+//   font-size: 9px;
+//   font-weight: normal;
+//   border-radius: 0;
+//   border: 1px outset #c0c0c0;
+//   cursor: pointer;
+//   background: #c0c0c0;
+//   color: #000000;
+//   font-family: "MS Sans Serif", sans-serif;
+//   min-width: 60px;
+//   flex: 1 1 0;
+//   margin: 0;
+//   transition: none;
+//   box-shadow: none;
+//   text-align: center;
+// }
+// .goal-actions button:hover,
+// .complete-btn:hover,
+// .cancel-btn:hover {
+//   background: #d4d0c8;
+//   box-shadow: none;
+// }
+// .goal-actions button:active,
+// .complete-btn:active,
+// .cancel-btn:active {
+//   border: 1px inset #c0c0c0;
+//   background: #b8b8b8;
+//   box-shadow: none;
+// }
 
 
 .goal-body {
@@ -121,6 +122,9 @@
   overflow-wrap: break-word;
   white-space: normal;
   overflow: visible;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
   &.empty {
     color: #808080;
     font-style: italic;
