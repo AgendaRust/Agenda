@@ -282,88 +282,88 @@ impl ReportService {
         }
     }
 
-    /// Função auxiliar para calcular o número da semana a partir de uma data
-    pub fn calculate_week_number(date: &str) -> Result<(i32, i32), String> {
-        // Formato esperado: "2024-W15" (ISO week date)
-        if date.len() >= 8 && date.contains("-W") {
-            let parts: Vec<&str> = date.split("-W").collect();
-            if parts.len() == 2 {
-                let year = parts[0].parse::<i32>()
-                    .map_err(|_| "Ano inválido".to_string())?;
-                let week = parts[1].parse::<i32>()
-                    .map_err(|_| "Semana inválida".to_string())?;
-                return Ok((year, week));
-            }
-        }
-        Err("Formato de data inválido".to_string())
-    }
+    // Função auxiliar para calcular o número da semana a partir de uma data
+    // pub fn calculate_week_number(date: &str) -> Result<(i32, i32), String> {
+    //     // Formato esperado: "2024-W15" (ISO week date)
+    //     if date.len() >= 8 && date.contains("-W") {
+    //         let parts: Vec<&str> = date.split("-W").collect();
+    //         if parts.len() == 2 {
+    //             let year = parts[0].parse::<i32>()
+    //                 .map_err(|_| "Ano inválido".to_string())?;
+    //             let week = parts[1].parse::<i32>()
+    //                 .map_err(|_| "Semana inválida".to_string())?;
+    //             return Ok((year, week));
+    //         }
+    //     }
+    //     Err("Formato de data inválido".to_string())
+    // }
 
-    /// Função auxiliar para extrair ano e mês de uma string de data
-    pub fn parse_month_input(date: &str) -> Result<(i32, i32), String> {
-        // Formato esperado: "2024-03"
-        let parts: Vec<&str> = date.split('-').collect();
-        if parts.len() == 2 {
-            let year = parts[0].parse::<i32>()
-                .map_err(|_| "Ano inválido".to_string())?;
-            let month = parts[1].parse::<i32>()
-                .map_err(|_| "Mês inválido".to_string())?;
+    // /// Função auxiliar para extrair ano e mês de uma string de data
+    // pub fn parse_month_input(date: &str) -> Result<(i32, i32), String> {
+    //     // Formato esperado: "2024-03"
+    //     let parts: Vec<&str> = date.split('-').collect();
+    //     if parts.len() == 2 {
+    //         let year = parts[0].parse::<i32>()
+    //             .map_err(|_| "Ano inválido".to_string())?;
+    //         let month = parts[1].parse::<i32>()
+    //             .map_err(|_| "Mês inválido".to_string())?;
 
-            if month >= 1 && month <= 12 {
-                return Ok((year, month));
-            }
-        }
-        Err("Formato de data inválido".to_string())
-    }
+    //         if month >= 1 && month <= 12 {
+    //             return Ok((year, month));
+    //         }
+    //     }
+    //     Err("Formato de data inválido".to_string())
+    // }
 }
 
 // Enum para representar os diferentes tipos de estatísticas
-#[derive(Debug, Clone, PartialEq)]
-pub enum StatsResponse {
-    Year(StatsYearResponse),
-    Month(StatsMonthResponse),
-    Week(StatsWeekResponse),
-}
+// #[derive(Debug, Clone, PartialEq)]
+// pub enum StatsResponse {
+//     Year(StatsYearResponse),
+//     Month(StatsMonthResponse),
+//     Week(StatsWeekResponse),
+// }
 
-impl StatsResponse {
-    /// Retorna os dados de tarefas para uso em gráficos
-    pub fn get_tasks_chart_data(&self) -> Vec<(String, f64)> {
-        match self {
-            StatsResponse::Year(stats) => vec![
-                ("Concluídas".to_string(), stats.executed_tasks as f64),
-                ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                ("Adiadas".to_string(), stats.delayed_tasks as f64),
-            ],
-            StatsResponse::Month(stats) => vec![
-                ("Concluídas".to_string(), stats.executed_tasks as f64),
-                ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                ("Adiadas".to_string(), stats.delayed_tasks as f64),
-            ],
-            StatsResponse::Week(stats) => vec![
-                ("Concluídas".to_string(), stats.executed_tasks as f64),
-                ("Pendentes".to_string(), stats.pendent_tasks as f64),
-                ("Adiadas".to_string(), stats.delayed_tasks as f64),
-            ],
-        }
-    }
+// impl StatsResponse {
+//     /// Retorna os dados de tarefas para uso em gráficos
+//     pub fn get_tasks_chart_data(&self) -> Vec<(String, f64)> {
+//         match self {
+//             StatsResponse::Year(stats) => vec![
+//                 ("Concluídas".to_string(), stats.executed_tasks as f64),
+//                 ("Pendentes".to_string(), stats.pendent_tasks as f64),
+//                 ("Adiadas".to_string(), stats.delayed_tasks as f64),
+//             ],
+//             StatsResponse::Month(stats) => vec![
+//                 ("Concluídas".to_string(), stats.executed_tasks as f64),
+//                 ("Pendentes".to_string(), stats.pendent_tasks as f64),
+//                 ("Adiadas".to_string(), stats.delayed_tasks as f64),
+//             ],
+//             StatsResponse::Week(stats) => vec![
+//                 ("Concluídas".to_string(), stats.executed_tasks as f64),
+//                 ("Pendentes".to_string(), stats.pendent_tasks as f64),
+//                 ("Adiadas".to_string(), stats.delayed_tasks as f64),
+//             ],
+//         }
+//     }
 
-    /// Retorna os dados de metas para uso em gráficos
-    pub fn get_goals_chart_data(&self) -> Vec<(String, f64)> {
-        match self {
-            StatsResponse::Year(stats) => vec![
-                ("Executadas".to_string(), stats.executed_goals as f64),
-                ("Pendentes".to_string(), stats.pendent_goals as f64),
-                ("Adiadas".to_string(), stats.delayed_goals as f64),
-            ],
-            StatsResponse::Month(stats) => vec![
-                ("Executadas".to_string(), stats.executed_goals as f64),
-                ("Pendentes".to_string(), stats.pendent_goals as f64),
-                ("Adiadas".to_string(), stats.delayed_goals as f64),
-            ],
-            StatsResponse::Week(stats) => vec![
-                ("Executadas".to_string(), stats.executed_goals as f64),
-                ("Pendentes".to_string(), stats.pendent_goals as f64),
-                ("Adiadas".to_string(), stats.delayed_goals as f64),
-            ],
-        }
-    }
-}
+//     /// Retorna os dados de metas para uso em gráficos
+//     pub fn get_goals_chart_data(&self) -> Vec<(String, f64)> {
+//         match self {
+//             StatsResponse::Year(stats) => vec![
+//                 ("Executadas".to_string(), stats.executed_goals as f64),
+//                 ("Pendentes".to_string(), stats.pendent_goals as f64),
+//                 ("Adiadas".to_string(), stats.delayed_goals as f64),
+//             ],
+//             StatsResponse::Month(stats) => vec![
+//                 ("Executadas".to_string(), stats.executed_goals as f64),
+//                 ("Pendentes".to_string(), stats.pendent_goals as f64),
+//                 ("Adiadas".to_string(), stats.delayed_goals as f64),
+//             ],
+//             StatsResponse::Week(stats) => vec![
+//                 ("Executadas".to_string(), stats.executed_goals as f64),
+//                 ("Pendentes".to_string(), stats.pendent_goals as f64),
+//                 ("Adiadas".to_string(), stats.delayed_goals as f64),
+//             ],
+//         }
+//     }
+// }

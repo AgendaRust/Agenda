@@ -139,32 +139,32 @@ pub async fn update_goal(goal_id: i32, goal_dto: GoalDto) -> Result<Goal, String
     }
 }
 
-pub async fn get_user_goals() -> Result<Vec<Goal>, String> {
-    let url = format!("{}/goals/user", API_URL);
-    let token = get_token();
+// pub async fn get_user_goals() -> Result<Vec<Goal>, String> {
+//     let url = format!("{}/goals/user", API_URL);
+//     let token = get_token();
 
-    if token.token.is_empty() {
-        return Err("No authentication token found".to_string());
-    }
+//     if token.token.is_empty() {
+//         return Err("No authentication token found".to_string());
+//     }
 
-    match Request::get(&url)
-        .header("Authorization", &format!("Bearer {}", token.token))
-        .send()
-        .await
-    {
-        Ok(response) => {
-            if response.status() == 200 {
-                match response.json::<Vec<Goal>>().await {
-                    Ok(goals) => Ok(goals),
-                    Err(e) => Err(format!("Failed to parse goals: {}", e)),
-                }
-            } else {
-                Err(format!("Failed to fetch goals: HTTP {}", response.status()))
-            }
-        }
-        Err(e) => Err(format!("Network error: {}", e)),
-    }
-}
+//     match Request::get(&url)
+//         .header("Authorization", &format!("Bearer {}", token.token))
+//         .send()
+//         .await
+//     {
+//         Ok(response) => {
+//             if response.status() == 200 {
+//                 match response.json::<Vec<Goal>>().await {
+//                     Ok(goals) => Ok(goals),
+//                     Err(e) => Err(format!("Failed to parse goals: {}", e)),
+//                 }
+//             } else {
+//                 Err(format!("Failed to fetch goals: HTTP {}", response.status()))
+//             }
+//         }
+//         Err(e) => Err(format!("Network error: {}", e)),
+//     }
+// }
 
 pub async fn delete_goal(id: i32) -> Result<(), String> {
     let url = format!("{}/goals/{}", API_URL, id);

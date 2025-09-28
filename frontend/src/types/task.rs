@@ -90,6 +90,7 @@ pub struct Task {
     pub task_type: String,
 }
 
+#[allow(dead_code)]
 impl Task {
     pub fn new(
         id: u32,

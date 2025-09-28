@@ -104,7 +104,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
             spawn_local(async move {
                 let begin_date_parsed = chrono::NaiveDateTime::parse_from_str(&begin_date, "%Y-%m-%dT%H:%M")
                                     .ok()
-                                    .map(|naive| chrono::DateTime::<chrono::Utc>::from_utc(naive, chrono::Utc))
+                                    .map(|naive| chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(naive, chrono::Utc))
                                     .unwrap_or_else(|| chrono::Utc::now());
 
                 let task_info = TaskDto {

@@ -1,5 +1,4 @@
 use yew::{function_component, html, Callback, Html, MouseEvent, Properties, classes};
-use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement, Event as ChangeEvent};
 
 use crate::types::goal::Goal;
 #[derive(Properties, PartialEq, Clone)]

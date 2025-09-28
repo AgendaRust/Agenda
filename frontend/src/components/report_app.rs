@@ -1,4 +1,4 @@
-use yew::{function_component, html, use_state, use_effect_with, Callback, Html, MouseEvent, Properties};
+use yew::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlSelectElement, HtmlInputElement, console};
 use crate::components::bar_chart::BarChart;

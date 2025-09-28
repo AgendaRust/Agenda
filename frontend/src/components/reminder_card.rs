@@ -1,5 +1,5 @@
 use yew::{function_component, html, Html, Properties, Callback, MouseEvent, use_state, InputEvent, TargetCast};
-use chrono::{DateTime, Utc, Local, TimeZone};
+use chrono::{DateTime, Utc, Local};
 use crate::services::reminder_service::{ReminderUpdateDto, update_reminder};
 
 fn format_reminder_date(date_end: &DateTime<Utc>) -> String {
@@ -95,7 +95,7 @@ pub fn reminder_card(props: &ReminderCardProps) -> Html {
             let date_end = (*edit_date_end).clone();
             // Parse date_end as UTC midnight, no local conversion
             let naive_date = chrono::NaiveDate::parse_from_str(&date_end, "%Y-%m-%d").unwrap();
-            let utc_dt = chrono::DateTime::<Utc>::from_utc(naive_date.and_hms_opt(0, 0, 0).unwrap(), Utc);
+            let utc_dt = chrono::DateTime::<Utc>::from_naive_utc_and_offset(naive_date.and_hms_opt(0, 0, 0).unwrap(), Utc);
             let dto = ReminderUpdateDto {
                 name: name.clone(),
                 category: category.clone(),
