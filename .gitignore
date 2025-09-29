@@ -27,6 +27,7 @@ target
 
 frontend/pkg/
 frontend/dist/
+backend/dist/
 
 *.db
 *.sqlite

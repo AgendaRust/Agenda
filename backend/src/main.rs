@@ -24,7 +24,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .attach(db::init_pool())
-        .mount("/", FileServer::from("src/dist"))
+        .mount("/", FileServer::from("dist"))
         .mount("/api/", routes::get_auth_routes())
         .mount("/api/notes", routes::get_note_routes())
         .mount("/api/tasks", routes::get_task_routes())
