@@ -2,7 +2,8 @@ use yew::{function_component, html, use_state, Callback, Html, MouseEvent, Prope
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlSelectElement, HtmlInputElement, console};
 use crate::components::bar_chart::BarChart;
-use crate::services::report_service::{ReportService, StatsYearResponse, StatsMonthResponse, StatsWeekResponse};
+use crate::services::report_service::{ReportService};
+use crate::types::report::{StatsYearResponse, StatsMonthResponse, StatsWeekResponse};
 
 #[derive(Properties, PartialEq)]
 pub struct ReportAppProps {

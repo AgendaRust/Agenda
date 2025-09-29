@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use gloo::net::http::Request;
 use serde::{Serialize, Deserialize};
 use crate::types::reminder::Reminder;
-
-use super::{API_URL, auth::get_token};
+use crate::config::get_api_url;
+use super::auth::get_token;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ReminderDto {
@@ -26,7 +26,7 @@ pub struct ReminderUpdateDto {
 }
 
 pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
-    let url = format!("{}/reminders/user", API_URL);
+    let url = format!("{}/reminders/user", get_api_url());
     let token = get_token();
 
     if token.token.is_empty() {
@@ -53,7 +53,7 @@ pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
 }
 
 pub async fn create_reminder(reminder_info: &ReminderDto) -> ReminderResult {
-    let url = format!("{}/reminders", API_URL);
+    let url = format!("{}/reminders", get_api_url());
     let token = get_token();
 
     // Check if we have a valid token
@@ -91,7 +91,7 @@ pub async fn create_reminder(reminder_info: &ReminderDto) -> ReminderResult {
 }
 
 pub async fn delete_reminder(reminder_id: u32) -> Result<(), String> {
-    let url = format!("{}/reminders/{}", API_URL, reminder_id);
+    let url = format!("{}/reminders/{}", get_api_url(), reminder_id);
     let token = get_token();
 
     if token.token.is_empty() {
@@ -117,7 +117,7 @@ pub async fn delete_reminder(reminder_id: u32) -> Result<(), String> {
 }
 
 pub async fn update_reminder(reminder_id: u32, dto: ReminderUpdateDto) -> Result<(), String> {
-    let url = format!("{}/reminders/{}", API_URL, reminder_id);
+    let url = format!("{}/reminders/{}", get_api_url(), reminder_id);
     let token = get_token();
     if token.token.is_empty() {
         return Err("No authentication token found".to_string());

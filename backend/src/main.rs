@@ -11,6 +11,7 @@ mod repository;
 
 use dotenvy::dotenv;
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
+use rocket::fs::FileServer;
 
 #[launch]
 fn rocket() -> _ {
@@ -23,11 +24,12 @@ fn rocket() -> _ {
 
     rocket::build()
         .attach(db::init_pool())
-        .mount("/", routes::get_auth_routes())
-        .mount("/notes", routes::get_note_routes())
-        .mount("/tasks", routes::get_task_routes())
-        .mount("/reminders", routes::get_reminder_routes())
-        .mount("/goals", routes::get_goal_routes())
-        .mount("/reports", routes::get_report_routes())
+        .mount("/", FileServer::from("src/dist"))
+        .mount("/api/", routes::get_auth_routes())
+        .mount("/api/notes", routes::get_note_routes())
+        .mount("/api/tasks", routes::get_task_routes())
+        .mount("/api/reminders", routes::get_reminder_routes())
+        .mount("/api/goals", routes::get_goal_routes())
+        .mount("/api/reports", routes::get_report_routes())
         .attach(cors.to_cors().unwrap())
 }

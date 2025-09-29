@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use gloo::net::http::Request;
 use crate::types::goal::Goal;
-use super::{API_URL, auth::get_token};
+use super::auth::get_token;
+use crate::config::get_api_url;
+// use super::API_URL;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GoalDto {
@@ -21,7 +23,7 @@ pub struct GoalUpdateDto {
     pub goal_type: String   
 }
 pub async fn get_all_goals() -> Result<Vec<Goal>, String> {
-    let url = format!("{}/goals/user", API_URL);
+    let url = format!("{}/goals/user", get_api_url());
     let token = get_token();
 
     if token.token.is_empty() {
@@ -62,7 +64,7 @@ pub async fn get_all_goals() -> Result<Vec<Goal>, String> {
 
 
 pub async fn create_goal(goal_dto: GoalDto) -> Result<Goal, String> {
-    let url = format!("{}/goals/", API_URL);
+    let url = format!("{}/goals/", get_api_url());
     let token = get_token();
     
     if token.token.is_empty() {
@@ -109,7 +111,7 @@ pub async fn create_goal(goal_dto: GoalDto) -> Result<Goal, String> {
 // ...existing code...
 
 pub async fn update_goal(goal_id: i32, goal_dto: GoalDto) -> Result<Goal, String> {
-    let url = format!("{}/goals/{}", API_URL, goal_id);
+    let url = format!("{}/goals/{}", get_api_url(), goal_id);
     let token = get_token();
     
     if token.token.is_empty() {
@@ -167,7 +169,7 @@ pub async fn update_goal(goal_id: i32, goal_dto: GoalDto) -> Result<Goal, String
 // }
 
 pub async fn delete_goal(id: i32) -> Result<(), String> {
-    let url = format!("{}/goals/{}", API_URL, id);
+    let url = format!("{}/goals/{}", get_api_url(), id);
     let token = get_token();
     
     if token.token.is_empty() {

@@ -3,7 +3,7 @@ use gloo_storage::{LocalStorage, Storage};
 use js_sys::Date;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
-use super::API_URL;
+use crate::config::get_api_url;
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthStruct {
@@ -56,7 +56,7 @@ pub enum RegisterResult {
 
 
 pub async fn login(login_info: &AuthStruct) -> LoginResult {
-    let login_url = format!("{API_URL}/login");
+    let login_url = format!("{}/login", get_api_url());
     match Request::post(&login_url)
         .json(&login_info)
         .unwrap()
@@ -77,7 +77,7 @@ pub async fn login(login_info: &AuthStruct) -> LoginResult {
 }
 
 pub async fn register(register_info: &AuthStruct) -> RegisterResult {
-    let register_url: String = format!("{API_URL}/register");
+    let register_url: String = format!("{}/register", get_api_url());
     match Request::post(&register_url)
         .json(&register_info)
         .unwrap()

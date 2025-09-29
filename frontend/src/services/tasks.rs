@@ -2,8 +2,8 @@ use chrono::DateTime;
 use gloo::net::http::Request;
 use serde::{Serialize, Deserialize};
 use crate::types::Task;
-
-use super::{API_URL, auth::get_token};
+use crate::config::get_api_url;
+use super::auth::get_token;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TaskDto {
@@ -30,7 +30,7 @@ pub enum TaskResult {
 }
 
 pub async fn delete_task(_task_id: u32) -> Result<(), String> {
-    let url = format!("{}/tasks/{}", API_URL, _task_id as i32);
+    let url = format!("{}/tasks/{}", get_api_url(), _task_id as i32);
     let token = get_token();
     if token.token.is_empty() {
         return Err("No authentication token found".to_string());
@@ -56,7 +56,7 @@ pub async fn delete_task(_task_id: u32) -> Result<(), String> {
 }
 
 pub async fn get_all_tasks() -> Result<Vec<Task>, String> {
-    let url = format!("{}/tasks", API_URL);
+    let url = format!("{}/tasks", get_api_url());
     let token = get_token();
 
     if token.token.is_empty() {
@@ -97,7 +97,7 @@ pub async fn get_all_tasks() -> Result<Vec<Task>, String> {
 
 
 pub async fn create_task(task_info: &TaskDto) -> TaskResult {
-    let url = format!("{}/tasks", API_URL);
+    let url = format!("{}/tasks", get_api_url());
     let token = get_token();
     
     // Check if we have a valid token
@@ -135,7 +135,7 @@ pub async fn create_task(task_info: &TaskDto) -> TaskResult {
 }
 
 pub async fn update_task_with_dto(task_id: u32, task_dto: TaskUpdateDto) -> Result<(), String> {
-    let url = format!("{}/tasks/{}", API_URL, task_id);
+    let url = format!("{}/tasks/{}", get_api_url(), task_id);
     let token = get_token();
     if token.token.is_empty() {
         return Err("No authentication token found".to_string());
