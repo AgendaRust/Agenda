@@ -672,13 +672,25 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             html! { <>{reminder_cards}</> }
                         },
                              ViewType::Goals => {
-                                let goal_cards: Vec<Html> = goals.iter().map(|goal| {
+                                // Only show goals whose date_end is today or in the future (date_end >= selected_date)
+                                let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
+                                    .unwrap_or_else(|| Local::now().date_naive());
+                                let filtered_goals: Vec<&Goal> = goals.iter()
+                                    .filter(|goal| {
+                                        if let Ok(date_end) = chrono::NaiveDate::parse_from_str(&goal.date_end, "%Y-%m-%d") {
+                                            date_end >= selected_date
+                                        } else {
+                                            false
+                                        }
+                                    })
+                                    .collect();
+
+                                let goal_cards: Vec<Html> = filtered_goals.iter().map(|goal| {
                                     let on_edit_goal = on_edit_goal.clone();
-                                    let goal_clone_for_edit = goal.clone();
+                                    let goal_clone_for_edit = (*goal).clone();
                                     html! {
                                         <GoalCard
                                             key={goal.id}
-                                            // ...todas as props do goal
                                             id={goal.id}
                                             name={goal.name.clone()}
                                             description={goal.description.clone()}
