@@ -1,17 +1,16 @@
 use rocket::State;
 use crate::db::Pool;
-use crate::dto::taskDTO::TaskDto;
-use crate::dto::taskUpdateDTO::TaskUpdateDto;
+use crate::dto::task_dto::TaskDto;
+use crate::dto::task_update_dto::TaskUpdateDto;
 use crate::entity::task;
 use crate::repository::task_repository::TaskRepository;
 use sea_orm::DeleteResult;
 use validator::Validate;
-use serde_json::{json, Value};
 /// Enum para erros específicos do serviço de tarefas.
+#[allow(dead_code)]
 pub enum TaskError {
     TaskNotFound(String),
     DatabaseError(String),
-    Unauthorized(String),
     ValidationError(String),
 }
 

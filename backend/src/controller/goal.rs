@@ -1,5 +1,5 @@
 use crate::db::Pool;
-use crate::dto::goalDTO::{GoalDto, GoalResponseDto};
+use crate::dto::goal_dto::{GoalDto, GoalResponseDto};
 use crate::entity::goal;
 use crate::service::goal_service;
 use rocket::http::Status;
@@ -46,7 +46,7 @@ pub async fn update_goal(
 pub async fn delete_goal(
     db: &State<Pool>,
     id: i32,
-    token: UserClaim,
+    _token: UserClaim, //verify if is the same user to delete
 ) -> Result<Json<goal::Model>, (Status, String)> {
     match goal_service::delete_goal_db(db, id).await {
         Ok(goal) => Ok(Json(goal)),
@@ -57,7 +57,7 @@ pub async fn delete_goal(
 #[get("/")]
 pub async fn list_goals(
     db: &State<Pool>,
-    token: UserClaim,
+    _token: UserClaim, //verify if is the same user to list
 ) -> Result<Json<Vec<GoalResponseDto>>, (Status, String)> {
     match goal_service::list_goals_db(db).await {
         Ok(goals) => Ok(Json(goals)),
@@ -69,7 +69,7 @@ pub async fn list_goals(
 pub async fn get_goal(
     db: &State<Pool>,
     id: i32,
-    token: UserClaim,
+    _token: UserClaim, //verify if is the same user to get
 ) -> Result<Json<GoalResponseDto>, (Status, String)> {
     match goal_service::get_goal_db(db, id).await {
         Ok(goal) => Ok(Json(goal)),

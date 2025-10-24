@@ -6,10 +6,10 @@ use crate::components::{task_card::TaskCard, task_form::TaskForm};
 use crate::components::{reminder_form::ReminderForm, reminder_card::ReminderCard};
 use crate::components::{goal_form::GoalForm, goal_card::GoalCard};
 use crate::types::{TaskDuration, Task};
-use crate::services::tasks::{TaskDto, TaskUpdateDto};
+use crate::services::tasks::{TaskUpdateDto};
 use crate::types::reminder::Reminder;
 use crate::types::goal::Goal;
-use crate::services::goal_service::{get_user_goals, get_all_goals, delete_goal, update_goal, GoalDto};
+use crate::services::goal_service::{get_all_goals, update_goal, GoalDto};
 use web_sys::HtmlAudioElement;
 
 
@@ -36,7 +36,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
     let first_render = use_state(|| true);
     let current_view = use_state(|| ViewType::Tasks);
     let show_task_form = use_state(|| false);
-    let show_reminder_form = use_state(|| false);
     let show_goal_form = use_state(|| false);
     let goal_to_edit = use_state(|| None::<Goal>);
     let error_message = use_state(String::new);
@@ -60,25 +59,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             });
         })
     };
-
-    let on_new_goal_click = {
-        let show_goal_form = show_goal_form.clone();
-        let goal_to_edit = goal_to_edit.clone();
-        Callback::from(move |_: MouseEvent| {
-            goal_to_edit.set(None);
-            show_goal_form.set(true);
-        })
-    };
-
-    let on_edit_goal = {
-        let show_goal_form = show_goal_form.clone();
-        let goal_to_edit = goal_to_edit.clone();
-        Callback::from(move |goal: Goal| {
-            goal_to_edit.set(Some(goal));
-            show_goal_form.set(true);
-        })
-    };
-
 
     let on_save_goal = {
         let show_goal_form = show_goal_form.clone();
@@ -193,12 +173,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         })
     };
 
-    let close_goal_form = {
-        let show_goal_form = show_goal_form.clone();
-        Callback::from(move |_: ()| {
-            show_goal_form.set(false);
-        })
-    };
     let on_task_delete = {
         let tasks = tasks.clone();
         Callback::from(move |task_id: u32| {
@@ -301,54 +275,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             }
         })
     };
-    let on_goal_delete = {
-        let goals = goals.clone();
-        Callback::from(move |goal_id: i32| {
-            let goals = goals.clone();
-            spawn_local(async move {
-                match crate::services::goal_service::delete_goal(goal_id).await {
-                    Ok(_) => {
-                        let updated_goals: Vec<Goal> = (*goals)
-                            .iter()
-                            .cloned()
-                            .filter(|goal| goal.id != goal_id)
-                            .collect();
-                        goals.set(updated_goals);
-                    }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("Failed to delete goal: {}", error).into());
-                    }
-                }
-            });
-        })
-    };
 
-    let on_goal_updated = {
-        let goals = goals.clone();
-        Callback::from(move |_: ()| {
-            let goals = goals.clone();
-            spawn_local(async move {
-                match crate::services::goal_service::get_all_goals().await {
-                    Ok(fetched_goals) => {
-                        goals.set(fetched_goals);
-                    }
-                    Err(error) => {
-                        web_sys::console::log_1(&format!("Failed to refresh goals: {}", error).into());
-                    }
-                }
-            });
-        })
-    };
-
-    let on_goal_created = {
-        let goals = goals.clone();
-        Callback::from(move |new_goal: Goal| {
-            let mut current_goals = (*goals).clone();
-            current_goals.push(new_goal);
-            goals.set(current_goals);
-
-        })
-    };
     let on_reminder_delete = {
         let reminders = reminders.clone();
         Callback::from(move |reminder_id: i32| {
@@ -717,7 +644,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             let end_of_week = selected_date + chrono::Duration::days((7 - weekday) as i64);
 
                             // Converter para DateTime<Utc> para comparar com reminder.date_end
-                            use chrono::{NaiveDateTime, Utc, TimeZone};
+                            use chrono::{Utc, TimeZone};
                             let start_of_week_dt = Utc.from_utc_datetime(&start_of_week.and_hms_opt(0, 0, 0).unwrap());
                             let end_of_week_dt = Utc.from_utc_datetime(&end_of_week.and_hms_opt(23, 59, 59).unwrap());
 

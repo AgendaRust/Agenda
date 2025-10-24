@@ -6,7 +6,7 @@ mod pages;
 mod services;
 mod types;
 mod utils;
-
+mod config;
 use utils::routes::Main;
 
 fn main() {

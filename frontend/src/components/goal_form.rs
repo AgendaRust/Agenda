@@ -2,7 +2,6 @@
 
 use yew::{function_component, html, use_state, use_effect_with, Callback, Html, InputEvent, MouseEvent, Properties, TargetCast, classes};
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
-use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::types::goal::Goal;

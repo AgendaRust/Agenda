@@ -5,4 +5,3 @@ pub mod entity;
 pub mod routes;
 pub mod service;
 pub mod repository;
-pub mod seeds;

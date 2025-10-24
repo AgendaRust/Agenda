@@ -1,6 +1,6 @@
 use yew::{function_component, html, Html, Properties, use_state, Callback, MouseEvent, InputEvent, TargetCast};
 use web_sys::HtmlInputElement;
-use crate::types::{Task, TaskDuration};
+use crate::types::TaskDuration;
 
 fn format_time_display(time: &str, duration: &TaskDuration) -> String {
     match duration {

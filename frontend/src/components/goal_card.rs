@@ -1,10 +1,6 @@
 use yew::{function_component, html, Callback, Html, MouseEvent, Properties, classes};
-use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement, Event as ChangeEvent};
-use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::spawn_local;
 
 use crate::types::goal::Goal;
-use crate::services::goal_service::{GoalDto, update_goal};
 #[derive(Properties, PartialEq, Clone)]
 pub struct GoalCardProps {
     pub id: i32,
@@ -132,8 +128,8 @@ pub struct GoalCardProps {
                     { if props.status == "Em andamento" || props.status == "NotStarted" {
                         html! {
                             <div class="quick-actions">
-                                <button class="complete-btn" onclick={on_complete_click}>{ "✓ Concluir" }</button>
-                                <button class="cancel-btn" onclick={on_cancel_click}>{ "✗ Cancelar" }</button>
+                                <button class="edit-button" onclick={on_complete_click}>{ "✓ Concluir" }</button>
+                                <button class="delete-button" onclick={on_cancel_click}>{ "✗ Cancelar" }</button>
                             </div>
                         }
                     } else {

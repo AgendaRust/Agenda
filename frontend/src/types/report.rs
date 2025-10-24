@@ -1,7 +1,6 @@
-use rocket::serde::{Deserialize, Serialize};
-use chrono::NaiveDate;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct StatsYearResponse {
     pub year: i32,
     pub total_tasks: i64,
@@ -26,7 +25,7 @@ pub struct StatsYearResponse {
     pub classification_goals: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct StatsMonthResponse {
     pub year: i32,
     pub month: i32,
@@ -50,7 +49,7 @@ pub struct StatsMonthResponse {
     pub classification_goals: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct StatsWeekResponse {
     pub year: i32,
     pub week: i32,
@@ -74,11 +73,11 @@ pub struct StatsWeekResponse {
     pub classification_goals: String,
 }
 
-
-impl StatsYearResponse {
-    pub fn default_for_year(year: i32) -> Self {
+// Implementações default para casos de erro
+impl Default for StatsYearResponse {
+    fn default() -> Self {
         Self {
-            year,
+            year: 0,
             total_tasks: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
@@ -103,11 +102,11 @@ impl StatsYearResponse {
     }
 }
 
-impl StatsMonthResponse {
-    pub fn default_for_month(year: i32, month: i32) -> Self {
+impl Default for StatsMonthResponse {
+    fn default() -> Self {
         Self {
-            year,
-            month,
+            year: 0,
+            month: 0,
             total_tasks: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
@@ -130,11 +129,11 @@ impl StatsMonthResponse {
     }
 }
 
-impl StatsWeekResponse {
-    pub fn default_for_week(year: i32, week: i32) -> Self {
+impl Default for StatsWeekResponse {
+    fn default() -> Self {
         Self {
-            year,
-            week,
+            year: 0,
+            week: 0,
             total_tasks: 0,
             executed_tasks: 0,
             pendent_tasks: 0,
