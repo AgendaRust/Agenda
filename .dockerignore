@@ -1,0 +1,15 @@
+# Ignora o git
+.git/
+.gitignore
+
+# Ignora os artefatos de build do Rust (serão gerados DENTRO do container)
+target/
+backend/target/
+
+# Ignora o banco de dados local e .env
+database.db
+*.db
+.env
+
+# Ignora dependências do frontend (se houver)
+frontend/node_modules/

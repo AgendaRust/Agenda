@@ -1,0 +1,51 @@
+# A linha 'version' foi removida para corrigir o aviso
+services:
+  # Este serviço roda primeiro, aplica as migrações e sai.
+  migrations:
+    build:
+      context: .
+      dockerfile: .dockerfile # <--- Procura o ficheiro com o nome correto
+    image: planner-rust-img # Damos um nome à imagem construída
+    # Define um 'command' diferente, que sobrepõe o CMD do Dockerfile
+    command: sh -c "ls -la /app/data && touch /app/data/test.txt && ./migration-cli up"
+    # SELinux fix for Fedora
+    security_opt:
+      - label:disable
+    # Monta o volume do banco de dados para que as migrações sejam salvas
+    volumes:
+      - planner-db:/app/data:z
+    # Puxa as variáveis de ambiente do arquivo .env
+    env_file:
+      - .env
+    # Define o DATABASE_URL para um local dentro do volume
+    environment:
+      - DATABASE_URL=sqlite:/app/data/database.db
+
+  # Este é o serviço principal da sua aplicação
+  app:
+    build:
+      context: .
+      dockerfile: .dockerfile # <--- Procura o ficheiro com o nome correto
+    image: planner-rust-img # Usa a mesma imagem já construída
+    # Depende que o serviço 'migrations' termine com sucesso
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    # SELinux fix for Fedora
+    security_opt:
+      - label:disable
+    ports:
+      - "8000:8000"
+    volumes:
+      - planner-db:/app/data:z # Monta o mesmo volume do banco de dados
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:/app/data/database.db
+      - ROCKET_ADDRESS=0.0.0.0
+      - ROCKET_PORT=8000
+
+# Define o volume nomeado para persistir o banco de dados
+volumes:
+  planner-db:
+
