@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Reminder::Id))
                     .col(integer(Reminder::UserId).not_null())
                     .col(string(Reminder::Name).not_null())
-                    .col(string_null(Reminder::Category).not_null())
+                    .col(string_null(Reminder::Category))
                     .col(timestamp(Reminder::DateEnd).not_null())
                     .foreign_key(
                         ForeignKey::create()
