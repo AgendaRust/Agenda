@@ -11,41 +11,88 @@ O objetivo principal é criar um sistema de planner que permita aos usuários or
 
 ## ⚡ Início Rápido
 
+### Opção 1: Docker (Recomendado)
+
 ```bash
 # Clone o repositório
 git clone https://github.com/AgendaRust/Agenda.git
 cd Agenda
 
-# Configure e execute o backend
+# Configure as variáveis de ambiente
+cat > .env << EOF
+JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum
+DB_USER=agenda_user
+DB_PASSWORD=secure_password_change_me
+DB_NAME=agenda_db
+DB_HOST=db
+DB_PORT=5432
+DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}:\${DB_PORT}/\${DB_NAME}
+EOF
+
+# Compile o frontend
+cd frontend
+trunk build --release
+cd ..
+
+# Inicie todos os serviços com Docker
+docker compose up --build
+```
+
+**URLs:**
+- Frontend: http://localhost:8000
+- Backend API: http://localhost:8000/api
+- Adminer (Database UI): http://localhost:8080
+
+### Opção 2: Desenvolvimento Local
+
+```bash
+# Clone o repositório
+git clone https://github.com/AgendaRust/Agenda.git
+cd Agenda
+
+# Inicie o PostgreSQL (backend)
 cd backend
-echo "DATABASE_URL=sqlite:./database.db" > .env
-echo "JWT_SECRET_KEY=your-super-secret-jwt-key-here" >> .env
-touch database.db
+docker-compose up -d
+
+# Configure e execute as migrações
+echo "DATABASE_URL=postgresql://agenda_user:secure_password_change_me@localhost:5432/agenda_db" > .env
+echo "JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum" >> .env
 cargo install sea-orm-cli
-sea-orm-cli migrate up
+cd migration
+cargo run
+cd ..
+
+# Execute o backend
 cargo run
 
 # Em outro terminal, execute o frontend
 cd ../frontend
-rustup target add wasm32-unknown-unknown
-cargo install trunk
-trunk serve
+trunk serve --port 8081
 ```
 
 **URLs:**
-
 - Backend API: http://localhost:8000
-- Frontend: http://localhost:8080
+- Frontend: http://localhost:8081
+- Adminer (Database UI): http://localhost:8080
 
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
 
+**Para executar com Docker (Recomendado):**
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+**Para desenvolvimento local:**
 - [Rust](https://www.rust-lang.org/tools/install) (versão mais recente)
-- [cargo-watch](https://crates.io/crates/cargo-watch) para desenvolvimento com hot reload
+- [Docker](https://docs.docker.com/get-docker/) (apenas para PostgreSQL)
+- [Trunk](https://trunkrs.dev/) para build do frontend
+- [cargo-watch](https://crates.io/crates/cargo-watch) (opcional) para desenvolvimento com hot reload
 - Compilador C ([Clang](https://clang.llvm.org/) ou [GCC](https://gcc.gnu.org/)): O frontend possui dependências (como a crate ring usada para criptografia em jsonwebtoken) que necessitam de um compilador C para serem compiladas.
 
 ### Passo a Passo
+
+#### Opção A: Usando Docker (Produção)
 
 1. **Clone o repositório**
 
@@ -54,13 +101,71 @@ trunk serve
    cd Agenda
    ```
 
-2. **Instale o cargo-watch** (opcional, para desenvolvimento com auto-reload)
+2. **Configure as variáveis de ambiente**
+
+   Crie o arquivo `.env` na raiz do projeto:
 
    ```bash
-   cargo install cargo-watch
+   cat > .env << EOF
+   JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum
+   DB_USER=agenda_user
+   DB_PASSWORD=secure_password_change_me
+   DB_NAME=agenda_db
+   DB_HOST=db
+   DB_PORT=5432
+   DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}:\${DB_PORT}/\${DB_NAME}
+   EOF
    ```
 
-3. **Configure o banco de dados e migrations**
+3. **Compile o frontend**
+
+   ```bash
+   cd frontend
+   rustup target add wasm32-unknown-unknown
+   cargo install trunk
+   trunk build --release
+   cd ..
+   ```
+
+4. **Inicie todos os serviços**
+
+   ```bash
+   docker compose up --build
+   ```
+
+   Isso irá:
+   - Criar e iniciar o banco de dados PostgreSQL
+   - Executar as migrações automaticamente
+   - Iniciar o backend (API Rust/Rocket)
+   - Servir o frontend compilado
+   - Iniciar o Adminer (interface web para gerenciar o banco)
+
+5. **Acesse a aplicação**
+   - Frontend: http://localhost:8000
+   - Backend API: http://localhost:8000/api
+   - Adminer: http://localhost:8080
+
+#### Opção B: Desenvolvimento Local
+
+1. **Clone o repositório**
+
+   ```bash
+   git clone https://github.com/AgendaRust/Agenda.git
+   cd Agenda
+   ```
+
+2. **Inicie o PostgreSQL**
+
+   ```bash
+   cd backend
+   docker-compose up -d
+   ```
+
+   Isso irá iniciar:
+   - PostgreSQL na porta 5432
+   - Adminer na porta 8080
+
+3. **Configure o backend**
 
    ```bash
    cd backend
@@ -69,33 +174,27 @@ trunk serve
    **Crie o arquivo .env:**
 
    ```bash
-   echo "DATABASE_URL=sqlite:./database.db" > .env
-   echo "JWT_SECRET_KEY=your-super-secret-jwt-key-here" >> .env
+   cat > .env << EOF
+   DATABASE_URL=postgresql://agenda_user:secure_password_change_me@localhost:5432/agenda_db
+   JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum
+   DB_USER=agenda_user
+   DB_PASSWORD=secure_password_change_me
+   DB_NAME=agenda_db
+   EOF
    ```
 
-   **Crie o banco de dados SQLite:**
-
-   ```bash
-   touch database.db
-   ```
-
-   **Instale o SeaORM CLI (se ainda não tiver):**
+   **Instale o SeaORM CLI:**
 
    ```bash
    cargo install sea-orm-cli
    ```
 
-   **Execute as migrations para criar o banco de dados e tabelas:**
+   **Execute as migrations:**
 
    ```bash
-   sea-orm-cli migrate up
-   ```
-
-   **Verifique se o banco foi criado corretamente:**
-
-   ```bash
-   sqlite3 database.db ".tables"
-   # Deve mostrar: notes seaql_migrations
+   cd migration
+   cargo run
+   cd ..
    ```
 
 4. **Execute o backend**
@@ -103,6 +202,7 @@ trunk serve
    **Para desenvolvimento (com auto-reload):**
 
    ```bash
+   cargo install cargo-watch  # se ainda não tiver
    cargo watch -x run
    ```
 
@@ -112,77 +212,69 @@ trunk serve
    cargo run
    ```
 
-5. **Acesse a API**
-   ```
-   http://localhost:8000
-   ```
-
-### Executando o Frontend
-
-6. **Volte para o diretório raiz e navegue para o frontend**
+5. **Execute o frontend** (em outro terminal)
 
    ```bash
-   cd ..
    cd frontend
-   ```
-
-7. **Instale as dependências do WebAssembly**
-
-   ```bash
    rustup target add wasm32-unknown-unknown
-   ```
-
-8. **Instale o Trunk** (ferramenta para build e servir aplicações Yew)
-
-   ```bash
    cargo install trunk
+   trunk serve --port 8081
    ```
 
-9. **Execute o frontend**
+6. **Acesse a aplicação**
+   - Backend API: http://localhost:8000
+   - Frontend: http://localhost:8081
+   - Adminer: http://localhost:8080
 
-   **Para desenvolvimento (com hot-reload):**
-
-   ```bash
-   trunk serve
-   ```
-
-   **Para build de produção:**
-
-   ```bash
-   trunk build --release
-   ```
-
-10. **Acesse a aplicação web**
-    ```
-    http://localhost:8080
-    ```
+**Nota:** O frontend em modo de desenvolvimento (`trunk serve --port 8081`) automaticamente se conectará ao backend em `http://localhost:8000/api`. Em produção (Docker), usa o caminho relativo `/api`.
 
 ## 🗄️ Configuração do Banco de Dados
 
-Este projeto utiliza SQLite com SeaORM para gerenciamento do banco de dados e migrations.
+Este projeto utiliza **PostgreSQL** com SeaORM para gerenciamento do banco de dados e migrations.
 
 ### Variáveis de Ambiente Necessárias
 
 O arquivo `.env` deve conter as seguintes variáveis:
 
+**Para Docker (raiz do projeto):**
 ```bash
-DATABASE_URL=sqlite:./database.db
 JWT_SECRET_KEY=your-super-secret-jwt-key-here
+DB_USER=agenda_user
+DB_PASSWORD=agenda_password
+DB_NAME=agenda_db
+DB_HOST=db
+DB_PORT=5432
+DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+```
+
+**Para desenvolvimento local (backend/.env):**
+```bash
+DATABASE_URL=postgresql://agenda_db:senha_top_top_secret@localhost:5432/agenda_db
+JWT_SECRET_KEY=your-super-secret-jwt-key-here
+DB_USER=agenda_db
+DB_PASSWORD=senha_top_top_secret
+DB_NAME=agenda_db
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
 **Importante**:
-
-- `DATABASE_URL`: Define a localização do banco de dados SQLite
+- `DATABASE_URL`: String de conexão com PostgreSQL
 - `JWT_SECRET_KEY`: Chave secreta para assinatura de tokens JWT (deve ter pelo menos 32 caracteres para segurança)
+- `DB_HOST`: Use `db` para Docker ou `localhost` para desenvolvimento local
 
 ### Comandos de Migration Úteis
 
 ```bash
+# Aplicar todas as migrations pendentes (via Docker)
+docker compose run migrations ./migration-cli up
+
+# Aplicar migrations localmente
+cd backend/migration
+cargo run
+
 # Verificar status das migrations
 sea-orm-cli migrate status
-
-# Aplicar todas as migrations pendentes
-sea-orm-cli migrate up
 
 # Reverter a última migration
 sea-orm-cli migrate down
@@ -194,51 +286,89 @@ sea-orm-cli migrate reset
 sea-orm-cli migrate generate nome_da_migration
 
 # Criar as entidades
-sea-orm-cli generate entity -u sqlite:./database.db  -o src/entity
+sea-orm-cli generate entity -u postgresql://user:password@localhost:5432/agenda_db -o src/entity
 ```
 
 ### Estrutura do Banco de Dados
 
-**Tabela: notes**
+**Tabelas principais:**
+- `user` - Usuários do sistema
+- `task` - Tarefas diárias (begin_date, complete_date, category, type)
+- `goal` - Metas (date_start, date_end, category, type)
+- `reminder` - Lembretes semanais (date_end, category)
+- `notes` - Notas (created_at)
 
-- `id` - INTEGER PRIMARY KEY AUTOINCREMENT
-- `text` - TEXT NOT NULL
-- `created_at` - TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+**Nota:** Todas as colunas de data/hora utilizam `TIMESTAMPTZ` (timestamp with timezone) para compatibilidade com `DateTimeUtc` do Rust.
+
+### Acessando o Banco de Dados
+
+**Via Adminer (Interface Web):**
+1. Acesse http://localhost:8080
+2. Faça login com:
+   - System: `PostgreSQL`
+   - Server: `db` (Docker) ou `localhost` (local)
+   - Username: valor de `DB_USER`
+   - Password: valor de `DB_PASSWORD`
+   - Database: valor de `DB_NAME`
+
+**Via linha de comando:**
+```bash
+# Usando Docker
+docker compose exec db psql -U agenda_user -d agenda_db
+
+# Localmente (se PostgreSQL estiver instalado)
+psql postgresql://agenda_db:senha_top_top_secret@localhost:5432/agenda_db
+```
 
 ### Solução de Problemas
 
-**Erro de conexão com SQLite:**
-
-- Verifique se o arquivo `.env` existe em `backend/.env`
-- Confirme que `DATABASE_URL=sqlite:./database.db` está correto
-- Confirme que `JWT_SECRET_KEY` está definida com pelo menos 32 caracteres
-- **Crie o banco de dados antes das migrations:** `touch database.db` ou `sqlite3 database.db "VACUUM;"`
-- Certifique-se de que as features SQLite estão habilitadas no `Cargo.toml`
+**Erro de conexão com PostgreSQL:**
+- Verifique se o Docker está rodando: `docker ps`
+- Confirme que o PostgreSQL está ativo: `docker compose ps`
+- Verifique se as variáveis de ambiente estão corretas no `.env`
+- Para Docker, use `DB_HOST=db`; para local, use `DB_HOST=localhost`
 
 **Migration não funciona:**
-
-- Execute `touch database.db` ou `sqlite3 database.db "VACUUM;"` para criar o arquivo do banco
+- Certifique-se de que o PostgreSQL está rodando
+- Verifique a string de conexão em `DATABASE_URL`
 - Execute `cargo install sea-orm-cli` para instalar a CLI
-- Verifique se está no diretório `backend/` ao executar comandos
-- Use `sea-orm-cli migrate status` para ver o estado atual
+- No Docker, as migrations são executadas automaticamente no serviço `migrations`
+
+**Resetar o banco de dados completamente:**
+```bash
+# Parar containers e remover volumes
+docker compose down -v
+
+# Reiniciar tudo do zero
+docker compose up --build
+```
 
 ### Estrutura do Projeto
 
 ```
 Agenda/
-├── backend/          # API em Rust com Rocket
+├── backend/              # API em Rust com Rocket
 │   ├── src/
 │   │   ├── main.rs
 │   │   ├── routes/
 │   │   ├── entity/
-│   │   └── dto/
+│   │   ├── dto/
+│   │   └── service/
+│   ├── migration/        # Migrations do banco de dados
+│   ├── docker-compose.yml # PostgreSQL + Adminer (dev local)
 │   └── Cargo.toml
-├── frontend/         # Interface web em Yew
+├── frontend/             # Interface web em Yew (WebAssembly)
 │   ├── src/
-│   │   └── main.rs
+│   │   ├── main.rs
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── dist/            # Build de produção (gerado pelo Trunk)
 │   ├── index.html
-│   ├── style.css
 │   └── Cargo.toml
+├── .dockerfile          # Multi-stage build para produção
+├── docker-compose.yml   # Orquestração completa da aplicação
+├── .env                 # Variáveis de ambiente
 └── README.md
 ```
 
@@ -307,12 +437,26 @@ Agenda/
       <a href="https://github.com/SeaQL/sea-orm" target="_blank">SeaORM</a>
     </td>
     <td align="center">
-      <img src="https://www.sqlite.org/images/sqlite370_banner.gif" width="40" alt="SQLite"/>
+      <img src="https://wiki.postgresql.org/images/a/a4/PostgreSQL_logo.3colors.svg" width="40" alt="PostgreSQL"/>
       <br/>
-      <a href="https://www.sqlite.org/" target="_blank">SQLite</a>
+      <a href="https://www.postgresql.org/" target="_blank">PostgreSQL</a>
+    </td>
+    <td align="center">
+      <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" width="40" alt="Docker"/>
+      <br/>
+      <a href="https://www.docker.com/" target="_blank">Docker</a>
     </td>
   </tr>
 </table>
+
+### Stack Completa
+
+- **Backend**: Rust + Rocket (Web Framework)
+- **Frontend**: Rust + Yew (WebAssembly Framework)
+- **ORM**: SeaORM (Migrations e Query Builder)
+- **Banco de Dados**: PostgreSQL 16
+- **Containerização**: Docker + Docker Compose
+- **Admin DB**: Adminer (Interface web para PostgreSQL)
 
 ## 🎓 Agradecimentos
 
