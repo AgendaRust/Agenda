@@ -41,7 +41,7 @@ docker compose up --build
 **URLs:**
 - Frontend: http://localhost:8000
 - Backend API: http://localhost:8000/api
-- Adminer (Database UI): http://localhost:8080
+- Adminer (Database UI): http://localhost:8080 (only with `--profile debug`)
 
 ### Opção 2: Desenvolvimento Local
 
@@ -119,13 +119,21 @@ trunk serve --port 8081
 
 3. **Compile o frontend**
 
+   ⚠️ **IMPORTANTE:** Sempre use `--release` para produção!
+
    ```bash
    cd frontend
    rustup target add wasm32-unknown-unknown
    cargo install trunk
-   trunk build --release
+   trunk build --release  # NÃO use apenas "trunk build"
    cd ..
    ```
+
+   **Por quê `--release` é obrigatório?**
+   - `trunk build` (sem --release) = build de desenvolvimento com WebSocket para hot-reload
+   - `trunk build --release` = build otimizado para produção sem código de desenvolvimento
+   
+   Se você usar apenas `trunk build`, verá erros de WebSocket no navegador.
 
 4. **Inicie todos os serviços**
 
@@ -143,7 +151,12 @@ trunk serve --port 8081
 5. **Acesse a aplicação**
    - Frontend: http://localhost:8000
    - Backend API: http://localhost:8000/api
-   - Adminer: http://localhost:8080
+   - Adminer: http://localhost:8080 (opcional, apenas para debug)
+
+   **Nota:** Por padrão, o Adminer não é iniciado. Para usá-lo, execute:
+   ```bash
+   docker compose --profile debug up -d adminer
+   ```
 
 #### Opção B: Desenvolvimento Local
 
@@ -228,6 +241,216 @@ trunk serve --port 8081
 
 **Nota:** O frontend em modo de desenvolvimento (`trunk serve --port 8081`) automaticamente se conectará ao backend em `http://localhost:8000/api`. Em produção (Docker), usa o caminho relativo `/api`.
 
+## 🌐 Deploy em Produção
+
+### Pré-requisitos para Produção
+
+1. **Servidor Linux** com Docker e Docker Compose instalados
+2. **Domínio configurado** (exemplo: DuckDNS)
+3. **Nginx** instalado como reverse proxy
+4. **Certificado SSL** (Let's Encrypt recomendado)
+
+### Passo a Passo para Deploy
+
+1. **Clone o repositório no servidor**
+
+   ```bash
+   ssh user@your-server
+   git clone https://github.com/AgendaRust/Agenda.git
+   cd Agenda
+   ```
+
+2. **Configure variáveis de ambiente de produção**
+
+   ⚠️ **IMPORTANTE:** Gere senhas fortes e únicas!
+
+   ```bash
+   # Gere um JWT secret forte
+   JWT_SECRET=$(openssl rand -base64 32)
+   
+   # Gere uma senha forte para o banco
+   DB_PASSWORD=$(openssl rand -base64 24)
+   
+   # Crie o arquivo .env
+   cat > .env << EOF
+   JWT_SECRET_KEY=${JWT_SECRET}
+   DB_USER=agenda_user
+   DB_PASSWORD=${DB_PASSWORD}
+   DB_NAME=agenda_db
+   DB_HOST=db
+   DB_PORT=5432
+   DATABASE_URL=postgresql://\${DB_USER}:\${DB_PASSWORD}@\${DB_HOST}:\${DB_PORT}/\${DB_NAME}
+   EOF
+   
+   # Proteja o arquivo
+   chmod 600 .env
+   ```
+
+3. **Compile o frontend no servidor (ou em sua máquina local)**
+
+   ```bash
+   cd frontend
+   rustup target add wasm32-unknown-unknown
+   cargo install trunk
+   trunk build --release
+   cd ..
+   ```
+
+4. **Configure o Nginx como reverse proxy**
+
+   ```bash
+   sudo nano /etc/nginx/sites-available/agenda
+   ```
+
+   Cole a seguinte configuração:
+
+   ```nginx
+   server {
+       listen 80;
+       server_name seu-dominio.duckdns.org;
+       
+       # Redirect HTTP to HTTPS
+       return 301 https://$server_name$request_uri;
+   }
+
+   server {
+       listen 443 ssl http2;
+       server_name seu-dominio.duckdns.org;
+
+       # SSL Configuration (Let's Encrypt)
+       ssl_certificate /etc/letsencrypt/live/seu-dominio.duckdns.org/fullchain.pem;
+       ssl_certificate_key /etc/letsencrypt/live/seu-dominio.duckdns.org/privkey.pem;
+       
+       # Strong SSL settings
+       ssl_protocols TLSv1.2 TLSv1.3;
+       ssl_ciphers HIGH:!aNULL:!MD5;
+       ssl_prefer_server_ciphers on;
+
+       # Security headers
+       add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+       add_header X-Frame-Options "SAMEORIGIN" always;
+       add_header X-Content-Type-Options "nosniff" always;
+
+       location / {
+           proxy_pass http://127.0.0.1:8000;
+           
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+           
+           # WebSocket support (if needed)
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection "upgrade";
+       }
+   }
+   ```
+
+   Ative o site:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/agenda /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+5. **Obtenha certificado SSL com Let's Encrypt**
+
+   ```bash
+   sudo apt update
+   sudo apt install certbot python3-certbot-nginx
+   sudo certbot --nginx -d seu-dominio.duckdns.org
+   ```
+
+   O certbot irá:
+   - Gerar o certificado SSL
+   - Configurar renovação automática
+   - Atualizar sua configuração do Nginx
+
+6. **Inicie a aplicação**
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+7. **Verifique os logs**
+
+   ```bash
+   docker compose logs -f
+   ```
+
+8. **Acesse sua aplicação**
+
+   ```
+   https://seu-dominio.duckdns.org
+   ```
+
+### Configuração do Roteador
+
+Certifique-se de que as seguintes portas estão abertas no seu roteador:
+
+- **Porta 80** (HTTP - para redirecionamento e Let's Encrypt)
+- **Porta 443** (HTTPS - para acesso seguro)
+
+### Comandos Úteis para Produção
+
+```bash
+# Ver logs em tempo real
+docker compose logs -f app
+
+# Reiniciar apenas o backend
+docker compose restart app
+
+# Parar tudo
+docker compose down
+
+# Parar e remover volumes (cuidado! apaga dados)
+docker compose down -v
+
+# Backup do banco de dados
+docker compose exec db pg_dump -U agenda_user agenda_db > backup_$(date +%Y%m%d).sql
+
+# Restaurar backup
+cat backup_20231025.sql | docker compose exec -T db psql -U agenda_user -d agenda_db
+
+# Atualizar aplicação
+git pull
+cd frontend && trunk build --release && cd ..
+docker compose up -d --build
+```
+
+### Segurança em Produção
+
+✅ **Checklist de Segurança:**
+
+- [ ] JWT_SECRET_KEY com pelo menos 32 caracteres aleatórios
+- [ ] Senha forte do banco de dados (DB_PASSWORD)
+- [ ] Arquivo `.env` com permissões restritas (`chmod 600 .env`)
+- [ ] HTTPS configurado com certificado válido
+- [ ] Adminer desabilitado (não inicie com `--profile debug` em produção)
+- [ ] Firewall configurado (apenas portas 80, 443 e SSH abertas)
+- [ ] Backups automáticos do banco de dados configurados
+- [ ] Monitoramento de logs ativo
+
+### Manutenção
+
+**Renovação automática do SSL:**
+O certbot configura automaticamente a renovação. Teste com:
+```bash
+sudo certbot renew --dry-run
+```
+
+**Backup automático:**
+Crie um cron job para backup diário:
+```bash
+crontab -e
+```
+
+Adicione:
+```cron
+0 2 * * * cd /caminho/para/Agenda && docker compose exec -T db pg_dump -U agenda_user agenda_db > backup_$(date +\%Y\%m\%d).sql
+```
+
 ## 🗄️ Configuração do Banco de Dados
 
 Este projeto utiliza **PostgreSQL** com SeaORM para gerenciamento do banco de dados e migrations.
@@ -236,11 +459,11 @@ Este projeto utiliza **PostgreSQL** com SeaORM para gerenciamento do banco de da
 
 O arquivo `.env` deve conter as seguintes variáveis:
 
-**Para Docker (raiz do projeto):**
+**Para Docker (raiz do projeto - .env):**
 ```bash
-JWT_SECRET_KEY=your-super-secret-jwt-key-here
+JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum
 DB_USER=agenda_user
-DB_PASSWORD=agenda_password
+DB_PASSWORD=secure_password_change_me
 DB_NAME=agenda_db
 DB_HOST=db
 DB_PORT=5432
@@ -249,10 +472,10 @@ DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_N
 
 **Para desenvolvimento local (backend/.env):**
 ```bash
-DATABASE_URL=postgresql://agenda_db:senha_top_top_secret@localhost:5432/agenda_db
-JWT_SECRET_KEY=your-super-secret-jwt-key-here
-DB_USER=agenda_db
-DB_PASSWORD=senha_top_top_secret
+DATABASE_URL=postgresql://agenda_user:secure_password_change_me@localhost:5432/agenda_db
+JWT_SECRET_KEY=your-super-secret-jwt-key-here-must-be-32-chars-minimum
+DB_USER=agenda_user
+DB_PASSWORD=secure_password_change_me
 DB_NAME=agenda_db
 DB_HOST=localhost
 DB_PORT=5432
@@ -317,7 +540,7 @@ sea-orm-cli generate entity -u postgresql://user:password@localhost:5432/agenda_
 docker compose exec db psql -U agenda_user -d agenda_db
 
 # Localmente (se PostgreSQL estiver instalado)
-psql postgresql://agenda_db:senha_top_top_secret@localhost:5432/agenda_db
+psql postgresql://agenda_user:secure_password_change_me@localhost:5432/agenda_db
 ```
 
 ### Solução de Problemas
@@ -334,6 +557,14 @@ psql postgresql://agenda_db:senha_top_top_secret@localhost:5432/agenda_db
 - Execute `cargo install sea-orm-cli` para instalar a CLI
 - No Docker, as migrations são executadas automaticamente no serviço `migrations`
 
+**Erros de WebSocket no frontend (`{{__TRUNK_ADDRESS__}}` etc.):**
+- Certifique-se de usar `trunk build --release` (não apenas `trunk build`)
+- O build de desenvolvimento não deve ser usado no Docker
+- Verifique se não há placeholders Trunk no `frontend/dist/index.html`:
+  ```bash
+  grep -c "{{__TRUNK" frontend/dist/index.html  # Deve retornar 0
+  ```
+
 **Resetar o banco de dados completamente:**
 ```bash
 # Parar containers e remover volumes
@@ -341,6 +572,28 @@ docker compose down -v
 
 # Reiniciar tudo do zero
 docker compose up --build
+```
+
+**⚠️ IMPORTANTE: Mudança de senha no .env**
+Se você alterar a senha do banco no `.env`, precisa remover o volume antigo:
+```bash
+docker compose down -v  # O -v remove os volumes
+docker compose up --build
+```
+
+**Acessar Adminer para debug:**
+```bash
+# Iniciar Adminer
+docker compose --profile debug up -d adminer
+
+# Acessar em http://localhost:8080
+# Server: db
+# Username: valor de DB_USER
+# Password: valor de DB_PASSWORD
+# Database: valor de DB_NAME
+
+# Parar Adminer
+docker compose --profile debug down
 ```
 
 ### Estrutura do Projeto
