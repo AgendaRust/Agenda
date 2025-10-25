@@ -21,7 +21,6 @@ pub fn register() -> Html {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             username.set(value.clone());
-            web_sys::console::log_1(&value.into());
         })
     };
 
@@ -30,10 +29,7 @@ pub fn register() -> Html {
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
-
             password.set(value.clone());
-
-            web_sys::console::log_1(&value.into());
         })
     };
 

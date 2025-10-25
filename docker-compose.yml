@@ -1,5 +1,4 @@
 services:
-  # PostgreSQL Database
   db:
     image: postgres:16-alpine
     restart: always
@@ -9,8 +8,6 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,49 +15,60 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - agenda-network
 
-  # Database Admin Interface
   adminer:
     image: adminer
     restart: always
-    ports:
-      - "8080:8080"
+    # Optional: Expose only for debugging
+    # ports: 
+    #   - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - agenda-network
+    profiles:
+      - debug  # Start with: docker compose --profile debug up
 
-  # Database Migrations
   migrations:
     build:
       context: .
       dockerfile: .dockerfile
     image: planner-rust-img
-    command: sh -c "./migration-cli up"
+    command: sh -c "sleep 5 && ./migration-cli up"
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - agenda-network
 
-  # Application Server
   app:
     build:
       context: .
       dockerfile: .dockerfile
     image: planner-rust-img
-    depends_on:
-      migrations:
-        condition: service_completed_successfully
+    restart: always
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      - ROCKET_ADDRESS=0.0.0.0
-      - ROCKET_PORT=8000
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - agenda-network
 
 volumes:
   postgres_data:
 
+networks:
+  agenda-network:
+    driver: bridge
