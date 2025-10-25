@@ -10,6 +10,8 @@ backend/target/
 database.db
 *.db
 .env
+postgres_data/
+data/
 
 # Ignora dependências do frontend (se houver)
 frontend/node_modules/

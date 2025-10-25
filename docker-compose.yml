@@ -1,20 +1,49 @@
 services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Database Admin Interface
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  # Database Migrations
   migrations:
     build:
       context: .
       dockerfile: .dockerfile
     image: planner-rust-img
-    user: root
-    command: sh -c "mkdir -p /app/data && touch /app/data/database.db && chmod -R 777 /app/data && ls -la /app/data && ./migration-cli up"
-    security_opt:
-      - label:disable
-    volumes:
-      - planner-db:/app/data:Z
+    command: sh -c "./migration-cli up"
     env_file:
       - .env
     environment:
-      - DATABASE_URL=sqlite:/app/data/database.db
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
 
+  # Application Server
   app:
     build:
       context: .
@@ -23,19 +52,15 @@ services:
     depends_on:
       migrations:
         condition: service_completed_successfully
-    security_opt:
-      - label:disable
     ports:
       - "8000:8000"
-    volumes:
-      - planner-db:/app/data:Z
     env_file:
       - .env
     environment:
-      - DATABASE_URL=sqlite:/app/data/database.db
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       - ROCKET_ADDRESS=0.0.0.0
       - ROCKET_PORT=8000
 
 volumes:
-  planner-db:
+  postgres_data:
 
