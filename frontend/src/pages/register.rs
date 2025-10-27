@@ -4,7 +4,7 @@ use yew_router::hooks::use_navigator;
 
 use crate::{
     services::auth::{self, AuthStruct, RegisterResult},
-    utils::routes::Route,
+    utils::{routes::Route, validation},
 };
 
 #[function_component(Register)]
@@ -14,22 +14,42 @@ pub fn register() -> Html {
     let username = use_state(String::new);
     let password = use_state(String::new);
     let button_pressed = use_state(|| false);
+    let username_errors = use_state(|| Vec::<String>::new());
+    let password_errors = use_state(|| Vec::<String>::new());
 
     let on_username_input_change = {
         let username = username.clone();
+        let username_errors = username_errors.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             username.set(value.clone());
+            
+            // Only validate if not empty
+            if !value.is_empty() {
+                let errors = validation::validate_username(&value);
+                username_errors.set(errors);
+            } else {
+                username_errors.set(Vec::new());
+            }
         })
     };
 
     let on_password_input_change = {
         let password = password.clone();
+        let password_errors = password_errors.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             password.set(value.clone());
+            
+            // Only validate if not empty
+            if !value.is_empty() {
+                let errors = validation::validate_password(&value);
+                password_errors.set(errors);
+            } else {
+                password_errors.set(Vec::new());
+            }
         })
     };
 
@@ -45,8 +65,20 @@ pub fn register() -> Html {
         let password: String = (*password).clone();
         let navigator = navigator.clone();
         let button_pressed = button_pressed.clone();
+        let username_errors = username_errors.clone();
+        let password_errors = password_errors.clone();
 
         Callback::from(move |_: MouseEvent| {
+            // Validate credentials
+            let (user_errs, pass_errs) = validation::validate_credentials(&username, &password);
+            username_errors.set(user_errs.clone());
+            password_errors.set(pass_errs.clone());
+
+            // If there are validation errors, don't proceed
+            if !user_errs.is_empty() || !pass_errs.is_empty() {
+                return;
+            }
+
             web_sys::console::log_1(
                 &format!("tentando registrar com {username} {password}").into(),
             );
@@ -111,10 +143,36 @@ pub fn register() -> Html {
                             <div class="register-form-container">
                                 <label class="register-form-label"> {"Insira seu nome de usuário"} </label>
                                 <input value={(*username).clone()}
-                                    oninput={on_username_input_change} class="register-input" type="text" required=true minlength="3" />
+                                    oninput={on_username_input_change} class="register-input" type="text" required=true minlength="6" />
+                                {
+                                    if !(*username_errors).is_empty() {
+                                        html! {
+                                            <div class="error-messages">
+                                                { for (*username_errors).iter().map(|error| html! {
+                                                    <div>{ format!("- {}", error) }</div>
+                                                })}
+                                            </div>
+                                        }
+                                    } else {
+                                        html! {}
+                                    }
+                                }
                                 <label class="register-form-label"> {"Insira sua senha"} </label>
                                 <input value={(*password).clone()}
-                                    oninput={on_password_input_change} onkeydown={on_password_keydown} class="register-input-password" type="password" required=true minlength="6" />
+                                    oninput={on_password_input_change} onkeydown={on_password_keydown} class="register-input-password" type="password" required=true minlength="8" />
+                                {
+                                    if !(*password_errors).is_empty() {
+                                        html! {
+                                            <div class="error-messages">
+                                                { for (*password_errors).iter().map(|error| html! {
+                                                    <div>{ format!("- {}", error) }</div>
+                                                })}
+                                            </div>
+                                        }
+                                    } else {
+                                        html! {}
+                                    }
+                                }
                                 <button disabled={(*button_pressed).clone()} onclick={on_click_register} class="register-button" type="button"> {"Cadastrar"} </button>
                                 <a class="register-login-link" onclick={on_click_login}> {"Já possui uma conta? entre aqui."} </a>
                             </div>

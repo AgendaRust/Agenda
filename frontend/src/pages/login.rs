@@ -2,7 +2,7 @@ use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::hooks::use_navigator;
 
-use crate::utils::routes::Route;
+use crate::utils::{routes::Route, validation};
 
 use crate::services::auth::{self, AuthStruct, LoginResult};
 
@@ -13,17 +13,31 @@ pub fn login() -> Html {
     let username = use_state(String::new);
     let password = use_state(String::new);
     let login_pressed = use_state(|| false);
+    let show_invalid_credentials = use_state(|| false);
 
     let onclick = {
         let username = (*username).clone();
         let password = (*password).clone();
         let navigator = navigator.clone();
-        // let navigator = navigator.clone();
+        let show_invalid_credentials = show_invalid_credentials.clone();
         Callback::from(move |_: MouseEvent| {
+            // Validate credentials before calling backend
+            let (user_errs, pass_errs) = validation::validate_credentials(&username, &password);
+
+            // If there are validation errors, show "Credenciais inválidas" and don't proceed
+            if !user_errs.is_empty() || !pass_errs.is_empty() {
+                show_invalid_credentials.set(true);
+                return;
+            }
+
+            // Clear the error message if validation passes
+            show_invalid_credentials.set(false);
+
             let username = username.clone();
             let password = password.clone();
             let navigator = navigator.clone();
             let login_pressed = login_pressed.clone();
+            let show_invalid_credentials = show_invalid_credentials.clone();
             if *login_pressed {
                 return;
             }
@@ -36,10 +50,7 @@ pub fn login() -> Html {
                         navigator.push(&Route::Home);
                     }
                     LoginResult::IncorrectCredentials => {
-                        web_sys::window()
-                            .unwrap()
-                            .alert_with_message("Credenciais erradas.")
-                            .unwrap();
+                        show_invalid_credentials.set(true);
                     }
                     LoginResult::NetworkError => {
                         web_sys::window()
@@ -62,19 +73,27 @@ pub fn login() -> Html {
 
     let on_username_input_change = {
         let username = username.clone();
+        let show_invalid_credentials = show_invalid_credentials.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             username.set(value.clone());
+            
+            // Clear error message when user starts typing
+            show_invalid_credentials.set(false);
         })
     };
 
     let on_password_input_change = {
         let password = password.clone();
+        let show_invalid_credentials = show_invalid_credentials.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             password.set(value.clone());
+            
+            // Clear error message when user starts typing
+            show_invalid_credentials.set(false);
         })
     };
 
@@ -117,6 +136,17 @@ pub fn login() -> Html {
                                         oninput={on_password_input_change}
                                         onkeydown={on_password_keydown}
                                         class="login-input-password" type="password" />
+                                    {
+                                        if *show_invalid_credentials {
+                                            html! {
+                                                <div class="error-messages">
+                                                    <div>{ "- Credenciais inválidas" }</div>
+                                                </div>
+                                            }
+                                        } else {
+                                            html! {}
+                                        }
+                                    }
                                     <button {onclick} class="login-button" type="button"> {"Entrar"} </button>
                                     <a class="login-register-link" onclick={onclick_register}> {"Ainda não possui uma conta? Clique aqui."} </a>
                                 </div>
