@@ -1,5 +1,5 @@
 use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, DbErr, EntityTrait, IntoActiveModel, QueryFilter, Set};
-use chrono::{Timelike, Utc, Duration};
+use chrono::{Timelike, Duration};
 use crate::dto::task_dto::TaskDto;
 use crate::dto::task_update_dto::TaskUpdateDto;
 use crate::entity::task;
@@ -70,11 +70,12 @@ impl<'a> TaskRepository<'a> {
             }
         };
 
-        if begin_date < Utc::now() {
-            return Err(DbErr::Custom(
-                "Task begin date cannot be in the past.".to_string(),
-            ));
-        }
+        // Removed validation: Tasks can now be created in the past
+        // if begin_date < Utc::now() {
+        //     return Err(DbErr::Custom(
+        //         "Task begin date cannot be in the past.".to_string(),
+        //     ));
+        // }
 
         let overlapping_task = task::Entity::find()
             .filter(task::Column::UserId.eq(user_id))
