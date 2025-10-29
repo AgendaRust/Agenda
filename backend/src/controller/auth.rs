@@ -1,7 +1,6 @@
 use crate::db::Pool;
 use crate::dto::auth_dto::AuthDto;
-use crate::repository::auth_repository:: UserError;
-use crate::repository::auth_repository;
+use crate::repository::auth_repository::UserError;
 use rocket::http::Status;
 use rocket::{serde::json::Json, State};
 use rocket::post;
@@ -41,7 +40,7 @@ pub async fn register(
     db: &State<Pool>,
 ) -> Result<(Status, Json<TokenResponse>), (Status, Json<ErrorResponse>)> {
     let result: Result<crate::entity::user::Model, UserError> =
-        auth_repository::create_user(db, &auth_dto).await;
+        auth_service::register_user(db, &auth_dto).await;
     match result {
         Ok(user) => {
             let user_claim = UserClaim {
