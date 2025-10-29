@@ -16,14 +16,19 @@ pub fn register() -> Html {
     let button_pressed = use_state(|| false);
     let username_errors = use_state(|| Vec::<String>::new());
     let password_errors = use_state(|| Vec::<String>::new());
+    let show_username_exists = use_state(|| false);
 
     let on_username_input_change = {
         let username = username.clone();
         let username_errors = username_errors.clone();
+        let show_username_exists = show_username_exists.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
             username.set(value.clone());
+            
+            // Clear the "username already exists" error when user starts typing
+            show_username_exists.set(false);
             
             // Only validate if not empty
             if !value.is_empty() {
@@ -67,6 +72,7 @@ pub fn register() -> Html {
         let button_pressed = button_pressed.clone();
         let username_errors = username_errors.clone();
         let password_errors = password_errors.clone();
+        let show_username_exists = show_username_exists.clone();
 
         Callback::from(move |_: MouseEvent| {
             // Validate credentials
@@ -86,22 +92,27 @@ pub fn register() -> Html {
             let register_info: AuthStruct = AuthStruct::new(username.clone(), password.clone());
             let navigator = navigator.clone();
             let button_pressed = button_pressed.clone();
+            let show_username_exists = show_username_exists.clone();
             if (*button_pressed) == false {
                 spawn_local(async move {
                     button_pressed.set(true);
                     match auth::register(&register_info).await {
                         RegisterResult::Success => {
                             // Handle successful registration
-                            web_sys::console::log_1(&"Successful register".into());
+                            web_sys::console::log_1(&"Registro realizado com sucesso".into());
                             navigator.push(&Route::Home);
                         }
                         RegisterResult::InvalidFields => {
                             web_sys::console::log_1(
-                                &format!("Registration failed, invalid input").into(),
+                                &format!("Falha no registro, campos inválidos").into(),
                             );
                         }
+                        RegisterResult::UsernameAlreadyExists => {
+                            web_sys::console::log_1(&"Nome de usuário já utilizado".into());
+                            show_username_exists.set(true);
+                        }
                         RegisterResult::NetworkError => {
-                            web_sys::console::log_1(&format!("Backend off do line").into());
+                            web_sys::console::log_1(&format!("Backend fora do ar").into());
                         }
                     }
                     button_pressed.set(false);
@@ -145,7 +156,13 @@ pub fn register() -> Html {
                                 <input value={(*username).clone()}
                                     oninput={on_username_input_change} class="register-input" type="text" required=true minlength="6" />
                                 {
-                                    if !(*username_errors).is_empty() {
+                                    if *show_username_exists {
+                                        html! {
+                                            <div class="error-messages">
+                                                <div>{ "- Nome de usuário já utilizado" }</div>
+                                            </div>
+                                        }
+                                    } else if !(*username_errors).is_empty() {
                                         html! {
                                             <div class="error-messages">
                                                 { for (*username_errors).iter().map(|error| html! {
