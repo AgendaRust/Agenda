@@ -97,7 +97,7 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                 let result = create_reminder(&reminder_info).await;
                 match result {
                     ReminderResult::Success(rem) => {
-                        web_sys::console::log_1(&format!("Reminder created successfully: {:?}", rem).into());
+                        web_sys::console::log_1(&format!("Lembrete criado com sucesso: {:?}", rem).into());
                         form_status.set("success".to_string());
 
                         // Notify parent component about the new reminder
@@ -127,7 +127,7 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                         form_status.set("error".to_string());
                     }
                     ReminderResult::NetworkError(err) => {
-                        web_sys::console::log_1(&format!("Network error: {}", err).into());
+                        web_sys::console::log_1(&format!("Erro de rede: {}", err).into());
                         form_status.set("error".to_string());
                     }
                 }
@@ -152,9 +152,9 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                         if !form_status.is_empty() {
                             <div class={format!("status-message {}", (*form_status).clone())}>
                                 if *form_status == "success" {
-                                    { "✓ Reminder created successfully!" }
+                                    { "✓ Lembrete criado com sucesso!" }
                                 } else if *form_status == "error" {
-                                    { "✗ Failed to create reminder. Please check fields." }
+                                    { "✗ Falha ao criar lembrete. Verifique os campos." }
                                 }
                             </div>
                         }

@@ -118,7 +118,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                 let result = create_task(&task_info).await;
                 match result {
                     crate::services::tasks::TaskResult::Success(task) => {
-                        web_sys::console::log_1(&format!("Task created successfully: {:?}", task).into());
+                        web_sys::console::log_1(&format!("Tarefa criada com sucesso: {:?}", task).into());
                         form_status.set("success".to_string());
                         
                         // Notify parent component about the new task
@@ -148,7 +148,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         });
                     },
                     crate::services::tasks::TaskResult::InvalidFields => {
-                        web_sys::console::log_1(&"Failed to create task: Invalid fields".into());
+                        web_sys::console::log_1(&"Falha ao criar tarefa: Campos inválidos".into());
                         form_status.set("error".to_string());
                         
                         // Reset error status after animation
@@ -159,7 +159,7 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         });
                     },
                     crate::services::tasks::TaskResult::NetworkError(err) => {
-                        web_sys::console::log_1(&format!("Network error while creating task: {}", err).into());
+                        web_sys::console::log_1(&format!("Erro de rede ao criar tarefa: {}", err).into());
                         form_status.set("error".to_string());
                         
                         // Reset error status after animation
@@ -235,9 +235,9 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         if !form_status.is_empty() {
                             <div class={format!("status-message {}", (*form_status).clone())}>
                                 if *form_status == "success" {
-                                    { "✓ Task created successfully!" }
+                                    { "✓ Tarefa criada com sucesso!" }
                                 } else if *form_status == "error" {
-                                    { "✗ Failed to create task. Please try again." }
+                                    { "✗ Falha ao criar tarefa. Tente novamente." }
                                 }
                             </div>
                         }
@@ -381,7 +381,7 @@ pub fn windows98_select(props: &Windows98SelectProps) -> Html {
     let current_label = props.options.iter()
         .find(|(val, _)| *val == props.value)
         .map(|(_, label)| *label)
-        .unwrap_or("Select");
+        .unwrap_or("Selecione");
 
     html! {
         <div class="win98-select-container">

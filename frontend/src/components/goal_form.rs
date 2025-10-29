@@ -39,7 +39,7 @@ pub fn windows98_select<T>(props: &Windows98SelectProps<T>) -> Html where T: Par
     let current_label = props.options.iter()
         .find(|(val, _)| *val == props.value)
         .map(|(_, label)| label.clone())
-        .unwrap_or_else(|| "Select".to_string());
+        .unwrap_or_else(|| "Selecione".to_string());
 
     html! {
         <div class="win98-select-container">
@@ -182,7 +182,7 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
                         });
                     }
                     Err(err) => {
-                        web_sys::console::error_1(&format!("Failed to save goal: {}", err).into());
+                        web_sys::console::error_1(&format!("Falha ao salvar meta: {}", err).into());
                         form_stat.set("error".to_string());
                     }
                 }

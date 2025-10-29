@@ -77,6 +77,14 @@ pub struct GoalCardProps {
 
         let status_class = props.status.to_lowercase().replace('_', "-");
         let goal_type_class = props.goal_type.to_lowercase();
+        
+        // Traduzir tipo de meta para português
+        let goal_type_label = match props.goal_type.as_str() {
+            "weekly" => "Semanal",
+            "monthly" => "Mensal",
+            "annual" => "Anual",
+            _ => &props.goal_type,
+        };
 
     html! {
         <div class="goal-card">
@@ -89,7 +97,7 @@ pub struct GoalCardProps {
             </div>
             <div class="goal-body">
                 <div class="goal-meta">
-                    <span class={classes!("goal-type", goal_type_class)}>{ &props.goal_type }</span>
+                    <span class={classes!("goal-type", goal_type_class)}>{ goal_type_label }</span>
                     { props.category.as_ref().map_or(html!{}, |cat| html!{ <span class="goal-category">{cat}</span> }) }
                 </div>
 

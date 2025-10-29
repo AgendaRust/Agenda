@@ -213,7 +213,7 @@ pub fn task_card(props: &TaskCardProps) -> Html {
                     </div>
                 }
                 <div class="task-datetime">
-                    <span class="task-date">{ format!("Due Date: {}", &props.date) }</span>
+                    <span class="task-date">{ format!("Data: {}", &props.date) }</span>
                     <span class="task-time">{ format_time_display(&props.time, &props.duration) }</span>
                 </div>
                 if *show_info {
