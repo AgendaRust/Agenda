@@ -93,7 +93,6 @@ pub fn reminder_card(props: &ReminderCardProps) -> Html {
             let name = (*edit_name).clone();
             let category = (*edit_category).clone();
             let date_end = (*edit_date_end).clone();
-            // Parse date_end as UTC midnight, no local conversion
             let naive_date = chrono::NaiveDate::parse_from_str(&date_end, "%Y-%m-%d").unwrap();
             let utc_dt = chrono::DateTime::<Utc>::from_naive_utc_and_offset(naive_date.and_hms_opt(0, 0, 0).unwrap(), Utc);
             let dto = ReminderUpdateDto {
@@ -112,7 +111,7 @@ pub fn reminder_card(props: &ReminderCardProps) -> Html {
                         }
                     }
                     Err(err) => {
-                        web_sys::console::log_1(&format!("Failed to update reminder: {}", err).into());
+                        web_sys::console::log_1(&format!("Falha ao atualizar lembrete: {}", err).into());
                     }
                 }
             });
@@ -178,7 +177,7 @@ pub fn reminder_card(props: &ReminderCardProps) -> Html {
                 } else {
                     <p class="reminder-category">{ &props.category }</p>
                     <div class="reminder-datetime">
-                        <span class="reminder-date">{ format!("Due Date: {}", format_reminder_date(&props.date_end)) }</span>
+                        <span class="reminder-date">{ format!("Data: {}", format_reminder_date(&props.date_end)) }</span>
                         <span class="reminder-time">{ format_reminder_time(&props.date_end) }</span>
                     </div>
                 }

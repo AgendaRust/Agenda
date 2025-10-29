@@ -51,6 +51,7 @@ pub enum LoginResult {
 pub enum RegisterResult {
     Success,
     InvalidFields,
+    UsernameAlreadyExists,
     NetworkError,
 }
 
@@ -91,6 +92,7 @@ pub async fn register(register_info: &AuthStruct) -> RegisterResult {
                 RegisterResult::Success
             }
             400 => RegisterResult::InvalidFields,
+            409 => RegisterResult::UsernameAlreadyExists,
             _ => RegisterResult::NetworkError,
         },
         Err(_) => RegisterResult::NetworkError,

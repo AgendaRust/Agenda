@@ -21,10 +21,9 @@ pub struct ReminderFormProps {
 pub fn reminder_form(props: &ReminderFormProps) -> Html {
     let reminder_name = use_state(|| String::new());
     let reminder_category = use_state(|| String::new());
-    let reminder_date = use_state(|| String::new()); // formato YYYY-MM-DD
+    let reminder_date = use_state(|| String::new());
     let form_status = use_state(|| String::new());
 
-    // Handlers
     let on_name_change = {
         let reminder_name = reminder_name.clone();
         Callback::from(move |e: InputEvent| {
@@ -77,7 +76,6 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
             let on_reminder_created = on_reminder_created.clone();
 
             spawn_local(async move {
-                // converte YYYY-MM-DD -> DateTime<Utc> (00:00h UTC)
                 let parsed_date: Option<DateTime<Utc>> = NaiveDate::parse_from_str(&*reminder_date, "%Y-%m-%d")
                     .map(|d| NaiveDateTime::new(d, chrono::NaiveTime::from_hms_opt(0,0,0).unwrap()))
                     .ok()
@@ -97,10 +95,9 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                 let result = create_reminder(&reminder_info).await;
                 match result {
                     ReminderResult::Success(rem) => {
-                        web_sys::console::log_1(&format!("Reminder created successfully: {:?}", rem).into());
+                        web_sys::console::log_1(&format!("Lembrete criado com sucesso: {:?}", rem).into());
                         form_status.set("success".to_string());
 
-                        // Notify parent component about the new reminder
                         if let Some(cb) = &on_reminder_created {
                             cb.emit(rem);
                         }
@@ -127,7 +124,7 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                         form_status.set("error".to_string());
                     }
                     ReminderResult::NetworkError(err) => {
-                        web_sys::console::log_1(&format!("Network error: {}", err).into());
+                        web_sys::console::log_1(&format!("Erro de rede: {}", err).into());
                         form_status.set("error".to_string());
                     }
                 }
@@ -152,9 +149,9 @@ pub fn reminder_form(props: &ReminderFormProps) -> Html {
                         if !form_status.is_empty() {
                             <div class={format!("status-message {}", (*form_status).clone())}>
                                 if *form_status == "success" {
-                                    { "✓ Reminder created successfully!" }
+                                    { "✓ Lembrete criado com sucesso!" }
                                 } else if *form_status == "error" {
-                                    { "✗ Failed to create reminder. Please check fields." }
+                                    { "✗ Falha ao criar lembrete. Verifique os campos." }
                                 }
                             </div>
                         }

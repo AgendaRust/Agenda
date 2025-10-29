@@ -55,8 +55,7 @@ pub async fn get_all_reminders() -> Result<Vec<Reminder>, String> {
 pub async fn create_reminder(reminder_info: &ReminderDto) -> ReminderResult {
     let url = format!("{}/reminders", get_api_url());
     let token = get_token();
-
-    // Check if we have a valid token
+    
     if token.token.is_empty() {
         return ReminderResult::NetworkError("No authentication token found".into());
     }
