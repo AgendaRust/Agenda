@@ -78,7 +78,6 @@ pub struct GoalCardProps {
         let status_class = props.status.to_lowercase().replace('_', "-");
         let goal_type_class = props.goal_type.to_lowercase();
         
-        // Traduzir tipo de meta para português
         let goal_type_label = match props.goal_type.as_str() {
             "weekly" => "Semanal",
             "monthly" => "Mensal",

@@ -93,7 +93,6 @@ pub fn reminder_card(props: &ReminderCardProps) -> Html {
             let name = (*edit_name).clone();
             let category = (*edit_category).clone();
             let date_end = (*edit_date_end).clone();
-            // Parse date_end as UTC midnight, no local conversion
             let naive_date = chrono::NaiveDate::parse_from_str(&date_end, "%Y-%m-%d").unwrap();
             let utc_dt = chrono::DateTime::<Utc>::from_naive_utc_and_offset(naive_date.and_hms_opt(0, 0, 0).unwrap(), Utc);
             let dto = ReminderUpdateDto {

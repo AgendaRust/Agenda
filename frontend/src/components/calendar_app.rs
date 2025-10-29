@@ -20,7 +20,6 @@ pub enum ViewType {
     Goals,
 }
 
-// Mock Goal struct for now - REMOVED since we're using the real Goal from types
 
 #[derive(Properties, PartialEq)]
 pub struct CalendarAppProps {
@@ -40,7 +39,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
     let goal_to_edit = use_state(|| None::<Goal>);
     let error_message = use_state(String::new);
 
-    // View switching callbacks
     let switch_to_tasks = {
         let current_view = current_view.clone();
         Callback::from(move |_: MouseEvent| {
@@ -201,9 +199,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
             let tasks = tasks.clone();
             let tasks_for_find = tasks.clone();
             spawn_local(async move {
-                // First, find the current task to get all its fields
                 if let Some(current_task) = (*tasks_for_find).iter().find(|t| t.id == task_id) {
-                    // Create TaskDto with all required fields, updating only title and description
                     let task_dto = TaskUpdateDto {
                         title: new_title.clone(),
                         description: new_description.clone(),
@@ -325,7 +321,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                     let mut task = (*tasks)[task_index].clone();
                     task.status = new_status.clone();
                     
-                    // Create TaskDto for update
                     let task_dto = TaskUpdateDto {
 
                         title: task.title.clone(),
@@ -335,7 +330,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
 
                     match crate::services::tasks::update_task_with_dto(task_id, task_dto).await {
                         Ok(_) => {
-                            // Update local state
                             let mut updated_tasks = (*tasks).clone();
                             updated_tasks[task_index] = task;
                             tasks.set(updated_tasks);
@@ -356,7 +350,7 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
         let reminders = reminders.clone();
         let goals = goals.clone();
         let first_render = first_render.clone();
-        let error_message = error_message.clone(); // Agora esta linha funciona!
+        let error_message = error_message.clone();
 
         use_effect(move || {
             if *first_render {
@@ -452,7 +446,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
     let total_cells_used = first_weekday + days_in_month as usize;
     let remaining_cells = if total_cells_used % 7 == 0 { 0 } else { 7 - (total_cells_used % 7) };
 
-    // Function to count tasks for a specific date
     let count_tasks_for_date = |day: u32| -> usize {
         let target_date = NaiveDate::from_ymd_opt(*current_year, *current_month, day)
             .unwrap_or_else(|| Local::now().date_naive());
@@ -636,19 +629,16 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             }
                         },
                         ViewType::Reminders => {
-                            // Calcular início (domingo) e fim (sábado) da semana do dia selecionado
                             let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
                                 .unwrap_or_else(|| Local::now().date_naive());
-                            let weekday = selected_date.weekday().number_from_sunday(); // 1 = domingo, 7 = sábado
+                            let weekday = selected_date.weekday().number_from_sunday();
                             let start_of_week = selected_date - chrono::Duration::days((weekday - 1) as i64);
                             let end_of_week = selected_date + chrono::Duration::days((7 - weekday) as i64);
 
-                            // Converter para DateTime<Utc> para comparar com reminder.date_end
                             use chrono::{Utc, TimeZone};
                             let start_of_week_dt = Utc.from_utc_datetime(&start_of_week.and_hms_opt(0, 0, 0).unwrap());
                             let end_of_week_dt = Utc.from_utc_datetime(&end_of_week.and_hms_opt(23, 59, 59).unwrap());
 
-                            // Filtrar lembretes da semana
                             let weekly_reminders: Vec<&Reminder> = reminders.iter()
                                 .filter(|reminder| {
                                     reminder.date_end >= start_of_week_dt && reminder.date_end <= end_of_week_dt
@@ -672,7 +662,6 @@ pub fn calendar_app(props: &CalendarAppProps) -> Html {
                             html! { <>{reminder_cards}</> }
                         },
                              ViewType::Goals => {
-                                // Only show goals whose date_end is today or in the future (date_end >= selected_date)
                                 let selected_date = NaiveDate::from_ymd_opt(*current_year, *current_month, *selected_day)
                                     .unwrap_or_else(|| Local::now().date_naive());
                                 let filtered_goals: Vec<&Goal> = goals.iter()

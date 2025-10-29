@@ -9,7 +9,6 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
         TaskDuration::Noite => "Noite".to_string(),
         TaskDuration::Madrugada => "Madrugada".to_string(),
         TaskDuration::MeiaHora | TaskDuration::UmaHora | TaskDuration::DuasHoras => {
-            // Parse the time (format: "HH:MM")
             if let Some((hour_str, minute_str)) = time.split_once(':') {
                 if let (Ok(hour), Ok(minute)) = (hour_str.parse::<u32>(), minute_str.parse::<u32>()) {
                     let start_time = format!("{:02}:{:02}", hour, minute);
@@ -22,7 +21,7 @@ fn format_time_display(time: &str, duration: &TaskDuration) -> String {
                     };
                     
                     let total_minutes = hour * 60 + minute + duration_minutes;
-                    let end_hour = (total_minutes / 60) % 24; // Handle day overflow
+                    let end_hour = (total_minutes / 60) % 24;
                     let end_minute = total_minutes % 60;
                     let end_time = format!("{:02}:{:02}", end_hour, end_minute);
                     

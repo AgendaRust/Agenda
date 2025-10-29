@@ -79,13 +79,10 @@ fn draw_bar_chart(
         return;
     }
 
-    // Calcular a soma total para determinar as percentagens
     let total_value: f64 = data.iter().map(|(_, v)| *v).sum();
 
-    // Encontrar valor máximo para a escala
     let max_value = data.iter().map(|(_, v)| *v).fold(0.0, f64::max);
 
-    // Desenhar título
     context.set_font("16px Arial");
     context.set_fill_style(&"#333".into());
     context.set_text_align("center");

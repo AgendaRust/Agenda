@@ -71,7 +71,6 @@ pub fn windows98_select<T>(props: &Windows98SelectProps<T>) -> Html where T: Par
 }
 
 
-// --- AJUSTE 1: Unificar as propriedades para criação e edição ---
 #[derive(Properties, PartialEq, Clone)]
 pub struct GoalFormProps {
     pub visible: bool,
@@ -93,33 +92,29 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
     let goal_category = use_state(String::new);
     let goal_status = use_state(String::new);
     let goal_type = use_state(String::new);
-    let form_status = use_state(String::new); // Para mensagens de sucesso/erro
+    let form_status = use_state(String::new);
 
-    // --- AJUSTE 2: Preencher o formulário com dados existentes se estiver no modo de edição ---
     {
         let props_clone = props.clone();
         let states = (goal_name.clone(), goal_description.clone(), goal_category.clone(), goal_status.clone(), goal_type.clone());
 
         use_effect_with(props_clone, move |props| {
             if let Some(goal) = &props.goal_to_edit {
-                // Modo Edição: preenche os campos com os dados da meta
                 states.0.set(goal.name.clone());
                 states.1.set(goal.description.clone().unwrap_or_default());
                 states.2.set(goal.category.clone().unwrap_or_default());
                 states.3.set(goal.status.clone());
                 states.4.set(goal.goal_type.clone());
             } else {
-                // Modo Criação: reseta para os valores padrão
                 states.0.set(String::new());
                 states.1.set(String::new());
                 states.2.set(String::new());
-                states.3.set("Em andamento".to_string()); // Padrão para novas metas
-                states.4.set("monthly".to_string()); // Padrão para novas metas
+                states.3.set("Em andamento".to_string());
+                states.4.set("monthly".to_string());
             }
         });
     }
 
-    // Handlers de input (não precisam de mudança)
     let on_input_change = |state: yew::UseStateHandle<String>| {
         Callback::from(move |e: InputEvent| {
             if let Some(input) = e.target_dyn_into::<HtmlInputElement>() {
@@ -135,7 +130,6 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
         })
     };
 
-    // --- AJUSTE 3: Lógica de salvar que decide entre criar e atualizar ---
     let on_save_click = {
         let states = (goal_name.clone(), goal_description.clone(), goal_category.clone(), goal_status.clone(), goal_type.clone(), form_status.clone());
         let on_close = props.on_close.clone();
@@ -163,10 +157,8 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
                 };
 
                 let result = if let Some(goal) = goal_to_edit {
-                    // Modo Edição: chama `update_goal`
                     update_goal(goal.id, goal_info).await
                 } else {
-                    // Modo Criação: chama `create_goal`
                     create_goal(goal_info).await
                 };
 
@@ -195,7 +187,6 @@ pub fn goal_form(props: &GoalFormProps) -> Html {
         Callback::from(move |_: MouseEvent| { if let Some(cb) = &on_close { cb.emit(()) } })
     };
 
-    // --- AJUSTE 4: Deixar o texto do formulário dinâmico ---
     let title_text = if is_edit_mode { "Editar Meta" } else { "Criar Meta" };
     let button_text = if is_edit_mode { "Salvar Alterações" } else { "Criar Meta" };
     let success_message = if is_edit_mode { "✓ Meta atualizada!" } else { "✓ Meta criada!" };

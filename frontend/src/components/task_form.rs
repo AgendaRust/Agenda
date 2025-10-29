@@ -121,12 +121,10 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         web_sys::console::log_1(&format!("Tarefa criada com sucesso: {:?}", task).into());
                         form_status.set("success".to_string());
                         
-                        // Notify parent component about the new task
                         if let Some(callback) = &on_task_created {
                             callback.emit(task.clone());
                         }
                         
-                        // Clear form and close after success animation
                         let task_title = task_title.clone();
                         let task_category = task_category.clone();
                         let task_description = task_description.clone();
@@ -151,7 +149,6 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         web_sys::console::log_1(&"Falha ao criar tarefa: Campos inválidos".into());
                         form_status.set("error".to_string());
                         
-                        // Reset error status after animation
                         let form_status = form_status.clone();
                         wasm_bindgen_futures::spawn_local(async move {
                             gloo_timers::future::TimeoutFuture::new(3000).await;
@@ -162,7 +159,6 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                         web_sys::console::log_1(&format!("Erro de rede ao criar tarefa: {}", err).into());
                         form_status.set("error".to_string());
                         
-                        // Reset error status after animation
                         let form_status = form_status.clone();
                         wasm_bindgen_futures::spawn_local(async move {
                             gloo_timers::future::TimeoutFuture::new(3000).await;
@@ -270,14 +266,8 @@ pub fn task_form(props: &TaskFormProps) -> Html {
                                     />
                                 </div>
                             </div>
-                            
-                            // Debug display (you can remove this later)
-                            <div style="font-size: 8px; color: #666; margin-top: 4px;">
-                                { format!("Data/Hora: {}", begin_date) }
-                            </div>
                         </div>
 
-                        // Task title - right column
                         <div>
                             <label for="title">{ "Título:" }</label>
                             <input 

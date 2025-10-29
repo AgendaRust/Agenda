@@ -15,8 +15,6 @@ use rocket::fs::{FileServer, NamedFile};
 use rocket::http::Status;
 use std::path::{Path, PathBuf};
 
-// Catch-all route to serve index.html for SPA routing
-// Rank 11 ensures FileServer (rank 10) is checked first for actual files
 #[get("/<_path..>", rank = 11)]
 async fn spa_fallback(_path: PathBuf) -> Result<NamedFile, Status> {
     NamedFile::open("dist/index.html")
@@ -43,11 +41,10 @@ fn rocket() -> _ {
         .mount("/api/reports", routes::get_report_routes())
         .attach(cors.to_cors().unwrap());
 
-    // Only serve static files if dist folder exists (production mode)
     if Path::new("dist").exists() {
         rocket = rocket
             .mount("/", FileServer::from("dist"))
-            .mount("/", routes![spa_fallback]); // Catch-all for SPA routing
+            .mount("/", routes![spa_fallback]);
     }
 
     rocket

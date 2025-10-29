@@ -21,16 +21,13 @@ pub fn login() -> Html {
         let navigator = navigator.clone();
         let show_invalid_credentials = show_invalid_credentials.clone();
         Callback::from(move |_: MouseEvent| {
-            // Validate credentials before calling backend
             let (user_errs, pass_errs) = validation::validate_credentials(&username, &password);
 
-            // If there are validation errors, show "Credenciais inválidas" and don't proceed
             if !user_errs.is_empty() || !pass_errs.is_empty() {
                 show_invalid_credentials.set(true);
                 return;
             }
 
-            // Clear the error message if validation passes
             show_invalid_credentials.set(false);
 
             let username = username.clone();
@@ -79,7 +76,6 @@ pub fn login() -> Html {
             let value = input.value();
             username.set(value.clone());
             
-            // Clear error message when user starts typing
             show_invalid_credentials.set(false);
         })
     };
@@ -92,7 +88,6 @@ pub fn login() -> Html {
             let value = input.value();
             password.set(value.clone());
             
-            // Clear error message when user starts typing
             show_invalid_credentials.set(false);
         })
     };

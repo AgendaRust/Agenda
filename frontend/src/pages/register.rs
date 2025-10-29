@@ -30,7 +30,6 @@ pub fn register() -> Html {
             // Clear the "username already exists" error when user starts typing
             show_username_exists.set(false);
             
-            // Only validate if not empty
             if !value.is_empty() {
                 let errors = validation::validate_username(&value);
                 username_errors.set(errors);
@@ -98,7 +97,6 @@ pub fn register() -> Html {
                     button_pressed.set(true);
                     match auth::register(&register_info).await {
                         RegisterResult::Success => {
-                            // Handle successful registration
                             web_sys::console::log_1(&"Registro realizado com sucesso".into());
                             navigator.push(&Route::Home);
                         }
